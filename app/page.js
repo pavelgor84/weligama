@@ -9,7 +9,7 @@ export default function Home() {
         <div className={styles.card_container}>
           <div className={styles.card_left}></div>
           <div className={styles.card_right}>
-            <h1>card title</h1>
+            <h3>Card title</h3>
             <div className={styles.card_right_options}></div>
             <div className={styles.card_right_date}></div>
             <div className={styles.card_right_price}></div>
