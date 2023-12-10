@@ -1,0 +1,46 @@
+.container {
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(187, 180, 180, 0.459);
+    width: 90%;
+    height: 30%;
+    color: rgb(207, 204, 204);
+    padding: 0px 0px 100px 0px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 400px;
+    height: 150px;
+    background-color: white;
+    color: slategrey;
+    border-radius: 10px;
+    padding: 0px 20px;
+}
+
+.title_header {
+    color: #181A18;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 5px;
+    text-align: left;
+
+    /* 115% */
+}
+
+.title_text {
+    text-align: left;
+    margin: 15px 10px;
+    line-height: 20px;
+    color: black;
+    font-size: 16px;
+    font-weight: 200;
+}
