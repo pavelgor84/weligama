@@ -42,12 +42,13 @@
 }
 
 .card_right h3 {
-  color: red;
+  color: rgb(32, 22, 22);
 }
 
 .card_right_options {
   padding: 10px;
   display: flex;
+  align-items: baseline;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
