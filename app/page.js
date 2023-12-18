@@ -10,26 +10,35 @@ export default function Home() {
     <main className={styles.container}>
       <div className={styles.main}>
         <div className={styles.card_container}>
-          <div className={styles.card_left}>left</div>
+          <div className={styles.card_left}></div>
           <div className={styles.card_right}>
             <h3>Card title</h3>
             <div className={styles.card_right_options}>
-              <Icon_bed /> 2 bedroom
-              <Icon_shower /> 1 bath
-              <Icon_cond /> a/c
-
+              <Icon_bed /> <span>2 bedroom</span>
+              <Icon_shower /> <span>1 bath</span>
+              <Icon_cond /> <span>a/c</span>
+              <div className={styles.card_right_options_txt}><span>City view</span>  |  <span>3rd floor</span>  |  <span>Elevator</span> | <span>Parking</span></div>
             </div>
-            <div className={styles.card_right_date}></div>
-            <div className={styles.card_right_price}></div>
+            <div className={styles.card_right_bottom}>
+              <div className={styles.card_right_date}><button className={styles.card_right_options_button}>Available now!</button></div>
+              <div className={styles.card_right_price}>from <span>Rs.6000</span> /day</div>
+            </div>
           </div>
         </div>
         <div className={styles.card_container}>
-          <div className={styles.card_left}>left</div>
+          <div className={styles.card_left}></div>
           <div className={styles.card_right}>
             <h3>Card title</h3>
-            <div className={styles.card_right_options}></div>
-            <div className={styles.card_right_date}></div>
-            <div className={styles.card_right_price}></div>
+            <div className={styles.card_right_options}>
+              <Icon_bed /> <span>2 bedroom</span>
+              <Icon_shower /> <span>1 bath</span>
+              <Icon_cond /> <span>a/c</span>
+              <div className={styles.card_right_options_txt}><span>City view</span>  |  <span>3rd floor</span>  |  <span>Elevator</span> | <span>Parking</span></div>
+            </div>
+            <div className={styles.card_right_bottom}>
+              <div className={styles.card_right_date}><button className={styles.card_right_options_button}>Available now!</button></div>
+              <div className={styles.card_right_price}>from <span>Rs.6000</span> /day</div>
+            </div>
           </div>
         </div>
 
