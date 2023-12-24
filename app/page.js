@@ -1,8 +1,21 @@
-import Image from 'next/image'
+"use client"
+
+//import Image from 'next/image'
 import styles from './page.module.css'
 import Icon_bed from '@/components/icons/Bed'
 import Icon_shower from '@/components/icons/Shower'
 import Icon_cond from '@/components/icons/Cond'
+
+import SliderTest from '@/components/slider/SliderTest'
+
+
+// const images = require.context('../public/images/south', true)
+// const imageList = images.keys().map(image => images(image));
+
+// imageList.map((image, index) => (
+//   console.log(`   key=${index} src=${JSON.stringify(image.default.src)} alt=${'image' + index} `)
+// ))
+
 
 
 export default function Home() {
@@ -10,7 +23,9 @@ export default function Home() {
     <main className={styles.container}>
       <div className={styles.main}>
         <div className={styles.card_container}>
-          <div className={styles.card_left}></div>
+          <div className={styles.card_left}>
+            <SliderTest />
+          </div>
           <div className={styles.card_right}>
             <h3>Card title</h3>
             <div className={styles.card_right_options}>
@@ -26,7 +41,9 @@ export default function Home() {
           </div>
         </div>
         <div className={styles.card_container}>
-          <div className={styles.card_left}></div>
+          <div className={styles.card_left}>
+            <SliderTest />
+          </div>
           <div className={styles.card_right}>
             <h3>Card title</h3>
             <div className={styles.card_right_options}>
