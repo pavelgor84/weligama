@@ -1,6 +1,6 @@
 "use client"
 
-import SliderTest from '@/components/slider/SliderTest'
+
 
 // import Image from 'next/image'
 
@@ -21,15 +21,28 @@ import SliderTest from '@/components/slider/SliderTest'
 // ))
 
 
-
+import SliderTest from '@/components/slider/SliderTest'
+import { useEffect, useState } from 'react'
 import styles from './list.module.css'
 
+
 export default function list() {
+    const [asset, setAsset] = useState([])
+
+    useEffect(() => {
+        fetch('/api')
+            .then((response) => response.json())
+            .then((json) => setAsset(json))
+    }, []);
+
     return (
         <section>
             <div className={styles.container}>
                 <div className={styles.block}>
                     <SliderTest />
+                </div>
+                <div>
+                    {JSON.stringify(asset)}
                 </div>
 
             </div>

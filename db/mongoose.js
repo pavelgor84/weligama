@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export async function initMonooaw() {
+export async function initMongoose() {
 
     if (mongoose.connection.readyState == 1) {
         return mongoose.connection.asPromise()
