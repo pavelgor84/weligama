@@ -77,6 +77,7 @@ export default function list() {
                 method: "POST",
                 body: data
             })
+            console.log(res)
             if (!res.ok) throw new Error(await res.text())
 
         }
