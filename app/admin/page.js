@@ -59,12 +59,31 @@ export default function list() {
 
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(property)// You can perform any necessary action with the form data here ;
-        console.log(property.images[0])
-        //const file = e.get('file')
-        //console.log(e)
+        //console.log(property.images[0])
+
+        if (!file) {
+            console.log("no file")
+            return
+        }
+
+        try {
+            const data = new FormData()
+            data.set('file', property.images[0])
+
+            const res = await fetch('/api/upload', {
+                method: "POST",
+                body: data
+            })
+            if (!res.ok) throw new Error(await res.text())
+
+        }
+        catch (e) {
+            console.error(e)
+        }
+
     };
 
     // useEffect(() => {
