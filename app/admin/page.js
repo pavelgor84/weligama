@@ -28,16 +28,43 @@ import styles from './list.module.css'
 
 export default function list() {
     const [asset, setAsset] = useState([])
-    const [property, setProperty] = useState({ name: '', coordinates: '', bedrooms: '', bathrooms: '', ac: '', view: '', floorNumber: '', parking: '', price: '', available: '' });
+    const [property, setProperty] = useState(
+        {
+            name: '',
+            coordinates: '',
+            bedrooms: '',
+            bathrooms: '',
+            ac: '',
+            view: '',
+            floorNumber: '',
+            parking: '',
+            price: '',
+            available: '',
+            images: ''
+        });
+    const [file, setFile] = useState({
+        images: ''
+    })
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setProperty(prevState => ({ ...prevState, [name]: value }));
     };
+    const handleFileChange = (e) => {
+        console.log(e.target.files)
+
+        const { name, value } = e.target;
+        setFile(prevState => ({ ...prevState, [name]: value }));
+        setProperty(prevState => ({ ...prevState, images: e.target.files }));
+
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(property)// You can perform any necessary action with the form data here ;
+        console.log(property.images[0])
+        //const file = e.get('file')
+        //console.log(e)
     };
 
     // useEffect(() => {
@@ -70,7 +97,7 @@ export default function list() {
                                 </tr>
                                 <tr>
                                     <th align='right'> <label>Number of Bathrooms:</label> </th>
-                                    <th align='right'> <input type="number" name="bathrooms" max="99" value={property.bathrooms} onChange={handleChange} required /></th>
+                                    <th align='left'> <input type="number" name="bathrooms" max="99" value={property.bathrooms} onChange={handleChange} required /></th>
                                 </tr>
                                 <tr>
                                     <th align='right'><label>A/C:</label></th>
@@ -116,6 +143,10 @@ export default function list() {
                                             <input type="radio" name="available" value="No" checked={property.available === "No"} onChange={handleChange} />
                                             No
                                         </label></th>
+                                </tr>
+                                <tr>
+                                    <th align='right'><label>Images:</label></th>
+                                    <th align='left'><input type="file" name="images" multiple value={file.images} onChange={handleFileChange} required /></th>
                                 </tr>
                             </tbody>
                         </table>
