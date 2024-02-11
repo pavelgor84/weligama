@@ -28,6 +28,7 @@ import styles from './list.module.css'
 
 export default function list() {
     const [asset, setAsset] = useState([])
+    //console.log(asset[0])
 
     useEffect(() => {
         fetch('/api')
@@ -39,10 +40,10 @@ export default function list() {
         <section>
             <div className={styles.container}>
                 <div className={styles.block}>
-                    <SliderTest />
+                    {asset[0] && <SliderTest img={asset[0].images} />}
                 </div>
                 <div>
-                    {JSON.stringify(asset)}
+                    {/* {asset[0] && JSON.stringify(asset[0].images)} */}
                 </div>
 
             </div>

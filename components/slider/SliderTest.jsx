@@ -26,21 +26,35 @@ import { images } from './images';
 
 // })
 
-const slide = images.map((image, index) => {
-  return (
-    <SwiperSlide key={index}>
-      <Image
-        src={image.src}
-        alt={image.alt}
-        width={300}
-        height={300}
-      />
-    </SwiperSlide>
-  )
-})
+// const slide = images.map((image, index) => {
+//   return (
+//     <SwiperSlide key={index}>
+//       <Image
+//         src={image.src}
+//         alt={image.alt}
+//         width={300}
+//         height={300}
+//       />
+//     </SwiperSlide>
+//   )
+// })
 
 
-export default function SliderTest() {
+export default function SliderTest({ img }) {
+  //console.log(`prop ${JSON.stringify(img)}`)
+
+  const slide = img.map((image, index) => {
+    return (
+      <SwiperSlide key={index}>
+        <Image
+          src={image.src}
+          alt={image.alt}
+          width={300}
+          height={300}
+        />
+      </SwiperSlide>
+    )
+  })
   return (
     <>
       <Swiper navigation={true} modules={[Navigation]} className="mySwiper">
