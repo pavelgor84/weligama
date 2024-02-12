@@ -14,6 +14,10 @@ const propertySchema = new Schema({
     },
     price: Number,
     available: Number,
+    images: [{
+        src: String,
+        alt: String
+    }]
 })
 
 const Restate = models?.Restate || model('Restate', propertySchema)

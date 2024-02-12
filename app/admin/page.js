@@ -55,7 +55,13 @@ export default function list() {
 
         const { name, value } = e.target;
         setFile(prevState => ({ ...prevState, [name]: value }));
-        setProperty(prevState => ({ ...prevState, images: e.target.files }));
+        let imageset = []
+        for (let i in e.target.files) {
+            if (!e.target.files[i].name) break
+            console.log(e.target.files[i].name)
+            imageset.push({ src: "/images/south/" + e.target.files[i].name, alt: "image number" + i })
+        }
+        setProperty(prevState => ({ ...prevState, images: imageset }));
 
     };
 
@@ -69,9 +75,25 @@ export default function list() {
             return
         }
 
+        // try {
+        //     const res = await fetch('/api/create', {
+        //         method: "POST",
+        //         body: JSON.stringify(property)
+        //     })
+        //     console.log(res)
+
+        // }
+        // catch (e) {
+        //     console.error(e)
+        // }
+
+
+
         try {
             const data = new FormData()
             data.set('file', property.images[0])
+            console.log(property)
+            data.set('prop', JSON.stringify(property))
 
             const res = await fetch('/api/upload', {
                 method: "POST",
