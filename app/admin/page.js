@@ -42,9 +42,7 @@ export default function list() {
             available: '',
             images: ''
         });
-    const [file, setFile] = useState({
-        images: ''
-    })
+    const [file, setFile] = useState([])
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -53,10 +51,11 @@ export default function list() {
     const handleFileChange = (e) => {
         console.log(e.target.files)
 
-        const { name, value } = e.target;
-        setFile(prevState => ({ ...prevState, [name]: value }));
+        const _files = Array.from(e.target.files);
+        setFile(_files);
+
         let imageset = []
-        for (let i in e.target.files) {
+        for (let i in e.target.files) {         // MAKE SANITY!!!
             if (!e.target.files[i].name) break
             console.log(e.target.files[i].name)
             imageset.push({ src: "/images/south/" + e.target.files[i].name, alt: "image number" + i })
@@ -91,7 +90,12 @@ export default function list() {
 
         try {
             const data = new FormData()
-            data.set('file', property.images[0])
+            //data.set('file', property.images)
+            file.forEach((image, i) => {
+                data.append(image.name, image)
+            })
+
+
             console.log(property)
             data.set('prop', JSON.stringify(property))
 

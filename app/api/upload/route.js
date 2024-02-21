@@ -5,26 +5,6 @@ import { join } from "path";
 // import Restate from "@/models/Restate";
 
 
-// export async function POST(request) {
-//     // await initMongoose()
-//     console.log("NextRequest")
-//     console.log("Current working directory: ",
-//         process.cwd());
-
-//     const data = await request.formData()
-//     const file = data.get('file')
-//     if (!file) {
-//         return NextResponse.json({ "success": false })
-//     }
-//     const bytes = await file.arrayBuffer()
-//     const buffer = Buffer.from(bytes)
-//     const path = join(process.cwd(), '/', 'public', '/', 'images', '/', 'south', file.name) // process.cwd() may be deleted
-//     await writeFile(path, buffer)
-//     console.log(`open file path ${path} to see the file`)
-//     return NextResponse.json({ "success": true })
-
-// }
-
 export async function POST(request) {
     // await initMongoose()
     console.log("NextRequest")
@@ -32,11 +12,24 @@ export async function POST(request) {
         process.cwd());
 
     const data = await request.formData()
-    const file = data.get('prop')
-    if (!file) {
+    const props = data.get('prop')          //GET PROPS
+    if (!props) {
         return NextResponse.json({ "success": false })
     }
-    console.log(JSON.parse(file))
+    console.log(JSON.parse(props))
+
+    console.log("Current working directory: ", process.cwd());
+
+    const formDataEntryValues = Array.from(data.values()); // GET FILES
+    for (const formDataEntryValue of formDataEntryValues) {
+        if (typeof formDataEntryValue === "object" && "arrayBuffer" in formDataEntryValue) {
+            /// MAKE SANITY!!!!!
+            const file = formDataEntryValue;
+            const buffer = Buffer.from(await file.arrayBuffer());
+            const path = join(process.cwd(), '/', 'public', '/', 'images', '/', 'south', file.name) // process.cwd() may be deleted
+            await writeFile(path, buffer)
+        }
+    }
 
     return NextResponse.json({ "success": true })
 
