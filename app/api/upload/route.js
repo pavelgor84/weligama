@@ -16,20 +16,29 @@ export async function POST(request) {
     if (!props) {
         return NextResponse.json({ "success": false })
     }
-    console.log(JSON.parse(props))
+    //console.log(JSON.parse(props))
+    let obj_props = JSON.parse(props)
 
     console.log("Current working directory: ", process.cwd());
 
     const formDataEntryValues = Array.from(data.values()); // GET FILES
+    let arr = []
     for (const formDataEntryValue of formDataEntryValues) {
         if (typeof formDataEntryValue === "object" && "arrayBuffer" in formDataEntryValue) {
             /// MAKE SANITY!!!!!
+
             const file = formDataEntryValue;
             const buffer = Buffer.from(await file.arrayBuffer());
             const path = join(process.cwd(), '/', 'public', '/', 'images', '/', 'south', file.name) // process.cwd() may be deleted
             await writeFile(path, buffer)
+
+            let image_object = { img: join('/', 'public', '/', 'images', '/', 'south', file.name), alt: file.name }
+            arr.push(image_object)
+            //console.log(`Arr: ${JSON.stringify(arr)}`)
         }
     }
+    obj_props.images = arr
+    console.log(`props: ${JSON.stringify(obj_props)}`)
 
     return NextResponse.json({ "success": true })
 
