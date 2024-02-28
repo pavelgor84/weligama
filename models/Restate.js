@@ -5,15 +5,12 @@ const propertySchema = new Schema({
     coordinates: String,
     bedroom: Number,
     bath: Number,
-    ac: Number,
-    addons: {
-        view: String,
-        floor: Number,
-        parking: Number
-
-    },
+    ac: String,
+    view: String,
+    floor: Number,
+    parking: String,
     price: Number,
-    available: Number,
+    available: String,
     images: [{
         src: String,
         alt: String
