@@ -32,11 +32,11 @@ export default function list() {
         {
             name: '',
             coordinates: '',
-            bedrooms: '',
-            bathrooms: '',
+            bedroom: '',
+            bath: '',
             ac: '',
             view: '',
-            floorNumber: '',
+            floor: '',
             parking: '',
             price: '',
             available: '',
@@ -139,11 +139,11 @@ export default function list() {
                                 </tr>
                                 <tr>
                                     <th align='right'><label>Number of Bedrooms:</label></th>
-                                    <th align='left'><input type="number" name="bedrooms" max="99" value={property.bedrooms} onChange={handleChange} required /></th>
+                                    <th align='left'><input type="number" name="bedroom" max="99" value={property.bedroom} onChange={handleChange} required /></th>
                                 </tr>
                                 <tr>
                                     <th align='right'> <label>Number of Bathrooms:</label> </th>
-                                    <th align='left'> <input type="number" name="bathrooms" max="99" value={property.bathrooms} onChange={handleChange} required /></th>
+                                    <th align='left'> <input type="number" name="bath" max="99" value={property.bath} onChange={handleChange} required /></th>
                                 </tr>
                                 <tr>
                                     <th align='right'><label>A/C:</label></th>
@@ -162,7 +162,7 @@ export default function list() {
                                 </tr>
                                 <tr>
                                     <th align='right'><label>Floor Number:</label></th>
-                                    <th align='left'><input type="number" name="floorNumber" max="99" value={property.floorNumber} onChange={handleChange} required /></th>
+                                    <th align='left'><input type="number" name="floor" max="99" value={property.floor} onChange={handleChange} required /></th>
                                 </tr>
                                 <tr>
                                     <th align='right'><label>Parking:</label></th>

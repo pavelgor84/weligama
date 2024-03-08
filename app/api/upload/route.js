@@ -33,7 +33,7 @@ export async function POST(request) {
             const path = join(process.cwd(), '/', 'public', '/', 'images', '/', 'south', file.name) // process.cwd() may be deleted
             await writeFile(path, buffer)
 
-            let image_object = { src: join('/', 'public', '/', 'images', '/', 'south', file.name), alt: file.name }
+            let image_object = { src: join('/', 'images', '/', 'south', file.name), alt: file.name }
             arr.push(image_object)
             //console.log(`Arr: ${JSON.stringify(arr)}`)
         }
