@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import styles from './list.module.css'
 
 
-export default function Admin({ email }) {
+export default function AdminEdit({ email }) {
 
     const [asset, setAsset] = useState([])
     const [property, setProperty] = useState(
@@ -105,7 +105,7 @@ export default function Admin({ email }) {
             <div className={styles.block}>
                 {/* {JSON.stringify(asset)} */}
 
-                <h2>Add property for {email}</h2>
+                <h2>Edit property for {email}</h2>
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <table>
                         <tbody>

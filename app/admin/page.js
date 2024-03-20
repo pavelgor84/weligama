@@ -2,6 +2,7 @@
 import { auth } from '@/auth'
 import styles from './list.module.css'
 import Admin from '@/components/admin/admin'
+import AdminMenu from '@/components/adminMenu/adminMenu'
 
 
 export default async function list() {
@@ -10,8 +11,8 @@ export default async function list() {
 
 
     return (
-        <div>ADMIN
-            {session && (<Admin email={session.user.email} />)}
+        <div className={styles.container}>
+            {session && (<AdminMenu email={session.user.email} />)}
 
         </div>
     )
