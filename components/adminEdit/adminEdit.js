@@ -8,6 +8,7 @@ import styles from './list.module.css'
 export default function AdminEdit({ email }) {
 
     const [asset, setAsset] = useState([])
+    console.log(asset)
     const [property, setProperty] = useState(
         {
             mail: email,
@@ -55,18 +56,6 @@ export default function AdminEdit({ email }) {
             return
         }
 
-        // try {
-        //     const res = await fetch('/api/create', {
-        //         method: "POST",
-        //         body: JSON.stringify(property)
-        //     })
-        //     console.log(res)
-
-        // }
-        // catch (e) {
-        //     console.error(e)
-        // }
-
 
 
         try {
@@ -94,11 +83,40 @@ export default function AdminEdit({ email }) {
 
     };
 
-    // useEffect(() => {
-    //     fetch('/api')
-    //         .then((response) => response.json())
-    //         .then((json) => setAsset(json))
-    // }, []);
+    useEffect(() => {
+        fetch('/api/edit', {
+            method: "POST",
+            body: JSON.stringify(email)
+        })
+            .then((response) => response.json())
+            .then((json) => {
+                setAsset(json)
+                setProperty(json[0])
+            })
+    }, []);
+
+    //useEffect(() => { setProperty(prevState => (asset[0])) }, [asset])
+
+
+
+    // const submitEmail = async (e) => {
+    //     e.preventDefault();
+    //     let mail = { "mail": email }
+    //     const res = await fetch('/api/edit', {
+    //         method: "POST",
+    //         body: JSON.stringify(mail)
+    //     })
+    //     return console.log(res.json())
+    //}
+
+    const selection = asset.map((opt) => {
+        return (<option key={opt._id} value={opt.name}>{opt.name}</option>)
+    })
+
+    function handleSelect(item) {
+        let position = asset.findIndex(obj => obj.name == item)
+        setProperty(prevState => (asset[position]))
+    }
 
     return (
         <section>
@@ -106,6 +124,13 @@ export default function AdminEdit({ email }) {
                 {/* {JSON.stringify(asset)} */}
 
                 <h2>Edit property for {email}</h2>
+                <label for="property">Choose your property:</label>
+
+                <select name="property" id="property_list" onChange={e => handleSelect(e.target.value)}>
+                    {selection}
+
+                </select>
+
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <table>
                         <tbody>
