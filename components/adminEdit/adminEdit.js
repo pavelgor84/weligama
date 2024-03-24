@@ -129,8 +129,27 @@ export default function AdminEdit({ email }) {
     }
 
     function handleDelete(itemName) {
-        let imageToDelete = property.images.find((item) => item.alt === itemName)
-        console.log(imageToDelete)
+        console.log(itemName)
+        let checkToDelete = property.images.find((item) => item.alt === itemName)
+        if (checkToDelete) {
+            const imageToFilter = property.images.filter((item) => item.alt != itemName)
+            let propertyState = { ...property }
+            propertyState.images = imageToFilter
+            propertyState.delete = checkToDelete
+
+            fetch('/api/delete', {
+                method: "POST",
+                body: JSON.stringify(propertyState)
+            })
+                .then((response) => response.json())
+                .then((json) => {
+                    console.log(json)
+                    // setAsset(json)
+                    // setProperty(json[0])
+                })
+
+        }
+
     }
 
     return (
