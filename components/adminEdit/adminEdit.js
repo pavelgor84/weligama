@@ -113,9 +113,24 @@ export default function AdminEdit({ email }) {
         return (<option key={opt._id} value={opt.name}>{opt.name}</option>)
     })
 
+    const imageSet = property.images ? property.images.map((im) => {
+        return (
+            <div >
+                <button id={im.alt} onClick={(e) => handleDelete(e.target.id)}> del</button>
+                <img src={im.src} width='60px' height='60px' />
+            </div>
+        )
+    }) : null
+
+
     function handleSelect(item) {
         let position = asset.findIndex(obj => obj.name == item)
         setProperty(prevState => (asset[position]))
+    }
+
+    function handleDelete(itemName) {
+        let imageToDelete = property.images.find((item) => item.alt === itemName)
+        console.log(imageToDelete)
     }
 
     return (
@@ -203,6 +218,8 @@ export default function AdminEdit({ email }) {
                     </table>
                     <button type="submit">Submit</button>
                 </form>
+
+                {imageSet}
 
             </div>
 
