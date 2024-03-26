@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react'
 import styles from './list.module.css'
+import axios from 'axios'
 
 
 export default function Admin({ email }) {
@@ -80,12 +81,9 @@ export default function Admin({ email }) {
             console.log(property)
             data.set('prop', JSON.stringify(property))
 
-            const res = await fetch('/api/upload', {
-                method: "POST",
-                body: data
-            })
-            console.log(res)
-            if (!res.ok) throw new Error(await res.text())
+            const response = await axios.post('/api/upload', data)
+            const result = await response.data
+            console.log({ result })
 
         }
         catch (e) {

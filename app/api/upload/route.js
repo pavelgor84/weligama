@@ -3,6 +3,7 @@ import { writeFile } from "fs/promises"
 import { join } from "path";
 import { initMongoose } from "@/db/mongoose";
 import Restate from "@/models/Restate";
+import { UploadImage } from "@/app/lib/upload";
 
 
 export async function POST(request) {
@@ -17,7 +18,7 @@ export async function POST(request) {
     }
     //CHECK FOR DUPLICATES HERE!!!
 
-    //console.log(JSON.parse(props))
+
     let obj_props = JSON.parse(props)
 
     //console.log("Current working directory: ", process.cwd());
@@ -28,26 +29,29 @@ export async function POST(request) {
         if (typeof formDataEntryValue === "object" && "arrayBuffer" in formDataEntryValue) {
             /// MAKE SANITY!!!!!
 
-            const file = formDataEntryValue;
-            const buffer = Buffer.from(await file.arrayBuffer());
-            const path = join(process.cwd(), '/', 'public', '/', 'images', '/', 'south', file.name) // process.cwd() may be deleted
-            await writeFile(path, buffer)
+            const data = await UploadImage(formDataEntryValue, "sri-lanka")
 
-            let image_object = { src: join('/', 'images', '/', 'south', file.name), alt: file.name }
-            arr.push(image_object)
-            //console.log(`Arr: ${JSON.stringify(arr)}`)
+            // const file = formDataEntryValue;
+            // const buffer = Buffer.from(await file.arrayBuffer());
+            // const path = join(process.cwd(), '/', 'public', '/', 'images', '/', 'south', file.name) // process.cwd() may be deleted
+            // await writeFile(path, buffer)
+
+            // let image_object = { src: join('/', 'images', '/', 'south', file.name), alt: file.name }
+            // arr.push(image_object)
+            return NextResponse.json({ "msg": data }, { status: 200 })
+
         }
     }
     obj_props.images = arr
     console.log(`props: ${JSON.stringify(obj_props)}`)
 
-    try {
-        const create_doc = await Restate.create(obj_props)
-        console.log(create_doc)
-        return NextResponse.json({ "success": true })
-    } catch (err) {
-        return NextResponse.json({ "Error": err.message })
-    }
+    // try {
+    //     const create_doc = await Restate.create(obj_props)
+    //     console.log(create_doc)
+    //     return NextResponse.json({ "success": true })
+    // } catch (err) {
+    //     return NextResponse.json({ "Error": err.message })
+    // }
 
 
 }
