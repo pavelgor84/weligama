@@ -2,6 +2,7 @@
 
 
 import { useEffect, useState } from 'react'
+import axios from 'axios'
 import styles from './list.module.css'
 
 
@@ -24,7 +25,8 @@ export default function AdminEdit({ email }) {
             available: '',
             images: ''
         });
-    const [file, setFile] = useState([])
+
+    const [files, setFiles] = useState([])
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -32,36 +34,25 @@ export default function AdminEdit({ email }) {
     };
     const handleFileChange = (e) => {
         console.log(e.target.files)
+        setFiles(prev => (e.target.files))
 
-        const _files = Array.from(e.target.files);
-        setFile(_files);
-
-        let imageset = []
-        for (let i in e.target.files) {         // MAKE SANITY!!!
-            if (!e.target.files[i].name) break
-            console.log(e.target.files[i].name)
-            imageset.push({ src: "/images/south/" + e.target.files[i].name, alt: "image number" + i })
-        }
-        setProperty(prevState => ({ ...prevState, images: imageset }));
 
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(property)// You can perform any necessary action with the form data here ;
-        //console.log(property.images[0])
 
-        if (!file) {
+        console.log(files)
+
+        if (files.length === 0) {
             console.log("no file")
             return
         }
 
-
-
         try {
             const data = new FormData()
-            //data.set('file', property.images)
-            file.forEach((image, i) => {
+            files.forEach((image, i) => {
                 data.append(image.name, image)
             })
 
@@ -69,12 +60,9 @@ export default function AdminEdit({ email }) {
             console.log(property)
             data.set('prop', JSON.stringify(property))
 
-            const res = await fetch('/api/upload', {
-                method: "POST",
-                body: data
-            })
-            console.log(res)
-            if (!res.ok) throw new Error(await res.text())
+            const response = await axios.post('/api/add_images', data)
+            const result = await response.data
+            console.log({ result })
 
         }
         catch (e) {
@@ -83,8 +71,8 @@ export default function AdminEdit({ email }) {
 
     };
 
-    useEffect(() => {
-        fetch('/api/edit', {
+    function fetch_data() {
+        fetch('/api/get_data_edit', {
             method: "POST",
             body: JSON.stringify(email)
         })
@@ -93,6 +81,10 @@ export default function AdminEdit({ email }) {
                 setAsset(json)
                 setProperty(json[0])
             })
+    }
+
+    useEffect(() => {
+        fetch_data()
     }, []);
 
 
@@ -219,7 +211,7 @@ export default function AdminEdit({ email }) {
                             </tr>
                             <tr>
                                 <th align='right'><label>Images:</label></th>
-                                <th align='left'><input type="file" name="images" multiple value={file.images} onChange={handleFileChange} required /></th>
+                                <th align='left'><input type="file" name="images" multiple onChange={handleFileChange} required /></th>
                             </tr>
                         </tbody>
                     </table>

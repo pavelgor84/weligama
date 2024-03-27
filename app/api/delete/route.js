@@ -20,24 +20,7 @@ export async function POST(request) {
     const update_db = await Restate.updateOne({ _id: body._id }, { $set: body })
     console.log(update_db)
 
-
-
     return NextResponse.json({ "success": true })
-    //await initMongoose()
-    //console.log("NextRequest")
-    //console.log("Current working directory: ", process.cwd());
-
-
-    //await writeFile(path, buffer)
-
-
-    // try {
-    //     const create_doc = await Restate.create(obj_props)
-    //     console.log(create_doc)
-    //     return NextResponse.json({ "success": true })
-    // } catch (err) {
-    //     return NextResponse.json({ "Error": err.message })
-    // }
 
 
 }

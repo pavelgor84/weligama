@@ -12,7 +12,6 @@ export async function POST(request) {
     if (!props) {
         return NextResponse.json({ "success": false })
     }
-    //CHECK FOR DUPLICATES HERE!!!
 
     let obj_props = JSON.parse(props)
 
@@ -20,10 +19,7 @@ export async function POST(request) {
     let imagesArray = []
     for (const formDataEntryValue of formDataEntryValues) {
         if (typeof formDataEntryValue === "object" && "arrayBuffer" in formDataEntryValue) {
-            // const path = join(process.cwd(), '/', 'public', '/', 'images', '/', 'south', file.name) // process.cwd() may be deleted
-            // await writeFile(path, buffer)
 
-            // let image_object = { src: join('/', 'images', '/', 'south', file.name), alt: file.name }
             imagesArray.push(formDataEntryValue)
 
         }
@@ -32,21 +28,21 @@ export async function POST(request) {
     return new Promise((resolve, reject) => {
         const uploads = imagesArray.map((im) => UploadImage(im, "sri-lanka"))
         Promise.all(uploads).then((values) => {
-            createDocument(obj_props, values)
+            editDocument(obj_props, values)
             resolve(NextResponse.json({ "msg": values }, { status: 200 }))
         }
         ).catch((err) => reject(err))
     })
 
-    async function createDocument(doc, images) {
-        const arrayOfImages = []
+    async function editDocument(doc, images) {
+
         for (let i = 0; i < images.length; i++) {
-            arrayOfImages.push(
+            doc.images.push(
                 { src: images[i].secure_url, alt: images[i].original_filename, public_id: images[i].public_id }
             )
         }
-        doc.images = arrayOfImages
-        await Restate.create(doc)
+        console.log(doc)
+        await Restate.updateOne({ _id: doc._id }, { $set: doc })
     }
 
     //obj_props.images = arr
