@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { writeFile } from "fs/promises"
-import { join } from "path";
+import { join, resolve } from "path";
 import { initMongoose } from "@/db/mongoose";
 import Restate from "@/models/Restate";
 import { UploadImage } from "@/app/lib/upload";
+import { rejects } from "assert";
 
 
 export async function POST(request) {
@@ -24,12 +25,12 @@ export async function POST(request) {
     //console.log("Current working directory: ", process.cwd());
 
     const formDataEntryValues = Array.from(data.values()); // GET FILES
-    let arr = []
+    let imagesArray = []
     for (const formDataEntryValue of formDataEntryValues) {
         if (typeof formDataEntryValue === "object" && "arrayBuffer" in formDataEntryValue) {
             /// MAKE SANITY!!!!!
 
-            const data = await UploadImage(formDataEntryValue, "sri-lanka")
+            //const data = await UploadImage(formDataEntryValue, "sri-lanka")
 
             // const file = formDataEntryValue;
             // const buffer = Buffer.from(await file.arrayBuffer());
@@ -38,20 +39,21 @@ export async function POST(request) {
 
             // let image_object = { src: join('/', 'images', '/', 'south', file.name), alt: file.name }
             // arr.push(image_object)
-            return NextResponse.json({ "msg": data }, { status: 200 })
+            //return NextResponse.json({ "msg": data }, { status: 200 })
+            imagesArray.push(formDataEntryValue)
 
         }
     }
-    obj_props.images = arr
-    console.log(`props: ${JSON.stringify(obj_props)}`)
 
-    // try {
-    //     const create_doc = await Restate.create(obj_props)
-    //     console.log(create_doc)
-    //     return NextResponse.json({ "success": true })
-    // } catch (err) {
-    //     return NextResponse.json({ "Error": err.message })
-    // }
+    return new Promise((resolve, reject) => {
+        const uploads = imagesArray.map((im) => UploadImage(im, "sri-lanka"))
+        Promise.all(uploads).then((values) => resolve(NextResponse.json({ "msg": values }, { status: 200 }))).catch((err) => reject(err))
+    })
+
+    //obj_props.images = arr
+    //console.log(`props: ${JSON.stringify(obj_props)}`)
+
+
 
 
 }
