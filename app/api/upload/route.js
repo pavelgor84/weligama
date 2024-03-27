@@ -9,8 +9,6 @@ import { rejects } from "assert";
 
 export async function POST(request) {
     await initMongoose()
-    //console.log("NextRequest")
-    //console.log("Current working directory: ", process.cwd());
 
     const data = await request.formData()
     const props = data.get('prop')          //GET PROPS
@@ -19,27 +17,16 @@ export async function POST(request) {
     }
     //CHECK FOR DUPLICATES HERE!!!
 
-
     let obj_props = JSON.parse(props)
-
-    //console.log("Current working directory: ", process.cwd());
 
     const formDataEntryValues = Array.from(data.values()); // GET FILES
     let imagesArray = []
     for (const formDataEntryValue of formDataEntryValues) {
         if (typeof formDataEntryValue === "object" && "arrayBuffer" in formDataEntryValue) {
-            /// MAKE SANITY!!!!!
-
-            //const data = await UploadImage(formDataEntryValue, "sri-lanka")
-
-            // const file = formDataEntryValue;
-            // const buffer = Buffer.from(await file.arrayBuffer());
             // const path = join(process.cwd(), '/', 'public', '/', 'images', '/', 'south', file.name) // process.cwd() may be deleted
             // await writeFile(path, buffer)
 
             // let image_object = { src: join('/', 'images', '/', 'south', file.name), alt: file.name }
-            // arr.push(image_object)
-            //return NextResponse.json({ "msg": data }, { status: 200 })
             imagesArray.push(formDataEntryValue)
 
         }
@@ -47,8 +34,23 @@ export async function POST(request) {
 
     return new Promise((resolve, reject) => {
         const uploads = imagesArray.map((im) => UploadImage(im, "sri-lanka"))
-        Promise.all(uploads).then((values) => resolve(NextResponse.json({ "msg": values }, { status: 200 }))).catch((err) => reject(err))
+        Promise.all(uploads).then((values) => {
+            createDocument(obj_props, values)
+            resolve(NextResponse.json({ "msg": values }, { status: 200 }))
+        }
+        ).catch((err) => reject(err))
     })
+
+    async function createDocument(doc, images) {
+        const arrayOfImages = []
+        for (let i = 0; i < images.length; i++) {
+            arrayOfImages.push(
+                { src: images[i].secure_url, alt: images[i].original_filename, public_id: images[i].public_id }
+            )
+        }
+        doc.images = arrayOfImages
+        await Restate.create(doc)
+    }
 
     //obj_props.images = arr
     //console.log(`props: ${JSON.stringify(obj_props)}`)

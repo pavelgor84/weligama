@@ -95,19 +95,7 @@ export default function AdminEdit({ email }) {
             })
     }, []);
 
-    //useEffect(() => { setProperty(prevState => (asset[0])) }, [asset])
 
-
-
-    // const submitEmail = async (e) => {
-    //     e.preventDefault();
-    //     let mail = { "mail": email }
-    //     const res = await fetch('/api/edit', {
-    //         method: "POST",
-    //         body: JSON.stringify(mail)
-    //     })
-    //     return console.log(res.json())
-    //}
 
     const selection = asset.map((opt) => {
         return (<option key={opt._id} value={opt.name}>{opt.name}</option>)
@@ -116,7 +104,7 @@ export default function AdminEdit({ email }) {
     const imageSet = property.images ? property.images.map((im) => {
         return (
             <div >
-                <button id={im.alt} onClick={(e) => handleDelete(e.target.id)}> del</button>
+                <button id={im.public_id} onClick={(e) => handleDelete(e.target.id)}> del</button>
                 <img src={im.src} width='60px' height='60px' />
             </div>
         )
@@ -130,9 +118,9 @@ export default function AdminEdit({ email }) {
 
     function handleDelete(itemName) {
         console.log(itemName)
-        let checkToDelete = property.images.find((item) => item.alt === itemName)
+        let checkToDelete = property.images.find((item) => item.public_id === itemName)
         if (checkToDelete) {
-            const imageToFilter = property.images.filter((item) => item.alt != itemName)
+            const imageToFilter = property.images.filter((item) => item.public_id != itemName)
             let propertyState = { ...property }
             propertyState.images = imageToFilter
             propertyState.delete = checkToDelete
