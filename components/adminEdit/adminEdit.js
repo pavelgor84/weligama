@@ -27,6 +27,7 @@ export default function AdminEdit({ email }) {
         });
 
     const [files, setFiles] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -51,6 +52,8 @@ export default function AdminEdit({ email }) {
         }
 
         try {
+            setLoading(true)
+
             const data = new FormData()
             files.forEach((image, i) => {
                 data.append(image.name, image)
@@ -67,6 +70,9 @@ export default function AdminEdit({ email }) {
         }
         catch (e) {
             console.error(e)
+        } finally {
+
+            setLoading(false)
         }
 
     };
@@ -95,8 +101,8 @@ export default function AdminEdit({ email }) {
 
     const imageSet = property.images ? property.images.map((im) => {
         return (
-            <div >
-                <button id={im.public_id} onClick={(e) => handleDelete(e.target.id)}> del</button>
+            <div key={im.public_id} >
+                <button id={im.public_id} onClick={(e) => handleDelete(e.target.id)} disabled={loading}> del</button>
                 <img src={im.src} width='60px' height='60px' />
             </div>
         )
@@ -138,7 +144,7 @@ export default function AdminEdit({ email }) {
                 {/* {JSON.stringify(asset)} */}
 
                 <h2>Edit property for {email}</h2>
-                <label for="property">Choose your property:</label>
+                <label htmlFor="property">Choose your property:</label>
 
                 <select name="property" id="property_list" onChange={e => handleSelect(e.target.value)}>
                     {selection}
@@ -215,7 +221,7 @@ export default function AdminEdit({ email }) {
                             </tr>
                         </tbody>
                     </table>
-                    <button type="submit">Submit</button>
+                    <button disabled={loading} type="submit">Submit</button>
                 </form>
 
                 {imageSet}

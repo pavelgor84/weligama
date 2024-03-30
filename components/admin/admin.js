@@ -25,6 +25,7 @@ export default function Admin({ email }) {
             images: ''
         });
     const [file, setFile] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -35,14 +36,6 @@ export default function Admin({ email }) {
 
         const _files = Array.from(e.target.files);
         setFile(_files);
-
-        let imageset = []
-        for (let i in e.target.files) {         // MAKE SANITY!!!
-            if (!e.target.files[i].name) break
-            console.log(e.target.files[i].name)
-            imageset.push({ src: "/images/south/" + e.target.files[i].name, alt: "image number" + i })
-        }
-        setProperty(prevState => ({ ...prevState, images: imageset }));
 
     };
 
@@ -55,20 +48,6 @@ export default function Admin({ email }) {
             console.log("no file")
             return
         }
-
-        // try {
-        //     const res = await fetch('/api/create', {
-        //         method: "POST",
-        //         body: JSON.stringify(property)
-        //     })
-        //     console.log(res)
-
-        // }
-        // catch (e) {
-        //     console.error(e)
-        // }
-
-
 
         try {
             const data = new FormData()
@@ -174,7 +153,7 @@ export default function Admin({ email }) {
                             </tr>
                         </tbody>
                     </table>
-                    <button type="submit">Submit</button>
+                    <button disabled={loading} type="submit">Submit</button>
                 </form>
 
             </div>
