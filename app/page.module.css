@@ -109,3 +109,31 @@
 .card_right_price span {
   font-weight: bold;
 }
+
+@media (max-width:1000px) {
+  .main {
+    width: 90%;
+  }
+
+  .card_container {
+    width: 95%;
+
+    display: flex;
+  }
+
+
+}
+
+@media (max-width:768px) {
+
+  .card_container {
+    height: 200px;
+  }
+
+  .card_right {
+    padding: 10px;
+    border-radius: 0px 10px 30px 0px;
+  }
+
+
+}
