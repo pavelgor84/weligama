@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@maptiler/sdk": "^2.0.0",
     "axios": "^1.6.8",
     "cloudinary": "^2.0.3",
     "mongoose": "^8.1.0",

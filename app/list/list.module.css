@@ -14,6 +14,12 @@
     background-color: cadetblue;
     object-fit: cover;
     object-position: center;
-    border: 1px red solid;
-    border-radius: 20px;
+}
+
+.left_block {
+    width: 400px;
+    height: 500px;
+    background-color: rgb(115, 168, 170);
+    object-fit: cover;
+    object-position: center;
 }
