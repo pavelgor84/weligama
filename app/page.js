@@ -60,8 +60,14 @@ export default function Home() {
   return (
     <main className={styles.container}>
       <div className={styles.main}>
+        <div className={styles.left_block}>
+          {card ? card : NULL}
+        </div>
+        <div className={styles.right_block}>
+          <div className={styles.map_place}>
 
-        {card ? card : NULL}
+          </div>
+        </div>
 
 
       </div>
