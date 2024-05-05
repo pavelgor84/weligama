@@ -1,13 +1,12 @@
 .main {
   width: 100%;
-  height: 700px;
+
   background-color: rgba(202, 178, 224, 0.8);
   border-radius: 10px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  margin-top: -60px;
   padding-top: 10px;
   gap: 10px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
@@ -37,7 +36,11 @@
 .right_block {
   background-color: crimson;
   width: 50%;
-  height: 70%;
+  height: 68vh;
+  position: sticky;
+  top: 30%;
+  align-self: flex-start;
+
 }
 
 .map_place {

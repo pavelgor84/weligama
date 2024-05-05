@@ -1,10 +1,12 @@
 .container {
     margin: auto;
+    position: sticky;
+    top: 0;
+    z-index: 10;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: rgba(187, 180, 180, 0.459);
-    width: 90%;
     height: 30%;
     color: rgb(207, 204, 204);
     padding: 0px 0px 100px 0px;
