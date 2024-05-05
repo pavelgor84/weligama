@@ -22,8 +22,30 @@ import SliderTest from '@/components/slider/SliderTest'
 
 export default function Home() {
 
+  function handleClick(e) {
+    const target = e.target.id;
+    const coords = {
+      positions: [],
+      currentPoint: ''
+    }
+    // let positions = []
+    // let currentPoint = ''
+    asset.forEach((el) => {
+      let tempPosition = el.coordinates
+      let tempPositionNum = tempPosition.split(',').map((x) => +x)
+      coords.positions.push(tempPositionNum)
+
+      if (el._id == target) {
+        let tempCoords = el.coordinates
+        coords.currentPoint = tempCoords.split(',').map((x) => +x)
+      }
+    })
+    console.log(coords)
+  }
+
   const [asset, setAsset] = useState([])
   //console.log(asset[0])
+  const [nav, setNav] = useState({})
 
   useEffect(() => {
     fetch('/api')
@@ -38,9 +60,9 @@ export default function Home() {
         <div className={styles.card_left}>
           <SliderTest img={prop.images} />
         </div>
-        <div className={styles.card_right}>
+        <div className={styles.card_right} id={prop._id} onClick={handleClick}>
           <h3>{prop.name}</h3>
-          <div className={styles.card_right_options}>
+          <div className={styles.card_right_options} >
             <Icon_bed /> <span>{prop.bedroom}</span>
             <Icon_shower /> <span>{prop.bath}</span>
             <Icon_cond /> <span>{prop.ac}</span>
@@ -58,19 +80,18 @@ export default function Home() {
 
 
   return (
-    <main className={styles.container}>
-      <div className={styles.main}>
-        <div className={styles.left_block}>
-          {card ? card : NULL}
-        </div>
-        <div className={styles.right_block}>
-          <div className={styles.map_place}>
+    <main className={styles.main}>
 
-          </div>
-        </div>
-
-
+      <div className={styles.left_block}>
+        {card ? card : NULL}
       </div>
+      <div className={styles.right_block}>
+        <div className={styles.map_place}>
+
+        </div>
+      </div>
+
+
     </main>
   )
 }

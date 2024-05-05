@@ -217,7 +217,7 @@ export default function AdminEdit({ email }) {
                             </tr>
                             <tr>
                                 <th align='right'><label>Images:</label></th>
-                                <th align='left'><input type="file" name="images" multiple onChange={handleFileChange} required /></th>
+                                <th align='left'><input type="file" name="images" multiple onChange={handleFileChange} /></th>
                             </tr>
                         </tbody>
                     </table>
