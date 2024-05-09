@@ -19,7 +19,7 @@ export default function List() {
     //         .then((response) => response.json())
     //         .then((json) => setAsset(json))
     // }, []);
-    let coords = [[80.4282318764493, 5.978403170674758], [80.42580714581621, 5.974711154120036]]
+    let coords = [[5.978403170674758, 80.4282318764493], [5.974711154120036, 80.42580714581621]]
 
     function handlePress(e) {
         let numberCoords = e.split(',').map((x) => +x)
@@ -31,8 +31,8 @@ export default function List() {
         <section>
             <div className={styles.container}>
                 <div className={styles.left_block}>
-                    <button value={'80.4282318764493, 5.978403170674758'} onClick={(e) => handlePress(e.target.value)}> first coords</button>
-                    <button value={'80.42580714581621, 5.974711154120036'} onClick={(e) => handlePress(e.target.value)}> second coords</button>
+                    <button value={'5.978403170674758, 80.4282318764493'} onClick={(e) => handlePress(e.target.value)}> first coords</button>
+                    <button value={'5.974711154120036, 80.42580714581621'} onClick={(e) => handlePress(e.target.value)}> second coords</button>
 
                 </div>
                 <div className={styles.block}>

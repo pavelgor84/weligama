@@ -34,6 +34,14 @@
   background-color: chartreuse;
 }
 
+.block {
+  width: 500px;
+  height: 500px;
+  background-color: cadetblue;
+  object-fit: cover;
+  object-position: center;
+}
+
 .card_container {
   margin-top: 5px;
   width: 600px;

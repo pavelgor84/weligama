@@ -8,11 +8,11 @@ import * as maptilersdk from '@maptiler/sdk';
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 
 
-export default function Map({ centerZoom, coords }) {
-    //console.log(coords.length)
+export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
+    console.log(coords)
     var cz
-    if (centerZoom == '') {
-        cz = [80.430288, 5.971817]
+    if (centerZoom == '' || !centerZoom) {
+        cz = [5.971817, 80.430288]
         //console.log("cz undefined")
     }
     else {
@@ -28,7 +28,7 @@ export default function Map({ centerZoom, coords }) {
     const mark = useRef([0, 0])
     const prevMark = useRef([0, 0])
     // const weligama = { lng: 80.430288, lat: 5.971817 };
-    const weligama = { lng: cz[0], lat: cz[1] };
+    const weligama = { lng: cz[1], lat: cz[0] };
     //console.log(weligama)
     maptilersdk.config.apiKey = 'AxnWhpldVUbU3HG2NB2E';
 
@@ -38,7 +38,7 @@ export default function Map({ centerZoom, coords }) {
         function markers(coords) {
             for (let i = 0; i < coords.length; i++) {
                 points.current[i] = new maptilersdk.Marker({ color: "#989ca3" })
-                    .setLngLat([coords[i][0], coords[i][1]])
+                    .setLngLat([coords[i][1], coords[i][0]])
                     .addTo(map.current);
 
             }
@@ -56,19 +56,19 @@ export default function Map({ centerZoom, coords }) {
             for (const property in points.current) {
                 console.log(points.current[property]._lngLat.lat)
                 console.log(mark.current[1])
-                if ((points.current[property]._lngLat.lat === mark.current[1]) && points.current[property]._lngLat.lng === mark.current[0]) {
-                    console.log("Found new!!")
+                if ((points.current[property]._lngLat.lat === mark.current[0]) && points.current[property]._lngLat.lng === mark.current[1]) {
+                    //console.log("Found new!!")
                     //points.current[property].remove()
                     points.current[property] = new maptilersdk.Marker({ color: "#FF0000" })
-                        .setLngLat([mark.current[0], mark.current[1]])
+                        .setLngLat([mark.current[1], mark.current[0]])
                         .addTo(map.current);
 
                 }
-                if ((points.current[property]._lngLat.lat === prevMark.current[1]) && points.current[property]._lngLat.lng === prevMark.current[0]) {
-                    console.log("Found prev!!")
+                if ((points.current[property]._lngLat.lat === prevMark.current[0]) && points.current[property]._lngLat.lng === prevMark.current[1]) {
+                    //console.log("Found prev!!")
                     //points.current[property].remove()
                     points.current[property] = new maptilersdk.Marker({ color: "#989ca3" })
-                        .setLngLat([prevMark.current[0], prevMark.current[1]])
+                        .setLngLat([prevMark.current[1], prevMark.current[0]])
                         .addTo(map.current);
 
                 }
@@ -83,7 +83,7 @@ export default function Map({ centerZoom, coords }) {
             if ((mark.current[0] === cz[0]) && mark.current[1] === cz[1]) return
             updateMarkers()
             map.current.flyTo({
-                center: cz
+                center: [cz[1], cz[0]]
             })
             console.log(points)
             return;

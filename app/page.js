@@ -9,6 +9,8 @@ import Icon_cond from '@/components/icons/Cond'
 
 import SliderTest from '@/components/slider/SliderTest'
 
+import Map from '@/components/map/map'
+
 
 // const images = require.context('../public/images/south', true)
 // const imageList = images.keys().map(image => images(image));
@@ -40,12 +42,15 @@ export default function Home() {
         coords.currentPoint = tempCoords.split(',').map((x) => +x)
       }
     })
-    console.log(coords)
+    //console.log(coords)
+    setNav((prev) => coords)
+
   }
 
   const [asset, setAsset] = useState([])
   //console.log(asset[0])
   const [nav, setNav] = useState({})
+  //console.log(nav)
 
   useEffect(() => {
     fetch('/api')
@@ -53,7 +58,7 @@ export default function Home() {
       .then((json) => setAsset(json))
   }, []);
 
-  console.log(asset)
+  //console.log(asset)
   const card = asset.map((prop) => {
     return (
       <div className={styles.card_container} key={prop._id}>
@@ -76,7 +81,7 @@ export default function Home() {
       </div>
     )
   })
-  //console.log(card)
+  console.log(nav.positions)
 
 
   return (
@@ -87,6 +92,9 @@ export default function Home() {
       </div>
       <div className={styles.right_block}>
         <div className={styles.map_place}>
+          <div className={styles.block}>
+            {nav.positions && <Map centerZoom={nav.currentPoint} coords={nav.positions} />}
+          </div>
 
         </div>
       </div>
