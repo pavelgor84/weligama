@@ -55,7 +55,7 @@ export default function Home() {
   const [asset, setAsset] = useState([])
   //console.log(asset[0])
   const [nav, setNav] = useState({})
-  console.log(nav)
+  //console.log(nav)
 
   useEffect(() => {
     fetch('/api')
