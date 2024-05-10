@@ -9,7 +9,7 @@ import "@maptiler/sdk/dist/maptiler-sdk.css";
 
 
 export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
-    console.log(coords)
+    //console.log(coords)
     var cz
     if (centerZoom == '' || !centerZoom) {
         cz = [5.971817, 80.430288]
@@ -54,8 +54,8 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
 
 
             for (const property in points.current) {
-                console.log(points.current[property]._lngLat.lat)
-                console.log(mark.current[1])
+                //console.log(points.current[property]._lngLat.lat)
+                //console.log(mark.current[1])
                 if ((points.current[property]._lngLat.lat === mark.current[0]) && points.current[property]._lngLat.lng === mark.current[1]) {
                     //console.log("Found new!!")
                     //points.current[property].remove()
@@ -76,16 +76,13 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
             }
         }
 
-
-        console.log("Effect")
-
         if (map.current) {
             if ((mark.current[0] === cz[0]) && mark.current[1] === cz[1]) return
             updateMarkers()
             map.current.flyTo({
                 center: [cz[1], cz[0]]
             })
-            console.log(points)
+            //console.log(points)
             return;
         } // stops map from intializing more than once
 

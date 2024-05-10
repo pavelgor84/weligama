@@ -24,39 +24,48 @@ import Map from '@/components/map/map'
 
 export default function Home() {
 
-  function handleClick(e) {
-    const target = e.target.id;
+  function updateMarks() {
     const coords = {
       positions: [],
       currentPoint: ''
     }
-    // let positions = []
-    // let currentPoint = ''
+    //console.log(asset)
     asset.forEach((el) => {
       let tempPosition = el.coordinates
+      //console.log(tempPosition)
       let tempPositionNum = tempPosition.split(',').map((x) => +x)
       coords.positions.push(tempPositionNum)
-
-      if (el._id == target) {
-        let tempCoords = el.coordinates
-        coords.currentPoint = tempCoords.split(',').map((x) => +x)
-      }
     })
     //console.log(coords)
     setNav((prev) => coords)
+  }
+
+  function handleClick(e) {
+    const target = e.target.id;
+    let findPoint = asset.find((el) => el._id == target)
+    if (findPoint) {
+      let point = { currentPoint: findPoint.coordinates.split(',').map((x) => +x) }
+      //console.log(point)
+      setNav(prev => ({ ...prev, ...point }))
+    }
+
 
   }
 
   const [asset, setAsset] = useState([])
   //console.log(asset[0])
   const [nav, setNav] = useState({})
-  //console.log(nav)
+  console.log(nav)
 
   useEffect(() => {
     fetch('/api')
       .then((response) => response.json())
       .then((json) => setAsset(json))
   }, []);
+
+  useEffect(() => {
+    updateMarks()
+  }, [asset]);
 
   //console.log(asset)
   const card = asset.map((prop) => {
@@ -81,7 +90,7 @@ export default function Home() {
       </div>
     )
   })
-  console.log(nav.positions)
+  //console.log(nav.positions)
 
 
   return (
