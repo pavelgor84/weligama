@@ -9,7 +9,7 @@ import "@maptiler/sdk/dist/maptiler-sdk.css";
 
 
 export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
-    console.log(coords)
+    //console.log(coords)
     var cz
     if (centerZoom == '' || !centerZoom) {
         cz = [5.971817, 80.430288]
@@ -35,13 +35,17 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
 
 
     useEffect(() => {
+
         function markers(coords) {
+            console.log(coords)
             for (let i = 0; i < coords.length; i++) {
                 points.current[i] = new maptilersdk.Marker({ color: "#989ca3" })
                     .setLngLat([coords[i][1], coords[i][0]])
                     .addTo(map.current);
-
             }
+            // points.current[i] = new maptilersdk.Marker({ color: "#989ca3" })
+            //     .setLngLat([coords[i][1], coords[i][0]])
+            //     .addTo(map.current);
 
         }
 
@@ -57,7 +61,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
                 //console.log(points.current[property]._lngLat.lat)
                 //console.log(mark.current[1])
                 if ((points.current[property]._lngLat.lat === mark.current[0]) && points.current[property]._lngLat.lng === mark.current[1]) {
-                    //console.log("Found new!!")
+                    console.log("Found new!!")
                     //points.current[property].remove()
                     points.current[property] = new maptilersdk.Marker({ color: "#FF0000" })
                         .setLngLat([mark.current[1], mark.current[0]])

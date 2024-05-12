@@ -54,7 +54,10 @@ export default function Home() {
 
   const [asset, setAsset] = useState([])
   //console.log(asset[0])
-  const [nav, setNav] = useState({})
+  const [nav, setNav] = useState({
+    positions: [],
+    currentPoint: ''
+  })
   //console.log(nav)
 
   useEffect(() => {
@@ -102,7 +105,8 @@ export default function Home() {
       <div className={styles.right_block}>
         <div className={styles.map_place}>
           <div className={styles.block}>
-            {nav.positions && <Map centerZoom={nav.currentPoint} coords={nav.positions} />}
+            {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={nav.positions} /> : "Loading"}
+            {/* {Object.hasOwn(nav, 'positions') ? <Map centerZoom={nav.currentPoint} coords={nav.positions} /> : "Loading..."} */}
           </div>
 
         </div>
