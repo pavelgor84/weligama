@@ -57,7 +57,7 @@ export default function SliderTest({ img }) {
   })
   return (
     <>
-      <Swiper navigation={true} modules={[Navigation]} className="mySwiper">
+      <Swiper navigation={true} loop={true} modules={[Navigation]} className="mySwiper">
 
         {
           slide
