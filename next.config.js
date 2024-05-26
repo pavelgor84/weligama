@@ -11,6 +11,9 @@ const nextConfig = {
             },
         ],
     },
+    env: {
+        MAPTILER_API: process.env.MAPTILER_API
+    }
 }
 
 module.exports = nextConfig

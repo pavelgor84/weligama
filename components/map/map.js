@@ -30,8 +30,9 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
     // const weligama = { lng: 80.430288, lat: 5.971817 };
     const weligama = { lng: cz[1], lat: cz[0] };
     //console.log(weligama)
-    maptilersdk.config.apiKey = 'AxnWhpldVUbU3HG2NB2E';
 
+    maptilersdk.config.apiKey = process.env.MAPTILER_API;
+    maptilersdk.config.caching = false;
 
 
     useEffect(() => {
