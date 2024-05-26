@@ -13,16 +13,6 @@ import Map from '@/components/map/map'
 import Link from 'next/link'
 
 
-// const images = require.context('../public/images/south', true)
-// const imageList = images.keys().map(image => images(image));
-
-// imageList.map((image, index) => (
-//   console.log(`   key=${index} src=${JSON.stringify(image.default.src)} alt=${'image' + index} `)
-// ))
-
-
-
-
 export default function Home() {
 
   function updateMarks() {
@@ -41,7 +31,7 @@ export default function Home() {
     setNav((prev) => coords)
   }
 
-  function handleClick(e) {
+  function handleClick(e) { // handle marker for the map
 
     let point = { currentPoint: e.split(',').map((x) => +x) }
     //console.log(point)
