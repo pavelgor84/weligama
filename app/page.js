@@ -10,6 +10,7 @@ import Icon_cond from '@/components/icons/Cond'
 import SliderTest from '@/components/slider/SliderTest'
 
 import Map from '@/components/map/map'
+import Link from 'next/link'
 
 
 // const images = require.context('../public/images/south', true)
@@ -41,15 +42,10 @@ export default function Home() {
   }
 
   function handleClick(e) {
-    const target = e.target.id;
-    let findPoint = asset.find((el) => el._id == target)
-    if (findPoint) {
-      let point = { currentPoint: findPoint.coordinates.split(',').map((x) => +x) }
-      //console.log(point)
-      setNav(prev => ({ ...prev, ...point }))
-    }
 
-
+    let point = { currentPoint: e.split(',').map((x) => +x) }
+    //console.log(point)
+    setNav(prev => ({ ...prev, ...point }))
   }
 
   const [asset, setAsset] = useState([])
@@ -77,19 +73,27 @@ export default function Home() {
         <div className={styles.card_left}>
           <SliderTest img={prop.images} />
         </div>
-        <div className={styles.card_right} id={prop._id} onClick={handleClick}>
-          <h3>{prop.name}</h3>
-          <div className={styles.card_right_options} >
-            <Icon_bed /> <span>{prop.bedroom}</span>
-            <Icon_shower /> <span>{prop.bath}</span>
-            <Icon_cond /> <span>{prop.ac}</span>
-            <div className={styles.card_right_options_txt}><span>View {prop.view}</span>  |  <span>Floors {prop.floor}</span>  |  <span>Elevator</span> | <span>Parking {prop.parking}</span></div>
-          </div>
-          <div className={styles.card_right_bottom}>
-            <div className={styles.card_right_date}><button className={styles.card_right_options_button}>Available {prop.available}</button></div>
-            <div className={styles.card_right_price}>from <span>Rs.{prop.price}</span> /day</div>
-          </div>
+        <div className={styles.card_right} id={prop._id} >
+          <Link href={{
+            pathname: "/list",
+            query: {
+              id: prop._id
+            }
+          }} target="_blank">
+            <h3>{prop.name}</h3>
+            <div className={styles.card_right_options} >
+              <Icon_bed /> <span>{prop.bedroom}</span>
+              <Icon_shower /> <span>{prop.bath}</span>
+              <Icon_cond /> <span>{prop.ac}</span>
+              <div className={styles.card_right_options_txt}><span>View {prop.view}</span>  |  <span>Floors {prop.floor}</span>  |  <span>Elevator</span> | <span>Parking {prop.parking}</span></div>
+            </div>
+            <div className={styles.card_right_bottom}>
+              <div className={styles.card_right_date}><button className={styles.card_right_options_button}>Available {prop.available}</button></div>
+              <div className={styles.card_right_price}>from <span>Rs.{prop.price}</span> /day</div>
+            </div>
+          </Link>
         </div>
+
       </div>
     )
   })
