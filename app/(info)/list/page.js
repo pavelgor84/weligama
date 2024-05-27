@@ -39,13 +39,16 @@ export default function List() {
     return (
         <section>
             <div className={styles.container}>
-                <div className={styles.left_block}>
+                <div className={styles.slider_area}>
 
                 </div>
-                <div className={styles.block}>
-                    {/* <Map centerZoom={center} coords={coords} /> */}
-
+                <div className={styles.info_block}>
+                    <div className={styles.info_block_left}> </div>
+                    <div className={styles.info_block_right}>
+                        {/* <Map centerZoom={center} coords={coords} /> */}
+                    </div>
                 </div>
+                <div className={styles.amenities}></div>
 
 
             </div>

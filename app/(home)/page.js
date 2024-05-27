@@ -2,7 +2,7 @@
 
 //import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import styles from './page.module.css'
+import styles from '../page.module.css'
 import Icon_bed from '@/components/icons/Bed'
 import Icon_shower from '@/components/icons/Shower'
 import Icon_cond from '@/components/icons/Cond'
