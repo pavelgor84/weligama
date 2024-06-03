@@ -1,7 +1,7 @@
 "use client"
 
 
-//import SliderTest from '@/components/slider/SliderTest'
+import SliderList from '@/components/slider_list/SliderList'
 import { useEffect, useRef, useState } from 'react'
 import styles from './list.module.css'
 import osm from './map_provider'
@@ -40,6 +40,7 @@ export default function List() {
         <section>
             <div className={styles.container}>
                 <div className={styles.slider_area}>
+                    {asset.images ? <SliderList img={asset.images} /> : "LOADING..."}
 
                 </div>
                 <div className={styles.info_block}>
