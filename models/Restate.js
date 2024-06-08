@@ -14,6 +14,8 @@ const propertySchema = new Schema({
     available: String,
     images: [{
         src: String,
+        widht: Number,
+        height: Number,
         alt: String,
         public_id: String,
     }]

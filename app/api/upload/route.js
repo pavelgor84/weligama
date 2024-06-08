@@ -42,7 +42,7 @@ export async function POST(request) {
         const arrayOfImages = []
         for (let i = 0; i < images.length; i++) {
             arrayOfImages.push(
-                { src: images[i].secure_url, alt: images[i].original_filename, public_id: images[i].public_id }
+                { src: images[i].secure_url, width: images[i].width, height: images[i].height, alt: images[i].original_filename, public_id: images[i].public_id }
             )
         }
         doc.images = arrayOfImages
