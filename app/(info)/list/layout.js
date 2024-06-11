@@ -1,8 +1,8 @@
 "use client"
 
-import { Inter } from 'next/font/google'
+import { Lato } from 'next/font/google'
 
-const inter = Inter({ subsets: ['latin'] })
+const lato = Lato({ subsets: ['latin'], weight: ['100', '300', '400'] })
 
 // export const metadata = {
 //   title: 'Create Next App',
@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
 
 
     <html lang="en">
-      <body className={inter.className}>
+      <body className={lato.className}>
         <div>HEADER</div>
         {children}
         <div>Footer</div>

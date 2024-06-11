@@ -45,12 +45,33 @@ export default function List() {
 
                 </div>
                 <div className={styles.info_block}>
-                    <div className={styles.info_block_left}> </div>
+                    <div className={styles.info_block_left}>
+                        <div lassName={styles.info_block_left} c>
+                            <h1 lassName={styles.header}> Rhoncus suspendisse </h1>
+                            <span lassName={styles.location}> London, Notting Hill </span>
+                            <div lassName={styles.short_amenities}>
+                                <div lassName={styles.short_amenities_leftIcons}>
+
+                                </div>
+                                <div lassName={styles.short_amenities_rightOptions}>
+
+                                </div>
+                            </div>
+                            <h2 lassName={styles.description_header}>Description</h2>
+                            <span lassName={styles.description}>
+                                A truly global city, London has long been considered a cutting-edge metropolis and hub for culture, style and finance. With each borough, Tube zone and neighborhood of London sporting its own vibe and lifestyle advantages, it can be downright difficult to settle on where to look for a furnished apartment in London . Whether you’re a digital nomad looking for a studio apartment in London or just seeking a month to month rental in London, Blueground has you covered.
+
+                            </span>
+                        </div>
+                    </div>
+
                     <div className={styles.info_block_right}>
                         {/* <Map centerZoom={center} coords={coords} /> */}
                     </div>
                 </div>
-                <div className={styles.amenities}></div>
+                <div className={styles.amenities}>
+
+                </div>
 
 
             </div>
