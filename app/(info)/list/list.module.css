@@ -12,9 +12,9 @@
 
 .slider_area {
     width: 100%;
-    height: 400px;
     background-color: rgb(197, 212, 212);
     object-fit: cover;
+    margin-bottom: 13px;
 }
 
 .info_block {
@@ -23,16 +23,19 @@
     flex-direction: row;
     width: 100%;
     height: 500px;
-    background-color: rgb(176, 182, 182);
-    object-fit: cover;
+    background-color: rgba(155, 196, 196, 0.815);
     object-position: center;
 }
 
 .info_block_left {
-
+    padding-left: 30px;
     width: 60%;
     height: 500px;
-    background-color: rgb(223, 216, 215);
+    background-color: rgb(212, 197, 194);
+}
+
+.header {
+    font-size: 2rem;
 }
 
 .info_block_right {
@@ -42,6 +45,35 @@
     object-position: center;
 }
 
+.location {
+    margin-bottom: 27px;
+    margin-top: -7px;
+}
+
+.short_amenities {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.short_amenities_leftIcons {}
+
+.short_amenities_leftIcons span {
+    margin-right: 10px;
+}
+
+.short_amenities_rightOptions {}
+
+.short_amenities_rightOptions span {
+    margin: 0px;
+}
+
 .amenities {
     width: 100%;
     height: 300px;
@@ -49,8 +81,7 @@
 }
 
 .description {
-    font-weight: 300;
+    font-weight: 400;
     font-size: small;
-    color: blue;
-    font-style: italic;
+    color: rgb(44, 44, 48);
 }

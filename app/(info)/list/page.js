@@ -9,6 +9,8 @@ import osm from './map_provider'
 import Map from '@/components/map/map'
 import { useSearchParams } from 'next/navigation'
 
+import { Icon_bed, Icon_cond, Icon_shower } from '@/components/icons/iconset'
+
 
 export default function List() {
     const id_property = useSearchParams() //get params from previous page
@@ -46,23 +48,25 @@ export default function List() {
                 </div>
                 <div className={styles.info_block}>
                     <div className={styles.info_block_left}>
-                        <div lassName={styles.info_block_left} c>
-                            <h1 lassName={styles.header}> Rhoncus suspendisse </h1>
-                            <span lassName={styles.location}> London, Notting Hill </span>
-                            <div lassName={styles.short_amenities}>
-                                <div lassName={styles.short_amenities_leftIcons}>
+                        <h1 className={styles.header}> Rhoncus suspendisse </h1>
+                        <div className={styles.location}> London, Notting Hill </div>
+                        <div className={styles.short_amenities}>
+                            <div className={styles.short_amenities_leftIcons}>
+                                <Icon_bed /> <span>2 bedroom</span>
+                                <Icon_shower /> <span>1 bath</span>
+                                <Icon_cond /> <span>yes</span>
 
-                                </div>
-                                <div lassName={styles.short_amenities_rightOptions}>
-
-                                </div>
                             </div>
-                            <h2 lassName={styles.description_header}>Description</h2>
-                            <span lassName={styles.description}>
-                                A truly global city, London has long been considered a cutting-edge metropolis and hub for culture, style and finance. With each borough, Tube zone and neighborhood of London sporting its own vibe and lifestyle advantages, it can be downright difficult to settle on where to look for a furnished apartment in London . Whether you’re a digital nomad looking for a studio apartment in London or just seeking a month to month rental in London, Blueground has you covered.
-
-                            </span>
+                            <div className={styles.short_amenities_rightOptions}>
+                                <span>View Garden</span>  |  <span>Floors 2 </span>  |  <span>Elevator</span> | <span>Parking yes</span>
+                            </div>
                         </div>
+                        <h2 className={styles.description_header}>Description</h2>
+                        <span className={styles.description}>
+                            A truly global city, London has long been considered a cutting-edge metropolis and hub for culture, style and finance. With each borough, Tube zone and neighborhood of London sporting its own vibe and lifestyle advantages, it can be downright difficult to settle on where to look for a furnished apartment in London . Whether you’re a digital nomad looking for a studio apartment in London or just seeking a month to month rental in London, Blueground has you covered.
+
+                        </span>
+
                     </div>
 
                     <div className={styles.info_block_right}>
