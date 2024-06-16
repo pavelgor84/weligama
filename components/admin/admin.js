@@ -25,6 +25,9 @@ export default function Admin({ email }) {
             images: ''
         });
     const [file, setFile] = useState([])
+    //console.log(file)
+    const [room, setRoom] = useState({})
+    console.log(room)
     const [loading, setLoading] = useState(false)
 
     const handleChange = (e) => {
@@ -32,10 +35,17 @@ export default function Admin({ email }) {
         setProperty(prevState => ({ ...prevState, [name]: value }));
     };
     const handleFileChange = (e) => {
-        console.log(e.target.files)
+        console.log(e)
 
         const _files = Array.from(e.target.files);
         setFile(_files);
+    };
+    const handleRoomChange = (e) => {
+        //console.log(e)
+        const _files = Array.from(e.target.files);
+        const roomNumber = e.target.name
+
+        setRoom(prevState => ({ ...prevState, [roomNumber]: _files }));
 
     };
 
@@ -150,6 +160,14 @@ export default function Admin({ email }) {
                             <tr>
                                 <th align='right'><label>Images:</label></th>
                                 <th align='left'><input type="file" name="images" multiple value={file.images} onChange={handleFileChange} required /></th>
+                            </tr>
+                            <tr>
+                                <th align='right'><label>Room 1:</label></th>
+                                <th align='left'><input type="file" name="room1" multiple value={room.images} onChange={handleRoomChange} required /></th>
+                            </tr>
+                            <tr>
+                                <th align='right'><label>Room 2:</label></th>
+                                <th align='left'><input type="file" name="room2" multiple value={room.images} onChange={handleRoomChange} required /></th>
                             </tr>
                         </tbody>
                     </table>

@@ -20,10 +20,7 @@ export async function POST(request) {
     let imagesArray = []
     for (const formDataEntryValue of formDataEntryValues) {
         if (typeof formDataEntryValue === "object" && "arrayBuffer" in formDataEntryValue) {
-            // const path = join(process.cwd(), '/', 'public', '/', 'images', '/', 'south', file.name) // process.cwd() may be deleted
-            // await writeFile(path, buffer)
 
-            // let image_object = { src: join('/', 'images', '/', 'south', file.name), alt: file.name }
             imagesArray.push(formDataEntryValue)
 
         }
