@@ -18,7 +18,18 @@ const propertySchema = new Schema({
         height: Number,
         alt: String,
         public_id: String,
-    }]
+    }],
+    rooms:
+        [{
+            room_number: Number,
+            src: String,
+            width: Number,
+            height: Number,
+            alt: String,
+            public_id: String,
+        }]
+
+
 })
 
 const Restate = models?.Restate || model('Restate', propertySchema)

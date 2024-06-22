@@ -8,7 +8,7 @@ export async function POST(request) {
     await initMongoose()
 
     const data = await request.formData()
-    const props = data.get('prop')          //GET PROPS
+    const props = data.get('room')          //GET PROPS
     if (!props) {
         return NextResponse.json({ "success": false })
     }
@@ -45,11 +45,17 @@ export async function POST(request) {
         const arrayOfImages = []
         for (let i = 0; i < images.length; i++) {
             arrayOfImages.push(
-                { src: images[i].secure_url, width: images[i].width, height: images[i].height, alt: images[i].original_filename, public_id: images[i].public_id }
+                { room_number: doc.room, src: images[i].secure_url, width: images[i].width, height: images[i].height, alt: images[i].original_filename, public_id: images[i].public_id }
             )
         }
-        doc.images = arrayOfImages
-        let respose = await Restate.create(doc)
+        let respose = await Restate.updateOne({ _id: doc.id }, {
+            $push: {
+                rooms: {
+                    $each: arrayOfImages
+                }
+            }
+        }
+        )
         resolve(NextResponse.json({ "msg": respose }, { "images": images }, { status: 200 }))
     }
 

@@ -28,6 +28,7 @@ export default function Admin({ email }) {
     //console.log(file)
     const [room, setRoom] = useState({})
     console.log(room)
+    console.log(room.hasOwnProperty("room1") && room.room1.length != 0)
     const [loading, setLoading] = useState(false)
 
     const handleChange = (e) => {
@@ -55,7 +56,7 @@ export default function Admin({ email }) {
         //console.log(property.images[0])
 
         if (!file) {
-            console.log("no file")
+            console.log("insufficient pics ")
             return
         }
 
@@ -66,13 +67,33 @@ export default function Admin({ email }) {
                 data.append(image.name, image)
             })
 
+            data.append('rooms', room)
 
             console.log(property)
-            data.set('prop', JSON.stringify(property))
+            data.append('prop', JSON.stringify(property))
 
             const response = await axios.post('/api/upload', data)
             const result = await response.data
             console.log({ result })
+            const id = result._id
+
+            if (room.hasOwnProperty("room1") && room.room1.length != 0) {
+                room.forEach(element => {
+                    let room_data = new FormData()
+                    let room_info = { "room": Object.keys(element)[0], "id": id }
+
+                    for (let i = 0; i < element.length; i++) {
+                        room_data.append(element.name, element)
+                    }
+                    room_data.append('room', JSON.stringify(room_info))
+                    let room_response = await axios.post('/api/upload_room', room_data)
+                    let room_result = await room_response.data
+                    console.log({ room_result })
+
+
+                });
+
+            }
 
         }
         catch (e) {
