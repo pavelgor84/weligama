@@ -15,16 +15,13 @@ export async function POST(request) {
     //CHECK FOR DUPLICATES HERE!!!
 
     let obj_props = JSON.parse(props)
-    //console.log(obj_props)
+    console.log(`PROPS ${obj_props.id}`)
 
     const formDataEntryValues = Array.from(data.values()); // GET FILES
     let imagesArray = []
     for (const formDataEntryValue of formDataEntryValues) {
         if (typeof formDataEntryValue === "object" && "arrayBuffer" in formDataEntryValue) {
-            // for (const [key, value] of Object.entries(formDataEntryValue)) {
-            //     console.log(`key: ${key}`);
-            // }
-            console.log(formDataEntryValue)
+
             imagesArray.push(formDataEntryValue)
 
         }
@@ -41,7 +38,7 @@ export async function POST(request) {
     })
 
     async function createDocument(doc, images, resolve) {
-        console.log(images)
+        console.log(`ID Document ${doc.id}`)
         const arrayOfImages = []
         for (let i = 0; i < images.length; i++) {
             arrayOfImages.push(

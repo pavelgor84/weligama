@@ -50,6 +50,17 @@ export default function Admin({ email }) {
 
     };
 
+    async function send_data(data) {
+        try {
+            const room_response = await axios.post('/api/upload_room', data)
+            const room_result = await room_response.data
+            console.log({ room_result })
+        }
+        catch (e) {
+            console.error(e)
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(property)// You can perform any necessary action with the form data here ;
@@ -75,23 +86,22 @@ export default function Admin({ email }) {
             const response = await axios.post('/api/upload', data)
             const result = await response.data
             console.log({ result })
-            const id = result._id
+            const id = result.msg._id
 
-            if (room.hasOwnProperty("room1") && room.room1.length != 0) {
-                room.forEach(element => {
+            if (room[Object.keys(room)[0]] && room[Object.keys(room)[0]].length != 0) { //room.room1 && room.room1.length > 0
+                for (const property in room) {
                     let room_data = new FormData()
-                    let room_info = { "room": Object.keys(element)[0], "id": id }
+                    let room_info = { "room": property, "id": id }
 
-                    for (let i = 0; i < element.length; i++) {
-                        room_data.append(element.name, element)
-                    }
+                    room[property].forEach((image, i) => {
+                        room_data.append(image.name, image)
+                    })
                     room_data.append('room', JSON.stringify(room_info))
-                    let room_response = await axios.post('/api/upload_room', room_data)
-                    let room_result = await room_response.data
-                    console.log({ room_result })
+                    send_data(room_data)
+
+                }
 
 
-                });
 
             }
 

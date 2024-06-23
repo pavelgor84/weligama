@@ -21,14 +21,13 @@ const propertySchema = new Schema({
     }],
     rooms:
         [{
-            room_number: Number,
+            room_number: String,
             src: String,
             width: Number,
             height: Number,
             alt: String,
             public_id: String,
-        }]
-
+        }],
 
 })
 

@@ -21,10 +21,7 @@ export async function POST(request) {
     let imagesArray = []
     for (const formDataEntryValue of formDataEntryValues) {
         if (typeof formDataEntryValue === "object" && "arrayBuffer" in formDataEntryValue) {
-            // for (const [key, value] of Object.entries(formDataEntryValue)) {
-            //     console.log(`key: ${key}`);
-            // }
-            console.log(formDataEntryValue)
+
             imagesArray.push(formDataEntryValue)
 
         }
@@ -41,7 +38,7 @@ export async function POST(request) {
     })
 
     async function createDocument(doc, images, resolve) {
-        console.log(images)
+        //console.log(images)
         const arrayOfImages = []
         for (let i = 0; i < images.length; i++) {
             arrayOfImages.push(
