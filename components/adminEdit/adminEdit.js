@@ -23,7 +23,8 @@ export default function AdminEdit({ email }) {
             parking: '',
             price: '',
             available: '',
-            images: ''
+            images: '',
+            rooms: '',
         });
 
     const [files, setFiles] = useState([])
@@ -108,6 +109,60 @@ export default function AdminEdit({ email }) {
         )
     }) : null
 
+
+
+    // const roomss = property.rooms ? Object.keys(property.rooms).forEach((item, index) => {
+    //     (<div className={styles.images_container}>
+    //         <span>Room{index} images</span>
+    //         <div className={styles.images}>
+    //             {property.rooms[item].map((room) => {
+    //                 return (
+    //                     <div key={im.public_id} >
+    //                         <button id={room.public_id} onClick={(e) => handleDelete(e.target.id)} disabled={loading}> del</button>
+    //                         <img src={room.src} width='60px' height='60px' />
+    //                     </div>
+    //                 )
+    //             })}
+    //         </div>
+    //     </div>)
+    // }) : null
+
+    const groupedByNumber = property.rooms ? property.rooms.reduce((acc, obj) => {
+        // Если ключ для этого number уже есть, добавляем объект в массив
+        if (!acc[obj.room_number]) {
+            acc[obj.room_number] = []; // Если нет, создаем новый массив для этого number
+        }
+        acc[obj.room_number].push(obj);
+        return acc;
+    }, {}) : null
+
+    let rooms = []
+    let index = 0
+    for (const item in groupedByNumber) {
+        //console.log(`${item}: ${groupedByNumber[item].length}`);
+        rooms.push(<div key={index++} className={styles.images_container}>
+            <span> Room {index + 1} </span>
+            <div className={styles.images}>
+                {groupedByNumber[item].map((room) => {
+                    return (
+                        <div key={room.public_id} >
+                            <button id={room.public_id} onClick={(e) => handleDelete(e.target.id)} disabled={loading}> del</button>
+                            <img src={room.src} width='60px' height='60px' />
+                        </div>
+                    )
+                })}
+            </div>
+        </div>)
+    }
+
+    function Rooms() {
+        return (
+            <>
+                {rooms}
+
+            </>
+        );
+    }
 
     function handleSelect(item) {
         let position = asset.findIndex(obj => obj.name == item)
@@ -223,9 +278,14 @@ export default function AdminEdit({ email }) {
                     </table>
                     <button disabled={loading} type="submit">Submit</button>
                 </form>
-
-                {imageSet}
-
+                <div className={styles.images_container}>
+                    <span>Property images</span>
+                    <div className={styles.images}>
+                        {imageSet}
+                    </div>
+                </div>
+                <span>Room images</span>
+                <Rooms />
             </div>
 
 
