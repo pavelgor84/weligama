@@ -22,8 +22,10 @@ export default function Admin({ email }) {
             parking: '',
             price: '',
             available: '',
-            images: ''
+            images: '',
+            rooms_info: {},
         });
+    console.log(property)
     const [file, setFile] = useState([])
     //console.log(file)
     const [room, setRoom] = useState({})
@@ -49,6 +51,12 @@ export default function Admin({ email }) {
         setRoom(prevState => ({ ...prevState, [roomNumber]: _files }));
 
     };
+    const handleRoomInfoChange = (e) => {
+        //console.log(e)
+        const { name, value } = e.target;
+        setProperty(prevState => ({ ...prevState, rooms_info: { ...prevState.rooms_info, [name]: value } }));
+
+    }
 
     async function send_data(data) {
         try {
@@ -197,9 +205,18 @@ export default function Admin({ email }) {
                                 <th align='left'><input type="file" name="room1" multiple value={room.images} onChange={handleRoomChange} required /></th>
                             </tr>
                             <tr>
+                                <th align='right'><label>Room 1 info:</label></th>
+                                <th align='left'><input type="text" name="room1" value={property.rooms_info.room1 || ''} onChange={handleRoomInfoChange} /></th>
+                            </tr>
+                            <tr>
                                 <th align='right'><label>Room 2:</label></th>
                                 <th align='left'><input type="file" name="room2" multiple value={room.images} onChange={handleRoomChange} required /></th>
                             </tr>
+                            <tr>
+                                <th align='right'><label>Room 2 info:</label></th>
+                                <th align='left'><input type="text" name="room2" value={property.rooms_info.room2 || ''} onChange={handleRoomInfoChange} /></th>
+                            </tr>
+
                         </tbody>
                     </table>
                     <button disabled={loading} type="submit">Submit</button>

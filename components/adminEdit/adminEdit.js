@@ -111,22 +111,6 @@ export default function AdminEdit({ email }) {
 
 
 
-    // const roomss = property.rooms ? Object.keys(property.rooms).forEach((item, index) => {
-    //     (<div className={styles.images_container}>
-    //         <span>Room{index} images</span>
-    //         <div className={styles.images}>
-    //             {property.rooms[item].map((room) => {
-    //                 return (
-    //                     <div key={im.public_id} >
-    //                         <button id={room.public_id} onClick={(e) => handleDelete(e.target.id)} disabled={loading}> del</button>
-    //                         <img src={room.src} width='60px' height='60px' />
-    //                     </div>
-    //                 )
-    //             })}
-    //         </div>
-    //     </div>)
-    // }) : null
-
     const groupedByNumber = property.rooms ? property.rooms.reduce((acc, obj) => {
         // Если ключ для этого number уже есть, добавляем объект в массив
         if (!acc[obj.room_number]) {
@@ -139,7 +123,6 @@ export default function AdminEdit({ email }) {
     let rooms = []
     let index = 0
     for (const item in groupedByNumber) {
-        //console.log(`${item}: ${groupedByNumber[item].length}`);
         rooms.push(<div key={index++} className={styles.images_container}>
             <span> Room {index + 1} </span>
             <div className={styles.images}>
