@@ -25,6 +25,7 @@ export default function AdminEdit({ email }) {
             available: '',
             images: '',
             rooms: '',
+            _id: '',
         });
 
     const [files, setFiles] = useState([])
@@ -37,7 +38,30 @@ export default function AdminEdit({ email }) {
     const handleFileChange = (e) => {
         console.log(e.target.files)
         setFiles(prev => (e.target.files))
+    };
 
+    async function send_data(data) {
+        try {
+            const room_response = await axios.post('/api/upload_room', data)
+            const room_result = await room_response.data
+            console.log({ room_result })
+        }
+        catch (e) {
+            console.error(e)
+        }
+    }
+
+    const handleFileRoomChange = (e) => {
+        //console.log(e.target.name)
+        const fileList = e.target.files
+        const data = new FormData()
+
+        for (let i = 0; i < fileList.length; i++) {
+            data.append(fileList[i].name, fileList[i])
+        }
+        let room_info = { "room": e.target.name, "id": property._id }
+        data.append('room', JSON.stringify(room_info))
+        send_data(data)
 
     };
 
@@ -124,7 +148,7 @@ export default function AdminEdit({ email }) {
     let index = 0
     for (const item in groupedByNumber) {
         rooms.push(<div key={index++} className={styles.images_container}>
-            <span> Room {index + 1} </span>
+            <span> Room {index + 1} or {item}</span>
             <div className={styles.images}>
                 {groupedByNumber[item].map((room) => {
                     return (
@@ -135,6 +159,10 @@ export default function AdminEdit({ email }) {
                     )
                 })}
             </div>
+
+            <label>Upload Images:</label>
+            <input type="file" name={item} multiple onChange={handleFileRoomChange} />
+
         </div>)
     }
 

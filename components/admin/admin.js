@@ -99,7 +99,7 @@ export default function Admin({ email }) {
             if (room[Object.keys(room)[0]] && room[Object.keys(room)[0]].length != 0) { //room.room1 && room.room1.length > 0
                 for (const property in room) {
                     let room_data = new FormData()
-                    let room_info = { "room": property, "id": id }
+                    let room_info = { "room": property, "id": id } //{ "room": "room1", "id": id }
 
                     room[property].forEach((image, i) => {
                         room_data.append(image.name, image)
@@ -202,19 +202,19 @@ export default function Admin({ email }) {
                             </tr>
                             <tr>
                                 <th align='right'><label>Room 1:</label></th>
-                                <th align='left'><input type="file" name="room1" multiple value={room.images} onChange={handleRoomChange} required /></th>
+                                <th align='left'><input type="file" name="1" multiple value={room.images} onChange={handleRoomChange} required /></th>
                             </tr>
                             <tr>
                                 <th align='right'><label>Room 1 info:</label></th>
-                                <th align='left'><input type="text" name="room1" value={property.rooms_info.room1 || ''} onChange={handleRoomInfoChange} /></th>
+                                <th align='left'><input type="text" name="1" value={property.rooms_info.room1 || ''} onChange={handleRoomInfoChange} /></th>
                             </tr>
                             <tr>
                                 <th align='right'><label>Room 2:</label></th>
-                                <th align='left'><input type="file" name="room2" multiple value={room.images} onChange={handleRoomChange} required /></th>
+                                <th align='left'><input type="file" name="2" multiple value={room.images} onChange={handleRoomChange} required /></th>
                             </tr>
                             <tr>
                                 <th align='right'><label>Room 2 info:</label></th>
-                                <th align='left'><input type="text" name="room2" value={property.rooms_info.room2 || ''} onChange={handleRoomInfoChange} /></th>
+                                <th align='left'><input type="text" name="2" value={property.rooms_info.room2 || ''} onChange={handleRoomInfoChange} /></th>
                             </tr>
 
                         </tbody>
