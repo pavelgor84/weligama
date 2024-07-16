@@ -25,16 +25,21 @@ export async function POST(request) {
         }
     }
 
+
+    if (imagesArray.length == 0) {
+        updateInfo(obj_props)
+    }
+
     return new Promise((resolve, reject) => {
         const uploads = imagesArray.map((im) => UploadImage(im, "sri-lanka"))
         Promise.all(uploads).then((values) => {
-            editDocument(obj_props, values)
+            updateImages(obj_props, values)
             resolve(NextResponse.json({ "msg": values }, { status: 200 }))
         }
         ).catch((err) => reject(err))
     })
 
-    async function editDocument(doc, images) {
+    async function updateImages(doc, images) {
 
         for (let i = 0; i < images.length; i++) {
             doc.images.push(
@@ -45,8 +50,12 @@ export async function POST(request) {
         await Restate.updateOne({ _id: doc._id }, { $set: doc })
     }
 
-    //obj_props.images = arr
-    //console.log(`props: ${JSON.stringify(obj_props)}`)
+    async function updateInfo(doc) {
+        const update_info = await Restate.updateOne({ _id: doc._id }, { $set: doc })
+        return NextResponse.json({ "doc_update_msg": update_info }, { status: 200 })
+
+    }
+
 
 
 

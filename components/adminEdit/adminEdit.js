@@ -1,7 +1,7 @@
 "use client"
 
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
 import styles from './list.module.css'
 
@@ -9,7 +9,7 @@ import styles from './list.module.css'
 export default function AdminEdit({ email }) {
 
     const [asset, setAsset] = useState([])
-    console.log(asset)
+    //console.log(asset)
     const [property, setProperty] = useState(
         {
             mail: email,
@@ -25,8 +25,13 @@ export default function AdminEdit({ email }) {
             available: '',
             images: '',
             rooms: '',
+            rooms_info: {},
             _id: '',
         });
+    //console.log(property)
+
+    const inputRefs = useRef({});
+    console.log(inputRefs)
 
     const [files, setFiles] = useState([])
     const [loading, setLoading] = useState(false)
@@ -51,7 +56,7 @@ export default function AdminEdit({ email }) {
         }
     }
 
-    const handleFileRoomChange = (e) => {
+    const handleFileRoomChange = (e) => { // SEND ROOM PICS
         //console.log(e.target.name)
         const fileList = e.target.files
         const data = new FormData()
@@ -65,24 +70,33 @@ export default function AdminEdit({ email }) {
 
     };
 
+    const handleRoomInfoChange = (e) => {
+        //console.log(e)
+        const { name, value } = e.target;
+        setProperty(prevState => ({ ...prevState, rooms_info: { ...prevState.rooms_info, [name]: value } }));
+
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(property)// You can perform any necessary action with the form data here ;
 
         console.log(files)
 
-        if (files.length === 0) {
-            console.log("no file")
-            return
-        }
+        // if (files.length === 0) {
+        //     console.log("no file")
+        //     return
+        // }
 
         try {
             setLoading(true)
 
             const data = new FormData()
-            files.forEach((image, i) => {
-                data.append(image.name, image)
-            })
+            if (files.length != 0) {
+                files.forEach((image, i) => {
+                    data.append(image.name, image)
+                })
+            }
 
 
             console.log(property)
@@ -117,7 +131,13 @@ export default function AdminEdit({ email }) {
     useEffect(() => {
         fetch_data()
     }, []);
-
+    useEffect(() => {
+        Object.keys(inputRefs.current).forEach(key => {
+            if (inputRefs.current[key]) {
+                inputRefs.current[key].focus();
+            }
+        });
+    }, [property.rooms_info]);
 
 
     const selection = asset.map((opt) => {
@@ -148,7 +168,7 @@ export default function AdminEdit({ email }) {
     let index = 0
     for (const item in groupedByNumber) {
         rooms.push(<div key={index++} className={styles.images_container}>
-            <span> Room {index + 1} or {item}</span>
+            <span> Room {item}</span>
             <div className={styles.images}>
                 {groupedByNumber[item].map((room) => {
                     return (
@@ -162,6 +182,10 @@ export default function AdminEdit({ email }) {
 
             <label>Upload Images:</label>
             <input type="file" name={item} multiple onChange={handleFileRoomChange} />
+            <label>Room {item} info:</label>
+            <input type="text" ref={el => inputRefs.current[item] = el} name={item} value={property.rooms_info[item] || ''} onChange={handleRoomInfoChange} />
+            <button disabled={loading} form="info_form" type="submit">Update info</button>
+
 
         </div>)
     }
@@ -217,7 +241,7 @@ export default function AdminEdit({ email }) {
 
                 </select>
 
-                <form className={styles.form} onSubmit={handleSubmit}>
+                <form id="info_form" className={styles.form} onSubmit={handleSubmit}>
                     <table>
                         <tbody>
                             <tr>
@@ -281,19 +305,20 @@ export default function AdminEdit({ email }) {
                                         No
                                     </label></th>
                             </tr>
-                            <tr>
-                                <th align='right'><label>Images:</label></th>
-                                <th align='left'><input type="file" name="images" multiple onChange={handleFileChange} /></th>
-                            </tr>
+
                         </tbody>
                     </table>
-                    <button disabled={loading} type="submit">Submit</button>
+                    <button disabled={loading} form="info_form" type="submit">Update</button>
                 </form>
                 <div className={styles.images_container}>
                     <span>Property images</span>
                     <div className={styles.images}>
                         {imageSet}
                     </div>
+
+                    <label>Upload images:</label>
+                    <input type="file" name="images" multiple onChange={handleFileChange} />
+
                 </div>
                 <span>Room images</span>
                 <Rooms />
