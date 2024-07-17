@@ -31,7 +31,9 @@ export default function AdminEdit({ email }) {
     //console.log(property)
 
     const inputRefs = useRef({});
-    console.log(inputRefs)
+    //console.log(inputRefs)
+    const currentRef = useRef();
+    //console.log(JSON.stringify(currentRef.current))
 
     const [files, setFiles] = useState([])
     const [loading, setLoading] = useState(false)
@@ -74,7 +76,11 @@ export default function AdminEdit({ email }) {
         //console.log(e)
         const { name, value } = e.target;
         setProperty(prevState => ({ ...prevState, rooms_info: { ...prevState.rooms_info, [name]: value } }));
-
+    }
+    const handleFocus = (e) => {
+        const { name } = e.target;
+        currentRef.current = name
+        //console.log(currentRef.current)
     }
 
     const handleSubmit = async (e) => {
@@ -133,7 +139,7 @@ export default function AdminEdit({ email }) {
     }, []);
     useEffect(() => {
         Object.keys(inputRefs.current).forEach(key => {
-            if (inputRefs.current[key]) {
+            if (key == currentRef.current) {
                 inputRefs.current[key].focus();
             }
         });
@@ -183,7 +189,10 @@ export default function AdminEdit({ email }) {
             <label>Upload Images:</label>
             <input type="file" name={item} multiple onChange={handleFileRoomChange} />
             <label>Room {item} info:</label>
-            <input type="text" ref={el => inputRefs.current[item] = el} name={item} value={property.rooms_info[item] || ''} onChange={handleRoomInfoChange} />
+
+            <input type="text" ref={el => inputRefs.current[item] = el} name={item} value={property.rooms_info[item] || ''}
+                onChange={handleRoomInfoChange} onFocus={handleFocus} />
+
             <button disabled={loading} form="info_form" type="submit">Update info</button>
 
 
