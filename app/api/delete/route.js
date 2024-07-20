@@ -10,7 +10,7 @@ export async function POST(request) {
 
     const body = await request.json()
     //const path = join(process.cwd(), '/', 'public', body.delete.src) // process.cwd() may be deleted
-    console.log(body)
+    //console.log(body)
 
     const result_delete = await DeleteImage(body.delete.public_id)
     console.log(result_delete)

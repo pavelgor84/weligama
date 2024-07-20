@@ -47,11 +47,32 @@ export default function AdminEdit({ email }) {
         setFiles(prev => (e.target.files))
     };
 
-    async function send_data(data) {
+    // async function send_data(data) {
+    //     try {
+    //         const room_response = await axios.post('/api/upload_room', data)
+    //         const room_result = await room_response.data
+    //         console.log({ room_result })
+    //     }
+    //     catch (e) {
+    //         console.error(e)
+    //     }
+    // }
+    // async function send_data_images(data) {
+    //     try {
+    //         const response = await axios.post('/api/add_images', data)
+    //         const result = await response.data
+    //         console.log({ result })
+    //     }
+    //     catch (e) {
+    //         console.error(e)
+    //     }
+    // }
+
+    async function send_data(data, where) {
         try {
-            const room_response = await axios.post('/api/upload_room', data)
-            const room_result = await room_response.data
-            console.log({ room_result })
+            const response = await axios.post(where, data)
+            const result = await response.data
+            console.log({ result })
         }
         catch (e) {
             console.error(e)
@@ -68,7 +89,30 @@ export default function AdminEdit({ email }) {
         }
         let room_info = { "room": e.target.name, "id": property._id }
         data.append('room', JSON.stringify(room_info))
-        send_data(data)
+        send_data(data, '/api/upload_room')
+
+    };
+    const handleFileImagesChange = (e) => { // SEND IMAGES PICS
+        //console.log(e.target.name)
+        const fileList = e.target.files
+        const data = new FormData()
+
+        for (let i = 0; i < fileList.length; i++) {
+            data.append(fileList[i].name, fileList[i])
+        }
+        data.set('prop', JSON.stringify(property))
+
+        try {
+            setLoading(true)
+
+            send_data(data, '/api/add_images')
+
+        } catch (e) {
+            console.log(e)
+        } finally {
+
+            setLoading(false)
+        }
 
     };
 
@@ -87,25 +131,11 @@ export default function AdminEdit({ email }) {
         e.preventDefault();
         console.log(property)// You can perform any necessary action with the form data here ;
 
-        console.log(files)
-
-        // if (files.length === 0) {
-        //     console.log("no file")
-        //     return
-        // }
-
         try {
             setLoading(true)
 
             const data = new FormData()
-            if (files.length != 0) {
-                files.forEach((image, i) => {
-                    data.append(image.name, image)
-                })
-            }
 
-
-            console.log(property)
             data.set('prop', JSON.stringify(property))
 
             const response = await axios.post('/api/add_images', data)
@@ -130,7 +160,7 @@ export default function AdminEdit({ email }) {
             .then((response) => response.json())
             .then((json) => {
                 setAsset(json)
-                setProperty(json[0])
+                setProperty(json[0])//useRef <----
             })
     }
 
@@ -215,13 +245,8 @@ export default function AdminEdit({ email }) {
 
     function handleDelete(itemName) {
         console.log(itemName)
-        let checkToDelete = property.images.find((item) => item.public_id === itemName)
-        if (checkToDelete) {
-            const imageToFilter = property.images.filter((item) => item.public_id != itemName)
-            let propertyState = { ...property }
-            propertyState.images = imageToFilter
-            propertyState.delete = checkToDelete
 
+        function sendForDelete(propertyState) {
             fetch('/api/delete', {
                 method: "POST",
                 body: JSON.stringify(propertyState)
@@ -232,9 +257,27 @@ export default function AdminEdit({ email }) {
                     // setAsset(json)
                     // setProperty(json[0])
                 })
-
         }
 
+        let checkForDeleteImages = property.images.find((item) => item.public_id === itemName)
+        let checkToDeleteRoomsImages = property.rooms.find((item) => item.public_id === itemName)
+
+        if (checkForDeleteImages) {
+            const imageToFilter = property.images.filter((item) => item.public_id != itemName)
+            let propertyState = { ...property }
+            propertyState.images = imageToFilter
+            propertyState.delete = checkForDeleteImages
+            sendForDelete(propertyState)
+
+        }
+        if (checkToDeleteRoomsImages) {
+            const imageToFilter = property.rooms.filter((item) => item.public_id != itemName)
+            let propertyState = { ...property }
+            propertyState.rooms = imageToFilter
+            propertyState.delete = checkToDeleteRoomsImages
+            sendForDelete(propertyState)
+
+        }
     }
 
     return (
@@ -326,7 +369,7 @@ export default function AdminEdit({ email }) {
                     </div>
 
                     <label>Upload images:</label>
-                    <input type="file" name="images" multiple onChange={handleFileChange} />
+                    <input type="file" name="images" multiple disabled={loading} onChange={handleFileImagesChange} />
 
                 </div>
                 <span>Room images</span>

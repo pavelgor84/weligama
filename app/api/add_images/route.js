@@ -52,7 +52,7 @@ export async function POST(request) {
 
     async function updateInfo(doc) {
         const update_info = await Restate.updateOne({ _id: doc._id }, { $set: doc })
-        return NextResponse.json({ "doc_update_msg": update_info }, { status: 200 })
+        return NextResponse.json({ "msg": update_info }, { status: 200 })
 
     }
 
