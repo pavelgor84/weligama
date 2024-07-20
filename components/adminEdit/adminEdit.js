@@ -47,26 +47,6 @@ export default function AdminEdit({ email }) {
         setFiles(prev => (e.target.files))
     };
 
-    // async function send_data(data) {
-    //     try {
-    //         const room_response = await axios.post('/api/upload_room', data)
-    //         const room_result = await room_response.data
-    //         console.log({ room_result })
-    //     }
-    //     catch (e) {
-    //         console.error(e)
-    //     }
-    // }
-    // async function send_data_images(data) {
-    //     try {
-    //         const response = await axios.post('/api/add_images', data)
-    //         const result = await response.data
-    //         console.log({ result })
-    //     }
-    //     catch (e) {
-    //         console.error(e)
-    //     }
-    // }
 
     async function send_data(data, where) {
         try {
