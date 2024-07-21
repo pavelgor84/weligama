@@ -19,7 +19,7 @@ export default function Gallery({ photos }) {
   console.log(photos)
   return (
     <>
-      <PhotoAlbum photos={photos} layout="rows" targetRowHeight={150} onClick={({ index }) => setIndex(index)} />
+      <PhotoAlbum photos={photos} spacing={2} layout="rows" targetRowHeight={150} onClick={({ index }) => setIndex(index)} />
 
       <Lightbox
         slides={photos}

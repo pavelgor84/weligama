@@ -38,6 +38,37 @@ export default function List() {
     const [asset, setAsset] = useState([])
     console.log(asset)
 
+    const groupedByNumber = asset.rooms ? asset.rooms.reduce((acc, obj) => {
+        // Если ключ для этого number уже есть, добавляем объект в массив
+        if (!acc[obj.room_number]) {
+            acc[obj.room_number] = []; // Если нет, создаем новый массив для этого number
+        }
+        acc[obj.room_number].push(obj);
+        return acc;
+    }, {}) : null
+
+    let rooms = []
+    let index = 0
+    for (const item in groupedByNumber) {
+        rooms.push(
+            <div className={styles.room_containter}>
+                <div key={index++} className={styles.room_photos}>
+                    <h4 className={styles.room_header}> Room {item}</h4>
+                    <Gallery photos={groupedByNumber[item]} />
+                </div>
+                <div className={styles.room_info}>  {asset.rooms_info[item] || ''} </div>
+            </div>
+        )
+    }
+    function Rooms() {
+        return (
+            <>
+                {rooms}
+
+            </>
+        );
+    }
+
 
     return (
         <section>
@@ -73,7 +104,9 @@ export default function List() {
                         {/* <Map centerZoom={center} coords={coords} /> */}
                     </div>
                 </div>
+                <h2>Where you sleep</h2>
                 <div className={styles.amenities}>
+                    <Rooms />
 
                 </div>
 
