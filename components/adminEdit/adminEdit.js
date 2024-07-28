@@ -34,25 +34,22 @@ export default function AdminEdit({ email }) {
     //console.log(inputRefs)
     const currentRef = useRef();
     //console.log(JSON.stringify(currentRef.current))
+    const propertyRef = useRef(0)
 
-    const [files, setFiles] = useState([])
     const [loading, setLoading] = useState(false)
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setProperty(prevState => ({ ...prevState, [name]: value }));
     };
-    const handleFileChange = (e) => {
-        console.log(e.target.files)
-        setFiles(prev => (e.target.files))
-    };
-
 
     async function send_data(data, where) {
         try {
             const response = await axios.post(where, data)
             const result = await response.data
             console.log({ result })
+            fetch_data()
+
         }
         catch (e) {
             console.error(e)
@@ -133,6 +130,7 @@ export default function AdminEdit({ email }) {
     };
 
     function fetch_data() {
+        console.log('new fetch')
         fetch('/api/get_data_edit', {
             method: "POST",
             body: JSON.stringify(email)
@@ -140,7 +138,7 @@ export default function AdminEdit({ email }) {
             .then((response) => response.json())
             .then((json) => {
                 setAsset(json)
-                setProperty(json[0])//useRef <----
+                setProperty(json[propertyRef.current])//useRef <----
             })
     }
 
@@ -221,6 +219,8 @@ export default function AdminEdit({ email }) {
     function handleSelect(item) {
         let position = asset.findIndex(obj => obj.name == item)
         setProperty(prevState => (asset[position]))
+        propertyRef.current = position // update ref to current property number in array
+
     }
 
     function handleDelete(itemName) {
@@ -234,6 +234,7 @@ export default function AdminEdit({ email }) {
                 .then((response) => response.json())
                 .then((json) => {
                     console.log(json)
+                    fetch_data()
                     // setAsset(json)
                     // setProperty(json[0])
                 })
