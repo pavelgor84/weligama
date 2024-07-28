@@ -13,6 +13,7 @@ export default function Admin({ email }) {
         {
             mail: email,
             name: '',
+            address: '',
             coordinates: '',
             bedroom: '',
             bath: '',
@@ -24,6 +25,7 @@ export default function Admin({ email }) {
             available: '',
             images: '',
             rooms_info: {},
+            description: ''
         });
     console.log(property)
     const [file, setFile] = useState([])
@@ -197,6 +199,10 @@ export default function Admin({ email }) {
                                     </label></th>
                             </tr>
                             <tr>
+                                <th align='right'><label>Property description:</label></th>
+                                <th align='left'><textarea name="description" value={property.description || ''} onChange={handleChange} /> </th>
+                            </tr>
+                            <tr>
                                 <th align='right'><label>Images:</label></th>
                                 <th align='left'><input type="file" name="images" multiple value={file.images} onChange={handleFileChange} required /></th>
                             </tr>
@@ -219,6 +225,7 @@ export default function Admin({ email }) {
 
                         </tbody>
                     </table>
+
                     <button disabled={loading} type="submit">Submit</button>
                 </form>
 

@@ -14,6 +14,7 @@ export default function AdminEdit({ email }) {
         {
             mail: email,
             name: '',
+            address: '',
             coordinates: '',
             bedroom: '',
             bath: '',
@@ -25,6 +26,7 @@ export default function AdminEdit({ email }) {
             available: '',
             images: '',
             rooms: '',
+            description: '',
             rooms_info: {},
             _id: '',
         });
@@ -337,6 +339,10 @@ export default function AdminEdit({ email }) {
                                         <input type="radio" name="available" value="No" checked={property.available === "No"} onChange={handleChange} />
                                         No
                                     </label></th>
+                            </tr>
+                            <tr>
+                                <th align='right'><label>Property description:</label></th>
+                                <th align='left'><textarea name="description" value={property.description || ''} onChange={handleChange} /> </th>
                             </tr>
 
                         </tbody>

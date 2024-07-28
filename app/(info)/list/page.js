@@ -51,8 +51,8 @@ export default function List() {
     let index = 0
     for (const item in groupedByNumber) {
         rooms.push(
-            <div className={styles.room_containter}>
-                <div key={index++} className={styles.room_photos}>
+            <div key={index++} className={styles.room_containter}>
+                <div className={styles.room_photos}>
                     <h4 className={styles.room_header}> Room {item}</h4>
                     <Gallery photos={groupedByNumber[item]} />
                 </div>
@@ -79,23 +79,21 @@ export default function List() {
                 </div>
                 <div className={styles.info_block}>
                     <div className={styles.info_block_left}>
-                        <h1 className={styles.header}> Rhoncus suspendisse </h1>
-                        <div className={styles.location}> London, Notting Hill </div>
+                        <h1 className={styles.header}> {asset.name && asset.name} </h1>
                         <div className={styles.short_amenities}>
                             <div className={styles.short_amenities_leftIcons}>
-                                <Icon_bed /> <span>2 bedroom</span>
-                                <Icon_shower /> <span>1 bath</span>
-                                <Icon_cond /> <span>yes</span>
+                                <Icon_bed /> <span>{asset.bedroom} bedroom</span>
+                                <Icon_shower /> <span>{asset.bath} bath</span>
+                                <Icon_cond /> <span>{asset.ac}</span>
 
                             </div>
                             <div className={styles.short_amenities_rightOptions}>
-                                <span>View Garden</span>  |  <span>Floors 2 </span>  |  <span>Elevator</span> | <span>Parking yes</span>
+                                <span>View {asset.view}</span>  |  <span>Floors {asset.floor} </span>  |  <span>Parking {asset.parking}</span>
                             </div>
                         </div>
                         <h2 className={styles.description_header}>Description</h2>
                         <span className={styles.description}>
-                            A truly global city, London has long been considered a cutting-edge metropolis and hub for culture, style and finance. With each borough, Tube zone and neighborhood of London sporting its own vibe and lifestyle advantages, it can be downright difficult to settle on where to look for a furnished apartment in London . Whether you’re a digital nomad looking for a studio apartment in London or just seeking a month to month rental in London, Blueground has you covered.
-
+                            {asset.description && asset.description}
                         </span>
 
                     </div>

@@ -12,6 +12,7 @@ const propertySchema = new Schema({
     parking: String,
     price: Number,
     available: String,
+    description: String,
     images: [{
         src: String,
         width: Number,

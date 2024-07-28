@@ -20,7 +20,7 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: 500px;
+
     background-color: rgba(155, 196, 196, 0.815);
     object-position: center;
 }
@@ -28,9 +28,11 @@
 .info_block_left {
     padding-left: 30px;
     padding-right: 30px;
+    padding-bottom: 20px;
     width: 60%;
-    height: 500px;
+
     background-color: rgb(245, 245, 245);
+    white-space: pre-wrap;
 }
 
 .header {
