@@ -9,7 +9,7 @@ import "@maptiler/sdk/dist/maptiler-sdk.css";
 
 
 export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
-    console.log(coords)
+    //console.log(coords)
     var cz
     if (centerZoom == '' || !centerZoom) {
         cz = [5.971817, 80.430288]

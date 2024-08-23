@@ -27,6 +27,7 @@ export default function Home() {
     })
     //console.log(coords)
     setNav((prev) => coords)
+
   }
 
   function handleClick(e) { // handle marker for the map
@@ -54,7 +55,69 @@ export default function Home() {
     updateMarks()
   }, [asset]);
 
-  //console.log(asset)
+
+  const marks = asset.map((prop) => {
+    return {
+      "type": "Feature",
+      "id": prop._id,
+      "geometry": {
+        "type": "Point",
+        "coordinates": prop.coordinates.split(',').map((x) => +x)
+      }
+    }
+  });
+  //console.log(JSON.stringify(marks))
+
+  // {
+  //   "type": "FeatureCollection",
+  //   "generator": "overpass-turbo",
+  //   "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  //   "timestamp": "2024-05-31T12:04:15Z",
+  //   "features": [
+  //     {
+  //       "type": "Feature",
+  //       "properties": {
+  //         "@id": "node/357659331",
+  //         "name": "Gill Wing",
+  //         "shop": "shoes"
+  //       },
+  //       "geometry": {
+  //         "type": "Point",
+  //         "coordinates": [
+  //           -0.1032412,
+  //           51.5425188
+  //         ]
+  //       },
+  //       "id": "node/357659331"
+  //     },
+  //     {
+  //       "type": "Feature",
+  //       "properties": {
+  //         "@id": "node/444284623",
+  //         "addr:city": "London",
+  //         "addr:housenumber": "33G",
+  //         "addr:postcode": "SW3 4LX",
+  //         "addr:street": "King's Road",
+  //         "brand": "Geox",
+  //         "brand:wikidata": "Q588001",
+  //         "brand:wikipedia": "en:Geox",
+  //         "name": "Geox",
+  //         "phone": "+44 20 7730 6787",
+  //         "shop": "shoes",
+  //         "website": "https://www.geox.com/en-GB"
+  //       },
+  //       "geometry": {
+  //         "type": "Point",
+  //         "coordinates": [
+  //           -0.1616884,
+  //           51.4904757
+  //         ]
+  //       },
+  //       "id": "node/444284623"
+  //     },]
+  //   }
+
+  console.log(asset)
   const card = asset.map((prop) => {
     return (
       <div className={styles.card_container} key={prop._id}>
@@ -97,7 +160,8 @@ export default function Home() {
       <div className={styles.right_block}>
         <div className={styles.map_place}>
           <div className={styles.block}>
-            {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={nav.positions} /> : "Loading"}
+            {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={marks} /> : "Loading"}
+            {/* {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={nav.positions} /> : "Loading"} */}
             {/* {Object.hasOwn(nav, 'positions') ? <Map centerZoom={nav.currentPoint} coords={nav.positions} /> : "Loading..."} */}
           </div>
 
