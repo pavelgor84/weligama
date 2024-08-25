@@ -31,10 +31,10 @@ export default function Home() {
   }
 
   function handleClick(e) { // handle marker for the map
-
-    let point = { currentPoint: e.split(',').map((x) => +x) }
-    //console.log(point)
-    setNav(prev => ({ ...prev, ...point }))
+    e.preventDefault()
+    setId(e.target.id)
+    //let point = { currentPoint: e.split(',').map((x) => +x) }
+    //setNav(prev => ({ ...prev, ...point }))
   }
 
   const [asset, setAsset] = useState([])
@@ -44,6 +44,7 @@ export default function Home() {
     currentPoint: ''
   })
   //console.log(nav)
+  const [id, setId] = useState('')
 
   useEffect(() => {
     fetch('/api')
@@ -56,9 +57,14 @@ export default function Home() {
   }, [asset]);
 
 
-  const marks = asset.map((prop) => {
+  const marks = asset.map((prop, index) => {
     return {
       "type": "Feature",
+      "properties": {
+        "@id": prop._id,
+        "home_id": prop._id,
+        "price": ""
+      },
       "id": prop._id,
       "geometry": {
         "type": "Point",
@@ -68,56 +74,8 @@ export default function Home() {
   });
   //console.log(JSON.stringify(marks))
 
-  // {
-  //   "type": "FeatureCollection",
-  //   "generator": "overpass-turbo",
-  //   "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
-  //   "timestamp": "2024-05-31T12:04:15Z",
-  //   "features": [
-  //     {
-  //       "type": "Feature",
-  //       "properties": {
-  //         "@id": "node/357659331",
-  //         "name": "Gill Wing",
-  //         "shop": "shoes"
-  //       },
-  //       "geometry": {
-  //         "type": "Point",
-  //         "coordinates": [
-  //           -0.1032412,
-  //           51.5425188
-  //         ]
-  //       },
-  //       "id": "node/357659331"
-  //     },
-  //     {
-  //       "type": "Feature",
-  //       "properties": {
-  //         "@id": "node/444284623",
-  //         "addr:city": "London",
-  //         "addr:housenumber": "33G",
-  //         "addr:postcode": "SW3 4LX",
-  //         "addr:street": "King's Road",
-  //         "brand": "Geox",
-  //         "brand:wikidata": "Q588001",
-  //         "brand:wikipedia": "en:Geox",
-  //         "name": "Geox",
-  //         "phone": "+44 20 7730 6787",
-  //         "shop": "shoes",
-  //         "website": "https://www.geox.com/en-GB"
-  //       },
-  //       "geometry": {
-  //         "type": "Point",
-  //         "coordinates": [
-  //           -0.1616884,
-  //           51.4904757
-  //         ]
-  //       },
-  //       "id": "node/444284623"
-  //     },]
-  //   }
 
-  console.log(asset)
+  //console.log(asset)
   const card = asset.map((prop) => {
     return (
       <div className={styles.card_container} key={prop._id}>
@@ -139,7 +97,7 @@ export default function Home() {
               <div className={styles.card_right_options_txt}><span>View {prop.view}</span>  |  <span>Floors {prop.floor}</span>  |  <span>Elevator</span> | <span>Parking {prop.parking}</span></div>
             </div>
             <div className={styles.card_right_bottom}>
-              <div className={styles.card_right_date}><button className={styles.card_right_options_button}>Available {prop.available}</button></div>
+              <div className={styles.card_right_date}><button id={prop._id} onClick={handleClick} className={styles.card_right_options_button}>Available {prop.available}</button></div>
               <div className={styles.card_right_price}>from <span>Rs.{prop.price}</span> /day</div>
             </div>
           </Link>
@@ -160,7 +118,7 @@ export default function Home() {
       <div className={styles.right_block}>
         <div className={styles.map_place}>
           <div className={styles.block}>
-            {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={marks} /> : "Loading"}
+            {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={marks} pointId={id} /> : "Loading"}
             {/* {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={nav.positions} /> : "Loading"} */}
             {/* {Object.hasOwn(nav, 'positions') ? <Map centerZoom={nav.currentPoint} coords={nav.positions} /> : "Loading..."} */}
           </div>

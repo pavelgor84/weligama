@@ -8,12 +8,12 @@ import * as maptilersdk from '@maptiler/sdk';
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 
 
-export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
+export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], pointId }) {
     const geo = {
         "type": "FeatureCollection",
         "features": coords
     }
-    console.log(geo)
+    console.log(pointId)
 
     var cz
     if (centerZoom == '' || !centerZoom) {
@@ -117,6 +117,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
 
             map.current.addSource('marks', {
                 type: 'geojson',
+                // promoteId: 'id',
                 generateId: true,
                 data: geo
             });
@@ -140,6 +141,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
                 map.current.getCanvas().style.cursor = '';
             });
 
+            map.current.on('click', getPoint);
 
 
         })
@@ -150,8 +152,54 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
 
     }, [weligama, zoom]);
 
+    function getRenderedFeatures(point) {
+        //if the point is null, it is searched within the bounding box of the map view
+        const features = map.current.queryRenderedFeatures(point, {
+            layers: ['points']
+        });
+        return features;
+    }
+
+    function getPoint(e) {
+        const features = getRenderedFeatures(e.point);
+        // const feaurez = getRenderedFeatures()
+        // console.log(feaurez)
+        console.log(features)
+        if (features.length) {
+            const element = features[0];
+            //selectedItem = element.id;
+            map.current.setLayoutProperty('points', 'icon-image',
+                [
+                    'match',
+                    ['id'], // get the feature id (make sure your data has an id set or use generateIds for GeoJSON sources
+                    element.id, 'pinShoeSelected', //image when id is the clicked feature id
+                    'pinShoe' // default
+                ]
+            );
+            //selectMapToList(element);
+        } else {
+            //cleanSelection();
+        }
+    }
+    if (map.current && pointId) {
+        const feaurez = getRenderedFeatures()
+        const find_home = feaurez.find((el) => {
+            return el.properties.home_id == pointId
+        })
+        console.log(find_home.id)
+        console.log(feaurez)
+        map.current.setLayoutProperty('points', 'icon-image',
+            [
+                'match',
+                ['id'], // get the feature id (make sure your data has an id set or use generateIds for GeoJSON sources
+                find_home.id, 'pinShoeSelected', //image when id is the clicked feature id
+                'pinShoe' // default
+            ]
+        );
+        //map.setCenter(item.dataset.lnglat.split(','));  
 
 
+    }
 
     return (
         <div className={styles.mapWrap}>
