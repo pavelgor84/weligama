@@ -62,7 +62,7 @@ export default function Home() {
       "id": prop._id,
       "geometry": {
         "type": "Point",
-        "coordinates": prop.coordinates.split(',').map((x) => +x)
+        "coordinates": prop.coordinates.split(',').reverse().map((x) => +x)
       }
     }
   });

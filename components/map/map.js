@@ -9,7 +9,12 @@ import "@maptiler/sdk/dist/maptiler-sdk.css";
 
 
 export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
-    console.log(coords)
+    const geo = {
+        "type": "FeatureCollection",
+        "features": coords
+    }
+    console.log(geo)
+
     var cz
     if (centerZoom == '' || !centerZoom) {
         cz = [5.971817, 80.430288]
@@ -84,10 +89,10 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
 
         if (map.current) {
             if ((mark.current[0] === cz[0]) && mark.current[1] === cz[1]) return
-            updateMarkers()
-            map.current.flyTo({
-                center: [cz[1], cz[0]]
-            })
+            //updateMarkers()
+            // map.current.flyTo({
+            //     center: [cz[1], cz[0]]
+            // })
             //console.log(points)
             return;
         } // stops map from intializing more than once
@@ -99,18 +104,40 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]] }) {
             //center: weligama ? [weligama.lng, weligama.lat] : [80.430288, 5.971817],
             zoom: zoom
         });
-        markers(coords)
-        map.current.on('load', function () {
+        //markers(coords)
+        map.current.on('load', async function () {
             console.log("YEEEEEE")
-            map.current.on('mouseenter', function () {
-                map.getCanvas().style.cursor = 'pointer';
-                console.log("on")
+
+            var image = await map.current.loadImage('/shoes.png');
+            map.current.addImage('pinShoe', image.data);
+
+            var imageSelected = await map.current.loadImage('/shoes_selected.png');
+            map.current.addImage('pinShoeSelected', imageSelected.data);
+
+
+            map.current.addSource('marks', {
+                type: 'geojson',
+                generateId: true,
+                data: geo
             });
 
-            // Change it back to a pointer when it leaves.
-            map.current.on('mouseleave', function () {
-                map.getCanvas().style.cursor = '';
-                console.log("off")
+            map.current.addLayer({
+                'id': 'points',
+                'type': 'symbol',
+                'source': 'marks',
+                'layout': {
+                    'icon-image': 'pinShoe',
+                },
+                'paint': {}
+            });
+
+
+            map.current.on('mouseenter', 'points', (e) => {
+                map.current.getCanvas().style.cursor = 'pointer';
+            });
+
+            map.current.on('mouseleave', 'points', (e) => {
+                map.current.getCanvas().style.cursor = '';
             });
 
 
