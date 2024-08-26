@@ -13,7 +13,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         "type": "FeatureCollection",
         "features": coords
     }
-    console.log(pointId)
+    //console.log(pointId)
 
     var cz
     if (centerZoom == '' || !centerZoom) {
@@ -179,25 +179,51 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         }
     }
     if (map.current && pointId) { // LIST to MAP interaction
-        const feaurez = getRenderedFeatures()
-        const find_home = feaurez.find((el) => {
-            return el.properties.home_id == pointId
-        })
-        console.log(find_home.id)
-        console.log(feaurez)
-        map.current.setLayoutProperty('points', 'icon-image',
-            [
-                'match',
-                ['id'], // get the feature id (make sure your data has an id set or use generateIds for GeoJSON sources
-                find_home.id, 'pinShoeSelected', //image when id is the clicked feature id
-                'pinShoe' // default
-            ]
-        );
-        //map.setCenter(item.dataset.lnglat.split(','));  < ----- make it life
-        map.current.flyTo({
-            center: find_home.geometry.coordinates
-        })
+        function getFeatureOfPoint(point) {     //find features in the map viewport
+            let feaurez = getRenderedFeatures()
+            let find = feaurez.find((el) => {
+                return el.properties.home_id == point
+            })
+            //console.log(find)
+            if (find) {
+                changeMarker(find.id) //if find then change color to selected
+                map.current.flyTo({
+                    center: find.geometry.coordinates
+                })
+                return true
+            }
+            else return false
+        }
+        function changeMarker(id) {
+            map.current.setLayoutProperty('points', 'icon-image',
+                [
+                    'match',
+                    ['id'],
+                    id, 'pinShoeSelected',
+                    'pinShoe' // default
+                ]
+            );
+        }
 
+
+        const find_home = getFeatureOfPoint(pointId) // get features in the map viewport
+
+        if (!find_home) { // if no then go search geojson
+            const find_home_away = coords.find((el) => {
+                return el.properties.home_id == pointId
+            })
+            if (find_home_away) {
+                //map.current.setCenter(find_home_away.geometry.coordinates);
+                let z = map.current.flyTo({ // go to geojson feature coordinates
+                    center: find_home_away.geometry.coordinates
+                })
+                setTimeout(() => { //wait to load features to map viewport
+                    getFeatureOfPoint(pointId) //call find features in the map viewport 
+                }, 1000);
+
+            }
+
+        }
 
     }
 

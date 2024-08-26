@@ -31,7 +31,7 @@ export default function Home() {
   }
 
   function handleClick(e) { // handle marker for the map
-    e.preventDefault()
+    //e.preventDefault()
     setId(e.target.id)
     //let point = { currentPoint: e.split(',').map((x) => +x) }
     //setNav(prev => ({ ...prev, ...point }))
@@ -78,7 +78,7 @@ export default function Home() {
   //console.log(asset)
   const card = asset.map((prop) => {
     return (
-      <div className={styles.card_container} key={prop._id}>
+      <div className={styles.card_container} key={prop._id} id={prop._id} onMouseOver={handleClick}>
         <div className={styles.card_left}>
           <SliderTest img={prop.images} />
         </div>
@@ -97,7 +97,7 @@ export default function Home() {
               <div className={styles.card_right_options_txt}><span>View {prop.view}</span>  |  <span>Floors {prop.floor}</span>  |  <span>Elevator</span> | <span>Parking {prop.parking}</span></div>
             </div>
             <div className={styles.card_right_bottom}>
-              <div className={styles.card_right_date}><button id={prop._id} onClick={handleClick} className={styles.card_right_options_button}>Available {prop.available}</button></div>
+              <div className={styles.card_right_date}><button className={styles.card_right_options_button}>Available {prop.available}</button></div>
               <div className={styles.card_right_price}>from <span>Rs.{prop.price}</span> /day</div>
             </div>
           </Link>
