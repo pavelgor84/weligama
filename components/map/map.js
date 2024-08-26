@@ -18,14 +18,11 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
     var cz
     if (centerZoom == '' || !centerZoom) {
         cz = [5.971817, 80.430288]
-        //console.log("cz undefined")
     }
     else {
-        //console.log("cz =  " + centerZoom)
         cz = centerZoom
     }
 
-    // const [center, setCenter] = useState({ lat: 5.971817, lng: 80.430288 })
     const [zoom, setZoom] = useState(14);
     const mapContainer = useRef(null);
     const map = useRef(null);
@@ -181,7 +178,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
             //cleanSelection();
         }
     }
-    if (map.current && pointId) {
+    if (map.current && pointId) { // LIST to MAP interaction
         const feaurez = getRenderedFeatures()
         const find_home = feaurez.find((el) => {
             return el.properties.home_id == pointId
@@ -196,7 +193,10 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
                 'pinShoe' // default
             ]
         );
-        //map.setCenter(item.dataset.lnglat.split(','));  
+        //map.setCenter(item.dataset.lnglat.split(','));  < ----- make it life
+        map.current.flyTo({
+            center: find_home.geometry.coordinates
+        })
 
 
     }
