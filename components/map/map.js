@@ -39,50 +39,6 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
 
     useEffect(() => {
 
-        function markers(coords) {
-            console.log(coords)
-            for (let i = 0; i < coords.length; i++) {
-                points.current[i] = new maptilersdk.Marker({ color: "#989ca3" })
-                    .setLngLat([coords[i][1], coords[i][0]])
-                    .setPopup(new maptilersdk.Popup().setHTML("&lt;h1&gt;Hello World!&lt;/h1&gt;"))
-                    .addTo(map.current);
-            }
-            // points.current[i] = new maptilersdk.Marker({ color: "#989ca3" })
-            //     .setLngLat([coords[i][1], coords[i][0]])
-            //     .addTo(map.current);
-
-        }
-
-
-        function updateMarkers() {
-            if ((mark.current[0] != cz[0]) && mark.current[1] != cz[1]) {
-                prevMark.current = [...mark.current]
-                mark.current = cz
-            }
-
-
-            for (const property in points.current) {
-                //console.log(points.current[property]._lngLat.lat)
-                //console.log(mark.current[1])
-                if ((points.current[property]._lngLat.lat === mark.current[0]) && points.current[property]._lngLat.lng === mark.current[1]) {
-                    console.log("Found new!!")
-                    //points.current[property].remove()
-                    points.current[property] = new maptilersdk.Marker({ color: "#FF0000" })
-                        .setLngLat([mark.current[1], mark.current[0]])
-                        .addTo(map.current);
-
-                }
-                if ((points.current[property]._lngLat.lat === prevMark.current[0]) && points.current[property]._lngLat.lng === prevMark.current[1]) {
-                    //console.log("Found prev!!")
-                    //points.current[property].remove()
-                    points.current[property] = new maptilersdk.Marker({ color: "#989ca3" })
-                        .setLngLat([prevMark.current[1], prevMark.current[0]])
-                        .addTo(map.current);
-
-                }
-
-            }
-        }
 
         if (map.current) {
             if ((mark.current[0] === cz[0]) && mark.current[1] === cz[1]) return
@@ -98,7 +54,6 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
             container: mapContainer.current,
             style: maptilersdk.MapStyle.STREETS,
             center: [weligama.lng, weligama.lat],
-            //center: weligama ? [weligama.lng, weligama.lat] : [80.430288, 5.971817],
             zoom: zoom
         });
         //markers(coords)
@@ -114,7 +69,6 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
 
             map.current.addSource('marks', {
                 type: 'geojson',
-                // promoteId: 'id',
                 generateId: true,
                 data: geo
             });
@@ -140,12 +94,8 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
 
             map.current.on('click', getPoint);
 
-
         })
 
-        // new maptilersdk.Marker({ color: "#FF0000" })
-        //     .setLngLat([80.4282318764493, 5.978403170674758])
-        //     .addTo(map.current);
 
     }, [weligama, zoom]);
 
