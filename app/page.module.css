@@ -1,7 +1,7 @@
 .main {
   width: 100%;
 
-  background-color: rgba(202, 178, 224, 0.8);
+  background-color: rgb(235 230 237 / 80%);
   border-radius: 10px;
   display: flex;
   flex-direction: row;
@@ -40,28 +40,46 @@
 }
 
 .card_container {
-  margin-top: 5px;
+  margin-top: 10px;
   width: 600px;
   height: 170px;
   display: flex;
+  -webkit-box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
+  -moz-box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
+  box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
+  border-radius: 0px 5px 15px 0px;
 }
 
 .card_left {
-  background-color: aqua;
   width: 30%;
   height: 100%;
-  border-radius: 30px 0px 0px 10px;
+  border-radius: 15px 0px 0px 5px;
 }
 
 .card_right {
-  background-color: rgb(150, 153, 153);
+  background-color: rgb(247 247 242);
   width: 70%;
   padding: 20px 80px 20px 20px;
-  border-radius: 0px 10px 30px 0px;
+  border-radius: 0px 5px 15px 0px;
 }
 
-.card_right h3 {
-  color: rgb(32, 22, 22);
+.card_container :hover {
+  background-color: rgb(201, 232, 236);
+  /* border: 1px solid rgb(173, 173, 173); */
+}
+
+.card_container :hover .card_right_options_button {
+  background-color: #49735A;
+  /* border: 1px solid rgb(173, 173, 173); */
+}
+
+.card_container :hover .card_right_h3 {
+  color: #febb02
+    /* border: 1px solid rgb(173, 173, 173); */
+}
+
+.card_right_h3 {
+  color: #006ce4;
   margin-bottom: 10px;
 }
 
@@ -76,6 +94,7 @@
   line-height: 16px;
   row-gap: 8px;
 }
+
 
 .card_right_options span {
   margin-left: 5px;
@@ -144,6 +163,6 @@
 
   .card_right {
     padding: 10px;
-    border-radius: 0px 10px 30px 0px;
+    border-radius: 0px 5px 15px 0px;
   }
 }

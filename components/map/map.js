@@ -8,7 +8,7 @@ import * as maptilersdk from '@maptiler/sdk';
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 
 
-export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], pointId }) {
+export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], pointId, scroll_to }) {
     const geo = {
         "type": "FeatureCollection",
         "features": coords
@@ -114,7 +114,8 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         console.log(features)
         if (features.length) {
             const element = features[0];
-            //selectedItem = element.id;
+            scroll_to(element.properties.home_id)
+
             map.current.setLayoutProperty('points', 'icon-image',
                 [
                     'match',

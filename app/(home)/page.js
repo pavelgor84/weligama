@@ -73,6 +73,15 @@ export default function Home() {
     }
   });
   //console.log(JSON.stringify(marks))
+  const hverrStyle = {
+    color: 'blue',
+    backgroundColor: 'lightgray',
+  };
+
+  const scroll = function (id) {
+    let el = document.getElementById(id)
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
 
 
   //console.log(asset)
@@ -89,7 +98,7 @@ export default function Home() {
               id: prop._id
             }
           }} target="_blank">
-            <h3>{prop.name}</h3>
+            <h3 className={styles.card_right_h3}>{prop.name}</h3>
             <div className={styles.card_right_options} >
               <Icon_bed /> <span>{prop.bedroom}</span>
               <Icon_shower /> <span>{prop.bath}</span>
@@ -118,7 +127,7 @@ export default function Home() {
       <div className={styles.right_block}>
         <div className={styles.map_place}>
           <div className={styles.block}>
-            {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={marks} pointId={id} /> : "Loading"}
+            {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={scroll} /> : "Loading"}
             {/* {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={nav.positions} /> : "Loading"} */}
             {/* {Object.hasOwn(nav, 'positions') ? <Map centerZoom={nav.currentPoint} coords={nav.positions} /> : "Loading..."} */}
           </div>
