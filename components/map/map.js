@@ -6,14 +6,15 @@ import { useEffect, useRef, useState } from 'react'
 import styles from './map.module.css'
 import * as maptilersdk from '@maptiler/sdk';
 import "@maptiler/sdk/dist/maptiler-sdk.css";
+import { createRoot } from 'react-dom/client';
+import Popup from '../popup/popup';
 
 
-export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], pointId, scroll_to }) {
+export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], pointId, scroll_to, html_popup }) {
     const geo = {
         "type": "FeatureCollection",
         "features": coords
     }
-    //console.log(pointId)
 
     var cz
     if (centerZoom == '' || !centerZoom) {
@@ -26,12 +27,21 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
     const [zoom, setZoom] = useState(14);
     const mapContainer = useRef(null);
     const map = useRef(null);
-    const points = useRef({})
+    const location = useRef(null)
+    const saved_popup = useRef(null)
     const mark = useRef([0, 0])
-    const prevMark = useRef([0, 0])
     // const weligama = { lng: 80.430288, lat: 5.971817 };
     const weligama = { lng: cz[1], lat: cz[0] };
     //console.log(weligama)
+
+    const Roomz = () => {
+        return (
+            <div>
+                <h3>Title</h3>
+                <div> test div</div>
+            </div>
+        )
+    }
 
     maptilersdk.config.apiKey = process.env.MAPTILER_API;
     maptilersdk.config.caching = false;
@@ -94,10 +104,44 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
 
             map.current.on('click', getPoint);
 
+
         })
 
 
     }, [weligama, zoom]);
+
+    useEffect(() => {
+        if (html_popup !== '') {
+            console.log(html_popup)
+
+            // let popupNode = document.createElement('div');
+            // const root = createRoot(popupNode);
+            // root.render(<Popup pop={html_popup} />)
+
+            show_popup()
+            // saved_popup.current = new maptilersdk.Popup({ offset: 15 })
+            //     .setLngLat(location.current)
+            //     .setDOMContent(popupNode)
+            //     .setMaxWidth(500)
+            //     .addTo(map.current)
+        }
+
+    }, [html_popup])
+
+    function show_popup() {
+        let popupNode = document.createElement('div');
+        const root = createRoot(popupNode);
+        root.render(<Popup pop={html_popup} />)
+        saved_popup.current = new maptilersdk.Popup({ offset: 15 })
+            .setLngLat(location.current)
+            .setDOMContent(popupNode)
+            .setMaxWidth(500)
+            .addTo(map.current)
+    }
+
+    // if (map.current) {
+    //     map.current.on('click', getPoint);
+    // }
 
     function getRenderedFeatures(point) {
         //if the point is null, it is searched within the bounding box of the map view
@@ -110,10 +154,12 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
     function getPoint(e) {
         const features = getRenderedFeatures(e.point);
         // const feaurez = getRenderedFeatures()
-        // console.log(feaurez)
-        console.log(features)
+
+
         if (features.length) {
+            console.log("click")
             const element = features[0];
+            location.current = element.geometry.coordinates
             scroll_to(element.properties.home_id)
 
             map.current.setLayoutProperty('points', 'icon-image',
@@ -124,6 +170,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
                     'pinShoe' // default
                 ]
             );
+
             //selectMapToList(element);
         } else {
             //cleanSelection();
@@ -138,9 +185,9 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
             //console.log(find)
             if (find) {
                 changeMarker(find.id) //if find then change color to selected
-                map.current.flyTo({
-                    center: find.geometry.coordinates
-                })
+                // map.current.flyTo({
+                //     center: find.geometry.coordinates
+                // })
                 return true
             }
             else return false
@@ -177,6 +224,22 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         }
 
     }
+    const debounce = (mainFunction, delay) => {
+        let timer;
+
+        return function (...args) {
+            clearTimeout(timer);
+
+            timer = setTimeout(() => {
+                mainFunction(...args);
+            }, delay);
+        };
+    };
+    const test = function () {
+        console.log("TEST")
+    }
+    const testdata = debounce(test, 3000)
+    testdata()
 
     return (
         <div className={styles.mapWrap}>

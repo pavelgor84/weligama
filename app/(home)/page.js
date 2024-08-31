@@ -45,6 +45,7 @@ export default function Home() {
   })
   //console.log(nav)
   const [id, setId] = useState('')
+  const [popup, setPopup] = useState('')
 
   useEffect(() => {
     fetch('/api')
@@ -56,7 +57,7 @@ export default function Home() {
     updateMarks()
   }, [asset]);
 
-
+  var Roomz
   const marks = asset.map((prop, index) => {
     return {
       "type": "Feature",
@@ -79,8 +80,15 @@ export default function Home() {
   };
 
   const scroll = function (id) {
-    let el = document.getElementById(id)
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    const pop = asset.find((el) => {
+      return el._id === id
+    })
+    if (pop) {
+      setPopup((prev) => pop)
+    }
+    // let el = document.getElementById(id)
+    // el.classList.add(styles.selected_card_container)
+    // el.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 
 
@@ -115,7 +123,7 @@ export default function Home() {
       </div>
     )
   })
-  //console.log(nav.positions)
+  //console.log(card[0])
 
 
   return (
@@ -127,7 +135,7 @@ export default function Home() {
       <div className={styles.right_block}>
         <div className={styles.map_place}>
           <div className={styles.block}>
-            {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={scroll} /> : "Loading"}
+            {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={scroll} html_popup={popup} /> : "Loading"}
             {/* {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={nav.positions} /> : "Loading"} */}
             {/* {Object.hasOwn(nav, 'positions') ? <Map centerZoom={nav.currentPoint} coords={nav.positions} /> : "Loading..."} */}
           </div>
