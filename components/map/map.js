@@ -29,6 +29,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
     const map = useRef(null);
     const location = useRef(null)
     const saved_popup = useRef(null)
+    const saved_html = useRef(null)
     const mark = useRef([0, 0])
     // const weligama = { lng: 80.430288, lat: 5.971817 };
     const weligama = { lng: cz[1], lat: cz[0] };
@@ -51,12 +52,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
 
 
         if (map.current) {
-            if ((mark.current[0] === cz[0]) && mark.current[1] === cz[1]) return
-            //updateMarkers()
-            // map.current.flyTo({
-            //     center: [cz[1], cz[0]]
-            // })
-            //console.log(points)
+
             return;
         } // stops map from intializing more than once
 
@@ -66,7 +62,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
             center: [weligama.lng, weligama.lat],
             zoom: zoom
         });
-        //markers(coords)
+
         map.current.on('load', async function () {
             console.log("YEEEEEE")
 
@@ -112,36 +108,33 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
 
     useEffect(() => {
         if (html_popup !== '') {
-            console.log(html_popup)
 
-            // let popupNode = document.createElement('div');
-            // const root = createRoot(popupNode);
-            // root.render(<Popup pop={html_popup} />)
+            saved_html.current = html_popup
 
             show_popup()
-            // saved_popup.current = new maptilersdk.Popup({ offset: 15 })
-            //     .setLngLat(location.current)
-            //     .setDOMContent(popupNode)
-            //     .setMaxWidth(500)
-            //     .addTo(map.current)
+
         }
 
     }, [html_popup])
 
+    function close_popup(e) {
+        e.preventDefault()
+        saved_popup.current.remove()
+    }
+
     function show_popup() {
+        //console.log(html_popup)
         let popupNode = document.createElement('div');
         const root = createRoot(popupNode);
-        root.render(<Popup pop={html_popup} />)
+        root.render(<Popup pop={saved_html.current} close={close_popup} />)
         saved_popup.current = new maptilersdk.Popup({ offset: 15 })
             .setLngLat(location.current)
             .setDOMContent(popupNode)
             .setMaxWidth(500)
             .addTo(map.current)
+        saved_popup.current.addClassName(styles.visible)
     }
 
-    // if (map.current) {
-    //     map.current.on('click', getPoint);
-    // }
 
     function getRenderedFeatures(point) {
         //if the point is null, it is searched within the bounding box of the map view
@@ -153,7 +146,6 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
 
     function getPoint(e) {
         const features = getRenderedFeatures(e.point);
-        // const feaurez = getRenderedFeatures()
 
 
         if (features.length) {
@@ -174,6 +166,10 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
             //selectMapToList(element);
         } else {
             //cleanSelection();
+        }
+
+        if (saved_popup.current != null && !saved_popup.current.isOpen()) { //check if popup is closed and reopen it using useRef vars
+            show_popup()
         }
     }
     if (map.current && pointId) { // LIST to MAP interaction
@@ -224,22 +220,22 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         }
 
     }
-    const debounce = (mainFunction, delay) => {
-        let timer;
+    // const debounce = (mainFunction, delay) => {
+    //     let timer;
 
-        return function (...args) {
-            clearTimeout(timer);
+    //     return function (...args) {
+    //         clearTimeout(timer);
 
-            timer = setTimeout(() => {
-                mainFunction(...args);
-            }, delay);
-        };
-    };
-    const test = function () {
-        console.log("TEST")
-    }
-    const testdata = debounce(test, 3000)
-    testdata()
+    //         timer = setTimeout(() => {
+    //             mainFunction(...args);
+    //         }, delay);
+    //     };
+    // };
+    // const test = function () {
+    //     console.log("TEST")
+    // }
+    // const testdata = debounce(test, 3000)
+    // testdata()
 
     return (
         <div className={styles.mapWrap}>

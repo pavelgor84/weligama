@@ -10,7 +10,7 @@ import SliderTest from '@/components/slider/SliderTest'
 import Link from 'next/link'
 
 
-export default function Popup({ pop }) {
+export default function Popup({ pop, close }) {
     console.log(pop)
     return (
         <div className={styles.card_container} key={pop._id} id={pop._id} >
@@ -24,6 +24,7 @@ export default function Popup({ pop }) {
                         id: pop._id
                     }
                 }} target="_blank">
+                    <div onClick={close} className={styles.card_right_close}>X</div>
                     <h3 className={styles.card_right_h3}>{pop.name}</h3>
                     <div className={styles.card_right_options} >
                         <Icon_bed /> <span>{pop.bedroom}</span>
