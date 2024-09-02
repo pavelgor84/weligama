@@ -35,14 +35,6 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
     const weligama = { lng: cz[1], lat: cz[0] };
     //console.log(weligama)
 
-    const Roomz = () => {
-        return (
-            <div>
-                <h3>Title</h3>
-                <div> test div</div>
-            </div>
-        )
-    }
 
     maptilersdk.config.apiKey = process.env.MAPTILER_API;
     maptilersdk.config.caching = false;
@@ -99,6 +91,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
             });
 
             map.current.on('click', getPoint);
+            console.log(map.current)
 
 
         })
@@ -117,9 +110,20 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
 
     }, [html_popup])
 
+    useEffect(() => { //clear markers when no pointId and mouse is over the list
+        if (map.current.style.map.isReady && !pointId) {
+            map.current.setLayoutProperty('points', 'icon-image', 'pinShoe');
+        }
+
+    }, [pointId])
+
     function close_popup(e) {
         e.preventDefault()
         saved_popup.current.remove()
+    }
+
+    function cleanSelection() {
+        map.current.setLayoutProperty('points', 'icon-image', 'pinShoe');
     }
 
     function show_popup() {
@@ -163,14 +167,12 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
                 ]
             );
 
-            //selectMapToList(element);
-        } else {
-            //cleanSelection();
+            if (saved_popup.current != null && (saved_html.current._id == element.properties.home_id) && !saved_popup.current.isOpen()) { //check if popup is closed and reopen it using useRef vars
+                show_popup()
+            }
         }
 
-        if (saved_popup.current != null && !saved_popup.current.isOpen()) { //check if popup is closed and reopen it using useRef vars
-            show_popup()
-        }
+
     }
     if (map.current && pointId) { // LIST to MAP interaction
         function getFeatureOfPoint(point) {     //find features in the map viewport

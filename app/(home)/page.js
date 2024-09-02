@@ -29,12 +29,20 @@ export default function Home() {
     setNav((prev) => coords)
 
   }
+  function handleLeave(e) {
+    // const mainDiv = e.currentTarget;
+    // if (!mainDiv.contains(e.relatedTarget)) {
+    //   console.log('Mouse left the main div');
+    //   setId(false)
+    // }
+    setId(false)
 
-  function handleClick(e) { // handle marker for the map
+  }
+
+  function handleOver(e) { // handle marker for the map
     //e.preventDefault()
     setId(e.target.id)
-    //let point = { currentPoint: e.split(',').map((x) => +x) }
-    //setNav(prev => ({ ...prev, ...point }))
+
   }
 
   const [asset, setAsset] = useState([])
@@ -57,7 +65,6 @@ export default function Home() {
     updateMarks()
   }, [asset]);
 
-  var Roomz
   const marks = asset.map((prop, index) => {
     return {
       "type": "Feature",
@@ -95,7 +102,7 @@ export default function Home() {
   //console.log(asset)
   const card = asset.map((prop) => {
     return (
-      <div className={styles.card_container} key={prop._id} id={prop._id} onMouseOver={handleClick}>
+      <div className={styles.card_container} key={prop._id} id={prop._id} onMouseEnter={handleOver} onMouseLeave={handleLeave} >
         <div className={styles.card_left}>
           <SliderTest img={prop.images} />
         </div>
