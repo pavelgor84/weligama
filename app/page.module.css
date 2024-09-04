@@ -163,12 +163,42 @@
 
 @media (max-width:768px) {
 
+  .main {
+    flex-direction: column-reverse;
+    overflow-x: hidden;
+    width: 100%;
+    gap: 0px;
+    height: 87%;
+  }
+
+  .left_block {
+    width: 100%;
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 10px;
+  }
+
+  .right_block {
+    top: 0px;
+    height: 65vh;
+  }
+
+  .block {
+    height: 66vh;
+  }
+
+
   .card_container {
-    height: 200px;
+    z-index: 10;
+    white-space: nowrap;
+    width: 450px;
+    height: 135px;
+    border-radius: 15px 5px 15px 0px;
   }
 
   .card_right {
-    padding: 10px;
-    border-radius: 0px 5px 15px 0px;
+    padding-top: 5px;
   }
+
 }

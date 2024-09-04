@@ -49,3 +49,23 @@
     font-size: 16px;
     font-weight: 200;
 }
+
+@media (max-width:768px) {
+
+    .container {
+        height: 10%;
+        padding: 0px;
+    }
+
+    .title_text {
+        display: none;
+    }
+
+    .title {
+        opacity: 0.5;
+        padding: 0px;
+        background-color: transparent;
+        height: 0px;
+    }
+
+}
