@@ -115,3 +115,22 @@
     color: rgb(44, 44, 48);
     width: 40%;
 }
+
+@media (max-width:768px) {
+    .container {
+        width: 100%;
+    }
+
+    .info_block {
+        flex-direction: column-reverse
+    }
+
+    .info_block_left {
+        width: auto;
+    }
+
+    .info_block_right {
+        width: auto;
+        height: 300px;
+    }
+}
