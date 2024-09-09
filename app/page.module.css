@@ -181,7 +181,7 @@
 
   .right_block {
     top: 0px;
-    height: 67vh;
+    height: 63vh;
   }
 
   .block {
@@ -203,7 +203,7 @@
 
 }
 
-@media (max-width:568px) {
+@media (max-width:320px) {
 
   .main {
     flex-direction: column-reverse;
