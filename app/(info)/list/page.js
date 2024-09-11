@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import styles from './list.module.css'
 import osm from './map_provider'
 import Map from '@/components/map/map'
+import Map_info from '@/components/map_info/map'
 import { useSearchParams } from 'next/navigation'
 
 import { Icon_bed, Icon_cond, Icon_shower } from '@/components/icons/iconset'
@@ -99,7 +100,7 @@ export default function List() {
                     </div>
 
                     <div className={styles.info_block_right}>
-                        {/* <Map centerZoom={center} coords={coords} /> */}
+                        {asset.coordinates && <Map_info coords={asset.coordinates.split(',').reverse().map((x) => +x)} />}
                     </div>
                 </div>
                 <h2>Where you sleep</h2>
