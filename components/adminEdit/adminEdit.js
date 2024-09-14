@@ -14,6 +14,7 @@ export default function AdminEdit({ email }) {
         {
             mail: email,
             name: '',
+            phone: '',
             address: '',
             coordinates: '',
             bedroom: '',
@@ -24,13 +25,14 @@ export default function AdminEdit({ email }) {
             parking: '',
             price: '',
             available: '',
+            occupied_rooms: [],
             images: '',
             rooms: '',
             description: '',
             rooms_info: {},
             _id: '',
         });
-    //console.log(property)
+    console.log(property)
 
     const inputRefs = useRef({});
     //console.log(inputRefs)
@@ -131,6 +133,20 @@ export default function AdminEdit({ email }) {
 
     };
 
+    const handleCheckboxChange = (roomId) => {
+        setProperty((prevOccupied) => {
+            const { occupied_rooms } = prevOccupied
+            if (occupied_rooms.includes(roomId)) {
+                // Если комната уже занята, удаляем её из состояния
+                return { ...prevOccupied, occupied_rooms: occupied_rooms.filter((id) => id !== roomId) };
+            } else {
+                // Если комната свободна, добавляем её в состояние
+                return { ...prevOccupied, occupied_rooms: [...occupied_rooms, roomId] };
+            }
+        });
+        handleSubmit()
+    };
+
     function fetch_data() {
         console.log('new fetch')
         fetch('/api/get_data_edit', {
@@ -185,6 +201,15 @@ export default function AdminEdit({ email }) {
     for (const item in groupedByNumber) {
         rooms.push(<div key={index++} className={styles.images_container}>
             <span> Room {item}</span>
+            <label>
+                <input
+                    type="checkbox"
+                    checked={property.occupied_rooms.includes(item)}
+                    onChange={() => handleCheckboxChange(item)}
+                />
+                Occupied
+            </label>
+            <div></div>
             <div className={styles.images}>
                 {groupedByNumber[item].map((room) => {
                     return (
@@ -282,6 +307,10 @@ export default function AdminEdit({ email }) {
                             <tr>
                                 <th align='right'><label>Property Name:</label></th>
                                 <th align='left'><input type="text" name="name" value={property.name} onChange={handleChange} required /></th>
+                            </tr>
+                            <tr>
+                                <th align='right'><label>Phone number:</label></th>
+                                <th align='left'><input type="text" name="phone" value={property.phone} onChange={handleChange} required /></th>
                             </tr>
                             <tr>
                                 <th align='right'><label>Coordinates:</label></th>
