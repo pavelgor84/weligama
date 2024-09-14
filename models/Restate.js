@@ -2,6 +2,7 @@ const { Schema, model, models } = require("mongoose");
 
 const propertySchema = new Schema({
     mail: String,
+    phone: String,
     name: String,
     coordinates: String,
     bedroom: Number,
@@ -12,6 +13,7 @@ const propertySchema = new Schema({
     parking: String,
     price: Number,
     available: String,
+    occupied_rooms: [String],
     description: String,
     images: [{
         src: String,

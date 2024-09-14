@@ -12,6 +12,7 @@ export default function Admin({ email }) {
     const [property, setProperty] = useState(
         {
             mail: email,
+            phone: '',
             name: '',
             address: '',
             coordinates: '',
@@ -140,6 +141,10 @@ export default function Admin({ email }) {
                             <tr>
                                 <th align='right'><label>Property Name:</label></th>
                                 <th align='left'><input type="text" name="name" value={property.name} onChange={handleChange} required /></th>
+                            </tr>
+                            <tr>
+                                <th align='right'><label>Phone number:</label></th>
+                                <th align='left'><input type="text" name="phone" value={property.phone} onChange={handleChange} required /></th>
                             </tr>
                             <tr>
                                 <th align='right'><label>Coordinates:</label></th>
