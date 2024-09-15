@@ -12,7 +12,14 @@
     width: 100%;
     background-color: rgb(245, 245, 245);
     object-fit: cover;
-    margin-bottom: 13px;
+
+}
+
+.phone_area {
+    margin: 5px;
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
 }
 
 .info_block {

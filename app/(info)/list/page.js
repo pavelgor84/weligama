@@ -51,15 +51,18 @@ export default function List() {
     let rooms = []
     let index = 0
     for (const item in groupedByNumber) {
-        rooms.push(
-            <div key={index++} className={styles.room_containter}>
-                <div className={styles.room_photos}>
-                    <h4 className={styles.room_header}> Room {item}</h4>
-                    <Gallery photos={groupedByNumber[item]} />
+
+        if (!asset.occupied_rooms.includes(item)) {
+            rooms.push(
+                <div key={index++} className={styles.room_containter}>
+                    <div className={styles.room_photos}>
+                        <h4 className={styles.room_header}> Room {item}</h4>
+                        <Gallery photos={groupedByNumber[item]} />
+                    </div>
+                    <div className={styles.room_info}>  {asset.rooms_info[item] || ''} </div>
                 </div>
-                <div className={styles.room_info}>  {asset.rooms_info[item] || ''} </div>
-            </div>
-        )
+            )
+        }
     }
     function Rooms() {
         return (
@@ -77,6 +80,10 @@ export default function List() {
                 <div className={styles.slider_area}>
                     {asset.images ? <Gallery photos={asset.images} /> : "LOADING..."}
 
+                </div>
+                <div className={styles.phone_area}>
+                    <div> Call: <a href={`tel:${asset.phone}`}>{asset.phone}</a></div>
+                    <div><a href={`https://api.whatsapp.com/send?phone=${asset.phone}&text=Hello!%I would like to see the ${asset.name}.%When can we meet?`}>Message to WhatsApp</a></div>
                 </div>
                 <div className={styles.info_block}>
                     <div className={styles.info_block_left}>

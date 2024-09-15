@@ -39,6 +39,7 @@ export default function AdminEdit({ email }) {
     const currentRef = useRef();
     //console.log(JSON.stringify(currentRef.current))
     const propertyRef = useRef(0)
+    const isOccupied = useRef([])
 
     const [loading, setLoading] = useState(false)
 
@@ -109,19 +110,24 @@ export default function AdminEdit({ email }) {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        console.log(property)// You can perform any necessary action with the form data here ;
+        if (e) {
+            e.preventDefault();
+        }
+        //console.log(property)// You can perform any necessary action with the form data here ;
 
         try {
             setLoading(true)
 
             const data = new FormData()
+            let add_occupied = { ...property } //copy current state
+            add_occupied.occupied_rooms = isOccupied.current // set Ref variable to occupied, because of async useState
+            //console.log(add_occupied)
 
-            data.set('prop', JSON.stringify(property))
+            data.set('prop', JSON.stringify(add_occupied))
 
             const response = await axios.post('/api/add_images', data)
             const result = await response.data
-            console.log({ result })
+            //console.log({ result })
 
         }
         catch (e) {
@@ -133,22 +139,27 @@ export default function AdminEdit({ email }) {
 
     };
 
-    const handleCheckboxChange = (roomId) => {
-        setProperty((prevOccupied) => {
-            const { occupied_rooms } = prevOccupied
-            if (occupied_rooms.includes(roomId)) {
-                // Если комната уже занята, удаляем её из состояния
-                return { ...prevOccupied, occupied_rooms: occupied_rooms.filter((id) => id !== roomId) };
-            } else {
-                // Если комната свободна, добавляем её в состояние
-                return { ...prevOccupied, occupied_rooms: [...occupied_rooms, roomId] };
-            }
+    const handleCheckboxChange = (roomId) => {   // toggle Occupied room
+
+        isOccupied.current = property.occupied_rooms //get current state of occupied rooms from state
+
+        if (isOccupied.current.includes(roomId)) { //work with Ref variable
+            isOccupied.current = isOccupied.current.filter((id) => id !== roomId)
+        } else {
+            isOccupied.current.push(roomId)
+        }
+        //console.log(isOccupied.current)
+
+        setProperty((prevOccupied) => { //update current state. It's async updaing
+            return { ...prevOccupied, occupied_rooms: isOccupied.current };
         });
-        handleSubmit()
+
+        handleSubmit() // call submit after checkbox activation. The state is still in progress. Working with Ref variable
+
     };
 
     function fetch_data() {
-        console.log('new fetch')
+        //console.log('new fetch')
         fetch('/api/get_data_edit', {
             method: "POST",
             body: JSON.stringify(email)
@@ -158,6 +169,7 @@ export default function AdminEdit({ email }) {
                 setAsset(json)
                 setProperty(json[propertyRef.current])//useRef <----
             })
+
     }
 
     useEffect(() => {
@@ -170,7 +182,6 @@ export default function AdminEdit({ email }) {
             }
         });
     }, [property.rooms_info]);
-
 
     const selection = asset.map((opt) => {
         return (<option key={opt._id} value={opt.name}>{opt.name}</option>)
@@ -199,7 +210,7 @@ export default function AdminEdit({ email }) {
     let rooms = []
     let index = 0
     for (const item in groupedByNumber) {
-        rooms.push(<div key={index++} className={styles.images_container}>
+        rooms.push(<div key={index++} className={styles.images_container} style={{ backgroundColor: property.occupied_rooms.includes(item) && 'crimson' }}>
             <span> Room {item}</span>
             <label>
                 <input
