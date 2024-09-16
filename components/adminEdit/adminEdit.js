@@ -298,6 +298,19 @@ export default function AdminEdit({ email }) {
 
         }
     }
+    function handleDeleteProperty() {
+        console.log(property)
+        fetch('/api/delete_asset', {
+            method: "POST",
+            body: JSON.stringify(property)
+        })
+            .then((response) => response.json())
+            .then((json) => {
+                console.log(json)
+                //go to admin if no more assets
+            })
+
+    }
 
     return (
         <section>
@@ -311,6 +324,7 @@ export default function AdminEdit({ email }) {
                     {selection}
 
                 </select>
+                <button disabled={loading} onClick={() => handleDeleteProperty()}>Delete Property</button>
 
                 <form id="info_form" className={styles.form} onSubmit={handleSubmit}>
                     <table>
