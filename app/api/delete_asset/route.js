@@ -25,6 +25,22 @@ export async function POST(request) {
 
     extract_images([body.images, body.rooms])
 
+
+    return new Promise((resolve, reject) => {
+        const for_delete = images_array.map((im) => DeleteImage(im))
+        Promise.all(for_delete).then((values) => {
+            deleteDocument(body._id, values, resolve)
+
+        }
+        ).catch((err) => reject(err))
+    })
+
+    async function deleteDocument(doc, rez, resolve) {
+        //console.log(images)
+        let respose = await Restate.deleteOne({ _id: doc })
+        resolve(NextResponse.json({ "msg": respose }, { "result": rez }, { status: 200 }))
+    }
+
     // const result_delete = await DeleteImage(body.delete.public_id)
     // console.log(result_delete)
 
@@ -32,7 +48,7 @@ export async function POST(request) {
     // const update_db = await Restate.updateOne({ _id: body._id }, { $set: body })
     // console.log(update_db)
 
-    return NextResponse.json({ "success": true })
+    //return NextResponse.json({ "success": true })
 
 
 }

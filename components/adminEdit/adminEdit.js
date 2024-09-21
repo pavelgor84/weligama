@@ -299,20 +299,24 @@ export default function AdminEdit({ email }) {
         }
     }
     function handleDeleteProperty() {
-        console.log(property)
-        fetch('/api/delete_asset', {
-            method: "POST",
-            body: JSON.stringify(property)
-        })
-            .then((response) => response.json())
-            .then((json) => {
-                console.log(json)
-                //go to admin if no more assets
+        const confirmAction = confirm(`Are you sure to delete ${property.name}?`)
+        if (confirmAction) {
+            // console.log(property)
+            fetch('/api/delete_asset', {
+                method: "POST",
+                body: JSON.stringify(property)
             })
+                .then((response) => response.json())
+                .then((json) => {
+                    console.log(json)
+                    fetch_data()
+                })
+        }
 
     }
 
-    return (
+
+    return (asset.length ?
         <section>
             <div className={styles.block}>
                 {/* {JSON.stringify(asset)} */}
@@ -418,6 +422,7 @@ export default function AdminEdit({ email }) {
             </div>
 
 
-        </section>
+        </section> : null
     )
+
 }
