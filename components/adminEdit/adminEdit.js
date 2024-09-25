@@ -328,11 +328,20 @@ export default function AdminEdit({ email }) {
                     {selection}
 
                 </select>
-                <button disabled={loading} onClick={() => handleDeleteProperty()}>Delete Property</button>
-
                 <form id="info_form" className={styles.form} onSubmit={handleSubmit}>
                     <table>
                         <tbody>
+                            <tr>
+                                <th align='right'><label>Available:</label></th>
+                                <th align='left'><label>
+                                    <input type="radio" name="available" value="Yes" checked={property.available === "Yes"} onChange={handleChange} />
+                                    Yes
+                                </label>
+                                    <label>
+                                        <input type="radio" name="available" value="No" checked={property.available === "No"} onChange={handleChange} />
+                                        No
+                                    </label></th>
+                            </tr>
                             <tr>
                                 <th align='right'><label>Property Name:</label></th>
                                 <th align='left'><input type="text" name="name" value={property.name} onChange={handleChange} required /></th>
@@ -388,17 +397,6 @@ export default function AdminEdit({ email }) {
                                 <th align='left'><input type="text" name="price" value={property.price} onChange={handleChange} required /></th>
                             </tr>
                             <tr>
-                                <th align='right'><label>Available:</label></th>
-                                <th align='left'><label>
-                                    <input type="radio" name="available" value="Yes" checked={property.available === "Yes"} onChange={handleChange} />
-                                    Yes
-                                </label>
-                                    <label>
-                                        <input type="radio" name="available" value="No" checked={property.available === "No"} onChange={handleChange} />
-                                        No
-                                    </label></th>
-                            </tr>
-                            <tr>
                                 <th align='right'><label>Property description:</label></th>
                                 <th align='left'><textarea name="description" value={property.description || ''} onChange={handleChange} /> </th>
                             </tr>
@@ -420,6 +418,7 @@ export default function AdminEdit({ email }) {
                 <span>Room images</span>
                 <Rooms />
             </div>
+            <button className={styles.del_button} disabled={loading} onClick={() => handleDeleteProperty()}>Delete Property</button>
 
 
         </section> : null

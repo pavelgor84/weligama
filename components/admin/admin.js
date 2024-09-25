@@ -139,6 +139,17 @@ export default function Admin({ email }) {
                     <table>
                         <tbody>
                             <tr>
+                                <th align='right'><label>Available:</label></th>
+                                <th align='left'><label>
+                                    <input type="radio" name="available" value="Yes" checked={property.available === "Yes"} onChange={handleChange} />
+                                    Yes
+                                </label>
+                                    <label>
+                                        <input type="radio" name="available" value="No" checked={property.available === "No"} onChange={handleChange} />
+                                        No
+                                    </label></th>
+                            </tr>
+                            <tr>
                                 <th align='right'><label>Property Name:</label></th>
                                 <th align='left'><input type="text" name="name" value={property.name} onChange={handleChange} required /></th>
                             </tr>
@@ -193,23 +204,17 @@ export default function Admin({ email }) {
                                 <th align='left'><input type="text" name="price" value={property.price} onChange={handleChange} required /></th>
                             </tr>
                             <tr>
-                                <th align='right'><label>Available:</label></th>
-                                <th align='left'><label>
-                                    <input type="radio" name="available" value="Yes" checked={property.available === "Yes"} onChange={handleChange} />
-                                    Yes
-                                </label>
-                                    <label>
-                                        <input type="radio" name="available" value="No" checked={property.available === "No"} onChange={handleChange} />
-                                        No
-                                    </label></th>
-                            </tr>
-                            <tr>
                                 <th align='right'><label>Property description:</label></th>
                                 <th align='left'><textarea name="description" value={property.description || ''} onChange={handleChange} /> </th>
                             </tr>
                             <tr>
                                 <th align='right'><label>Images:</label></th>
                                 <th align='left'><input type="file" name="images" multiple value={file.images} onChange={handleFileChange} required /></th>
+                            </tr>
+                            <tr>
+                                <th align='right'></th>
+                                <th align='left'>Rooms:</th>
+
                             </tr>
                             <tr>
                                 <th align='right'><label>Room 1:</label></th>

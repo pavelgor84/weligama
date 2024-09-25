@@ -9,6 +9,6 @@ import Restate from "@/models/Restate";
 
 export async function GET() {
     await initMongoose()
-    return NextResponse.json(await Restate.find().exec())
+    return NextResponse.json(await Restate.find({ "available": "Yes" }).exec())
 
 }
