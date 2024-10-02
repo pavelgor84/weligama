@@ -166,8 +166,10 @@ export default function AdminEdit({ email }) {
         })
             .then((response) => response.json())
             .then((json) => {
-                setAsset(json)
-                setProperty(json[propertyRef.current])//useRef <----
+                if (json.length) { //if no assents in DB, then do nothing
+                    setAsset(json)
+                    setProperty(json[propertyRef.current])//useRef <----
+                }
             })
 
     }
@@ -181,6 +183,7 @@ export default function AdminEdit({ email }) {
                 inputRefs.current[key].focus();
             }
         });
+
     }, [property.rooms_info]);
 
     const selection = asset.map((opt) => {
@@ -421,7 +424,11 @@ export default function AdminEdit({ email }) {
             <button className={styles.del_button} disabled={loading} onClick={() => handleDeleteProperty()}>Delete Property</button>
 
 
-        </section> : null
+        </section> :
+        <div className={styles.block}>
+
+            <h2>No property added yet</h2>
+        </div>
     )
 
 }
