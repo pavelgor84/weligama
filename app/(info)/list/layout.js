@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
 
     <html lang="en">
       <body className={lato.className}>
-        <div>HEADER</div>
+        <div>Description</div>
         {children}
 
         <footer className={styles.footer}>

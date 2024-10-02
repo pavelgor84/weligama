@@ -1,12 +1,30 @@
 "use client"
 
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import styles from './list.module.css'
 import axios from 'axios'
 
 
 export default function Admin({ email }) {
+    const defaul_state = { // make it imported!!!
+        mail: email,
+        phone: '',
+        name: '',
+        address: '',
+        coordinates: '',
+        bedroom: '',
+        bath: '',
+        ac: '',
+        view: '',
+        floor: '',
+        parking: '',
+        price: '',
+        available: '',
+        images: '',
+        rooms_info: {},
+        description: ''
+    }
 
     const [asset, setAsset] = useState([])
     const [property, setProperty] = useState(
@@ -36,6 +54,7 @@ export default function Admin({ email }) {
     console.log(room.hasOwnProperty("room1") && room.room1.length != 0)
     const [loading, setLoading] = useState(false)
 
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setProperty(prevState => ({ ...prevState, [name]: value }));
@@ -58,7 +77,6 @@ export default function Admin({ email }) {
         //console.log(e)
         const { name, value } = e.target;
         setProperty(prevState => ({ ...prevState, rooms_info: { ...prevState.rooms_info, [name]: value } }));
-
     }
 
     async function send_data(data) {
@@ -66,6 +84,7 @@ export default function Admin({ email }) {
             const room_response = await axios.post('/api/upload_room', data)
             const room_result = await room_response.data
             console.log({ room_result })
+            setProperty(defaul_state)
         }
         catch (e) {
             console.error(e)
@@ -222,7 +241,7 @@ export default function Admin({ email }) {
                             </tr>
                             <tr>
                                 <th align='right'><label>Room 1 info:</label></th>
-                                <th align='left'><input type="text" name="1" value={property.rooms_info.room1 || ''} onChange={handleRoomInfoChange} /></th>
+                                <th align='left'><textarea name="1" value={property.rooms_info[1] || ''} onChange={handleRoomInfoChange} /></th>
                             </tr>
                             <tr>
                                 <th align='right'><label>Room 2:</label></th>
@@ -230,7 +249,7 @@ export default function Admin({ email }) {
                             </tr>
                             <tr>
                                 <th align='right'><label>Room 2 info:</label></th>
-                                <th align='left'><input type="text" name="2" value={property.rooms_info.room2 || ''} onChange={handleRoomInfoChange} /></th>
+                                <th align='left'><textarea name="2" value={property.rooms_info[2] || ''} onChange={handleRoomInfoChange} /></th>
                             </tr>
 
                         </tbody>

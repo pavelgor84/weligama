@@ -239,7 +239,7 @@ export default function AdminEdit({ email }) {
             <input type="file" name={item} multiple onChange={handleFileRoomChange} />
             <label>Room {item} info:</label>
 
-            <input type="text" ref={el => inputRefs.current[item] = el} name={item} value={property.rooms_info[item] || ''}
+            <textarea ref={el => inputRefs.current[item] = el} name={item} value={property.rooms_info[item] || ''}
                 onChange={handleRoomInfoChange} onFocus={handleFocus} />
 
             <button disabled={loading} form="info_form" type="submit">Update info</button>

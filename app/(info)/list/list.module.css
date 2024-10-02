@@ -120,6 +120,7 @@
     padding: 30px;
     color: rgb(44, 44, 48);
     width: 40%;
+    white-space: pre-wrap;
 }
 
 @media (max-width:768px) {
