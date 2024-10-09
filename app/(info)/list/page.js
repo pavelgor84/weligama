@@ -83,7 +83,7 @@ export default function List() {
                 </div>
                 <div className={styles.phone_area}>
                     <div> Call: <a href={`tel:${asset.phone}`}>{asset.phone}</a></div>
-                    <div><a href={`https://api.whatsapp.com/send?phone=${asset.phone}&text=Hello!%I would like to see the ${asset.name}.%When can we meet?`}>Message to WhatsApp</a></div>
+                    <div><a href={`https://api.whatsapp.com/send?phone=${asset.phone}&text=Hello! I would like to see the ${asset.name}.When can we meet?`}>Message to WhatsApp</a></div>
                 </div>
                 <div className={styles.info_block}>
                     <div className={styles.info_block_left}>

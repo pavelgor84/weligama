@@ -99,8 +99,8 @@
     background-color: rgb(245, 245, 245);
     width: 100%;
     display: flex;
-    flex-direction: row;
-    padding-bottom: 30px;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 .room_header {
@@ -108,7 +108,7 @@
 }
 
 .room_photos {
-    width: 60%;
+    width: 100%;
     padding-left: 30px;
     padding-right: 30px;
 }
@@ -119,7 +119,7 @@
     align-content: center;
     padding: 30px;
     color: rgb(44, 44, 48);
-    width: 40%;
+    width: 100%;
     white-space: pre-wrap;
 }
 
@@ -134,10 +134,24 @@
 
     .info_block_left {
         width: auto;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-bottom: 20px;
     }
 
     .info_block_right {
         width: auto;
         height: 300px;
+    }
+
+    .room_photos {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .room_info {
+
+        padding: 15px;
+
     }
 }
