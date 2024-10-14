@@ -1,7 +1,7 @@
 "use client"
 
 //import Image from 'next/image'
-import { useEffect, useState } from 'react'
+//import { useEffect, useState } from 'react'
 import styles from './page.module.css'
 import { Icon_bed, Icon_cond, Icon_shower } from '@/components/icons/iconset'
 

@@ -26,3 +26,8 @@
     justify-content: center;
     align-items: center;
 }
+
+.info {
+    font-weight: 300;
+    color: azure;
+}

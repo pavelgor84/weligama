@@ -168,17 +168,22 @@ export default function Admin({ email }) {
                                         No
                                     </label></th>
                             </tr>
+
                             <tr>
                                 <th align='right'><label>Property Name:</label></th>
-                                <th align='left'><input type="text" name="name" value={property.name} onChange={handleChange} required /></th>
+                                <th align='left'><input type="text" placeholder='Villa South' name="name" value={property.name} onChange={handleChange} required /></th>
                             </tr>
                             <tr>
                                 <th align='right'><label>Phone number:</label></th>
-                                <th align='left'><input type="text" name="phone" value={property.phone} onChange={handleChange} required /></th>
+                                <th align='left'><input type="text" placeholder='+19058747474' name="phone" value={property.phone} onChange={handleChange} required /></th>
+                            </tr>
+                            <tr align='right'>
+                                <th align='right'></th>
+                                <th align='left' className={styles.info}> Copy and paste coordinates from Google maps. Like 5.9744140972131685, 80.43011706614641</th>
                             </tr>
                             <tr>
                                 <th align='right'><label>Coordinates:</label></th>
-                                <th align='left'><input type="text" name="coordinates" value={property.coordinates} onChange={handleChange} required /></th>
+                                <th align='left'><input type="text" placeholder='5.9744140972131685, 80.43011706614641' name="coordinates" value={property.coordinates} onChange={handleChange} required /></th>
                             </tr>
                             <tr>
                                 <th align='right'><label>Number of Bedrooms:</label></th>
@@ -204,7 +209,7 @@ export default function Admin({ email }) {
                                 <th align='left'><input type="text" name="view" value={property.view} onChange={handleChange} /></th>
                             </tr>
                             <tr>
-                                <th align='right'><label>Floor Number:</label></th>
+                                <th align='right'><label>Number of floors:</label></th>
                                 <th align='left'><input type="number" name="floor" max="99" value={property.floor} onChange={handleChange} required /></th>
                             </tr>
                             <tr>
@@ -218,9 +223,10 @@ export default function Admin({ email }) {
                                         No
                                     </label></th>
                             </tr>
+
                             <tr>
                                 <th align='right'><label>Price:</label></th>
-                                <th align='left'><input type="text" name="price" value={property.price} onChange={handleChange} required /></th>
+                                <th align='left'><input type="text" placeholder='Price for a day' name="price" value={property.price} onChange={handleChange} required /></th>
                             </tr>
                             <tr>
                                 <th align='right'><label>Property description:</label></th>
@@ -232,7 +238,7 @@ export default function Admin({ email }) {
                             </tr>
                             <tr>
                                 <th align='right'></th>
-                                <th align='left'>Rooms:</th>
+                                <th align='left'>If you have separate rooms:</th>
 
                             </tr>
                             <tr>
@@ -240,7 +246,7 @@ export default function Admin({ email }) {
                                 <th align='left'><input type="file" name="1" multiple value={room.images} onChange={handleRoomChange} required /></th>
                             </tr>
                             <tr>
-                                <th align='right'><label>Room 1 info:</label></th>
+                                <th align='right'><label>Room 1 description:</label></th>
                                 <th align='left'><textarea name="1" value={property.rooms_info[1] || ''} onChange={handleRoomInfoChange} /></th>
                             </tr>
                             <tr>
@@ -248,7 +254,7 @@ export default function Admin({ email }) {
                                 <th align='left'><input type="file" name="2" multiple value={room.images} onChange={handleRoomChange} required /></th>
                             </tr>
                             <tr>
-                                <th align='right'><label>Room 2 info:</label></th>
+                                <th align='right'><label>Room 2 description:</label></th>
                                 <th align='left'><textarea name="2" value={property.rooms_info[2] || ''} onChange={handleRoomInfoChange} /></th>
                             </tr>
 

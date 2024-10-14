@@ -5,8 +5,8 @@
 import Gallery from '@/components/gallery/Gallery'
 import { useEffect, useRef, useState } from 'react'
 import styles from './list.module.css'
-import osm from './map_provider'
-import Map from '@/components/map/map'
+// import osm from './map_provider'
+// import Map from '@/components/map/map'
 import Map_info from '@/components/map_info/map'
 import { useSearchParams } from 'next/navigation'
 
