@@ -243,7 +243,7 @@ export default function Admin({ email }) {
                             </tr>
                             <tr>
                                 <th align='right'><label>Room 1:</label></th>
-                                <th align='left'><input type="file" name="1" multiple value={room.images} onChange={handleRoomChange} required /></th>
+                                <th align='left'><input type="file" name="1" multiple value={room.images} onChange={handleRoomChange} /></th>
                             </tr>
                             <tr>
                                 <th align='right'><label>Room 1 description:</label></th>
@@ -251,7 +251,7 @@ export default function Admin({ email }) {
                             </tr>
                             <tr>
                                 <th align='right'><label>Room 2:</label></th>
-                                <th align='left'><input type="file" name="2" multiple value={room.images} onChange={handleRoomChange} required /></th>
+                                <th align='left'><input type="file" name="2" multiple value={room.images} onChange={handleRoomChange} /></th>
                             </tr>
                             <tr>
                                 <th align='right'><label>Room 2 description:</label></th>

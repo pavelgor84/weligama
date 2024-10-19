@@ -9,6 +9,7 @@ import SliderTest from '@/components/slider/SliderTest'
 
 import Map from '@/components/map/map'
 import Link from 'next/link'
+import next from 'next'
 
 
 export default function Home() {
@@ -56,7 +57,7 @@ export default function Home() {
   const [popup, setPopup] = useState('')
 
   useEffect(() => {
-    fetch('/api')
+    fetch('/api', { next: { revalidate: 60 } })
       .then((response) => response.json())
       .then((json) => setAsset(json))
   }, []);
