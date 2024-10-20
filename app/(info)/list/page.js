@@ -59,7 +59,7 @@ export default function List() {
                         <h4 className={styles.room_header}> Room {item}</h4>
                         <Gallery photos={groupedByNumber[item]} />
                     </div>
-                    <div className={styles.room_info}>  {asset.room_info != undefined ? asset.rooms_info[item] : 'No information'} </div>
+                    <div className={styles.room_info}>  {asset.rooms_info != undefined ? asset.rooms_info[item] : 'No information'} </div>
                 </div>
             )
         }
