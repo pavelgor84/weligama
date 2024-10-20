@@ -3,6 +3,7 @@ import { join } from "path";
 import { initMongoose } from "@/db/mongoose";
 import Restate from "@/models/Restate";
 import { DeleteImage } from "@/app/lib/delete";
+import { revalidatePath } from "next/cache";
 
 
 export async function POST(request) {
@@ -19,6 +20,7 @@ export async function POST(request) {
 
     const update_db = await Restate.updateOne({ _id: body._id }, { $set: body })
     console.log(update_db)
+    revalidatePath('/', 'layout')
 
     return NextResponse.json({ "success": true })
 

@@ -35,6 +35,7 @@ export async function POST(request) {
         const uploads = imagesArray.map((im) => UploadImage(im, "sri-lanka"))
         Promise.all(uploads).then((values) => {
             updateImages(obj_props, values)
+            revalidatePath('/', 'layout')
             resolve(NextResponse.json({ "msg": values }, { status: 200 }))
         }
         ).catch((err) => reject(err))

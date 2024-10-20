@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { initMongoose } from "@/db/mongoose";
 import Restate from "@/models/Restate";
 import { DeleteImage } from "@/app/lib/delete";
+import { revalidatePath } from "next/cache";
+
 
 
 export async function POST(request) {
@@ -38,6 +40,7 @@ export async function POST(request) {
     async function deleteDocument(doc, rez, resolve) {
         //console.log(images)
         let respose = await Restate.deleteOne({ _id: doc })
+        revalidatePath('/', 'layout')
         resolve(NextResponse.json({ "msg": respose }, { "result": rez }, { status: 200 }))
     }
 
