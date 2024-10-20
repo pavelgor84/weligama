@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { initMongoose } from "@/db/mongoose";
 import Restate from "@/models/Restate";
 import { UploadImage } from "@/app/lib/upload";
+import { revalidatePath } from "next/cache";
 
 
 export async function POST(request) {
@@ -52,6 +53,7 @@ export async function POST(request) {
 
     async function updateInfo(doc) {
         const update_info = await Restate.updateOne({ _id: doc._id }, { $set: doc })
+        revalidatePath('/')
         return NextResponse.json({ "msg": update_info }, { status: 200 })
 
     }
