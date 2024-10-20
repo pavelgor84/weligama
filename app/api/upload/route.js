@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { initMongoose } from "@/db/mongoose";
 import Restate from "@/models/Restate";
 import { UploadImage } from "@/app/lib/upload";
+import { revalidatePath } from "next/cache";
 
 
 export async function POST(request) {
@@ -47,6 +48,7 @@ export async function POST(request) {
         }
         doc.images = arrayOfImages
         let respose = await Restate.create(doc)
+        revalidatePath('/', 'layout')
         resolve(NextResponse.json({ "msg": respose }, { "images": images }, { status: 200 }))
     }
 
