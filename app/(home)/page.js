@@ -10,7 +10,6 @@ import SliderTest from '@/components/slider/SliderTest'
 import Map from '@/components/map/map'
 import Link from 'next/link'
 import next from 'next'
-export const revalidate = 10
 
 
 export default function Home() {
