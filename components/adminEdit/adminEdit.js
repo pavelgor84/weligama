@@ -32,7 +32,7 @@ export default function AdminEdit({ email }) {
             rooms_info: {},
             _id: '',
         });
-    console.log(property)
+    //console.log(property)
 
     const inputRefs = useRef({});
     //console.log(inputRefs)
@@ -127,7 +127,7 @@ export default function AdminEdit({ email }) {
 
             const response = await axios.post('/api/add_images', data)
             const result = await response.data
-            //console.log({ result })
+            console.log({ result })
 
         }
         catch (e) {
