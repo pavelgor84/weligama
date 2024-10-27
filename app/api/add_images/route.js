@@ -30,7 +30,7 @@ export async function POST(request) {
     if (imagesArray.length == 0) { //If no images included the update info
         console.log("PROPS UPDATE")
         const update_info = await Restate.updateOne({ _id: obj_props._id }, { $set: obj_props })
-        //revalidatePath('/', 'layout')
+        revalidatePath('/', 'layout')
         return NextResponse.json({ "msg": update_info }, { status: 200 })
     } else {
         return new Promise((resolve, reject) => {
