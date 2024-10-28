@@ -104,6 +104,7 @@ export default function Admin({ email }) {
         try {
             const data = new FormData()
             //data.set('file', property.images)
+            //----------------------------------------add property----------------------
             file.forEach((image, i) => {
                 data.append(image.name, image)
             })
@@ -117,7 +118,9 @@ export default function Admin({ email }) {
             const result = await response.data
             console.log({ result })
             const id = result.msg._id
+            //----------------------------------------add property----------------------
 
+            //----------------------------------------add rooms-------------------------
             if (room[Object.keys(room)[0]] && room[Object.keys(room)[0]].length != 0) { //room.room1 && room.room1.length > 0
                 for (const property in room) {
                     let room_data = new FormData()
@@ -128,12 +131,9 @@ export default function Admin({ email }) {
                     })
                     room_data.append('room', JSON.stringify(room_info))
                     send_data(room_data)
-
                 }
-
-
-
             }
+            //----------------------------------------add rooms-------------------------
 
         }
         catch (e) {
