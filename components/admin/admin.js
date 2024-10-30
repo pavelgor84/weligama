@@ -1,7 +1,7 @@
 "use client"
 
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import styles from './list.module.css'
 import axios from 'axios'
 
@@ -54,11 +54,34 @@ export default function Admin({ email }) {
     console.log(room.hasOwnProperty("room1") && room.room1.length != 0)
     const [loading, setLoading] = useState(false)
 
+    const [forms, setForms] = useState([]);
+
+    const handleAddPerson = () => {
+        // Копируем массив форм и добавляем новую пустую форму с уникальным id
+        setForms([...forms, { info: '', id: Date.now() }]);
+    };
+    console.log(forms)
+    const handleInputChange = (e, index) => {
+        const { info, value } = e.target;
+        const newForms = [...forms];
+        newForms[index][info] = value;
+        setForms(newForms);
+    };
+    // Обработчик события нажатия кнопки "Удалить форму"
+    const handleAdd = (index) => {
+        // Копируем массив форм и удаляем форму по указанному индексу
+        const newForms = [...forms];
+        newForms.splice(index, 1);
+        setForms(newForms);
+    };
+
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setProperty(prevState => ({ ...prevState, [name]: value }));
+        const { info, value } = e.target;
+        setProperty(prevState => ({ ...prevState, [info]: value }));
     };
+
+
     const handleFileChange = (e) => {
         console.log(e)
 
@@ -242,6 +265,25 @@ export default function Admin({ email }) {
 
                             </tr>
                             <tr>
+                                <th align='right'></th>
+                                <th align='left'><button onClick={handleAddPerson}>Add room</button></th>
+                            </tr>
+                            {forms.map((form, index) => (
+                                <React.Fragment key={form.id} >
+                                    <tr >
+                                        <th align='right'><label>Room {index + 1}:</label></th>
+                                        <th align='left'><input type="file" name={index} multiple value={room.images} onChange={handleRoomChange} /></th>
+                                    </tr>
+                                    <tr >
+                                        <th align='right'><label>Room {index + 1} description:</label></th>
+                                        <th align='left'><textarea name="info" value={form.info} onChange={(e) => handleInputChange(e, index)} /></th>
+                                    </tr>
+                                </React.Fragment>
+
+
+                            ))}
+
+                            {/* <tr>
                                 <th align='right'><label>Room 1:</label></th>
                                 <th align='left'><input type="file" name="1" multiple value={room.images} onChange={handleRoomChange} /></th>
                             </tr>
@@ -256,10 +298,33 @@ export default function Admin({ email }) {
                             <tr>
                                 <th align='right'><label>Room 2 description:</label></th>
                                 <th align='left'><textarea name="2" value={property.rooms_info[2] || ''} onChange={handleRoomInfoChange} /></th>
-                            </tr>
+                            </tr> */}
 
                         </tbody>
                     </table>
+                    <div>
+
+                        {/* {forms.map((form, index) => (
+                            <div key={form.id}>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={form.name}
+                                    onChange={(e) => handleInputChange(e, index)}
+                                    placeholder="Имя"
+                                />
+                                <input
+                                    type="text"
+                                    name="surname"
+                                    value={form.surname}
+                                    onChange={(e) => handleInputChange(e, index)}
+                                    placeholder="Фамилия"
+                                />
+                                <button onClick={() => handleAdd(index)}>Delete room</button>
+                            </div>
+                        ))} */}
+                    </div>
+
 
                     <button disabled={loading} type="submit">Submit</button>
                 </form>
