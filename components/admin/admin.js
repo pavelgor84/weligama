@@ -59,12 +59,14 @@ export default function Admin({ email }) {
     const handleAddPerson = () => {
         // Копируем массив форм и добавляем новую пустую форму с уникальным id
         setForms([...forms, { info: '', id: Date.now() }]);
+        console.log(forms)
     };
     console.log(forms)
     const handleInputChange = (e, index) => {
-        const { info, value } = e.target;
+        console.log(e)
+        const { name, value } = e.target;
         const newForms = [...forms];
-        newForms[index][info] = value;
+        newForms[index][name] = value;
         setForms(newForms);
     };
     // Обработчик события нажатия кнопки "Удалить форму"
@@ -77,8 +79,8 @@ export default function Admin({ email }) {
 
 
     const handleChange = (e) => {
-        const { info, value } = e.target;
-        setProperty(prevState => ({ ...prevState, [info]: value }));
+        const { name, value } = e.target;
+        setProperty(prevState => ({ ...prevState, [name]: value }));
     };
 
 
@@ -276,7 +278,7 @@ export default function Admin({ email }) {
                                     </tr>
                                     <tr >
                                         <th align='right'><label>Room {index + 1} description:</label></th>
-                                        <th align='left'><textarea name="info" value={form.info} onChange={(e) => handleInputChange(e, index)} /></th>
+                                        <th align='left'><textarea name='info' value={form.info} onChange={(e) => handleInputChange(e, index)} /></th>
                                     </tr>
                                 </React.Fragment>
 
