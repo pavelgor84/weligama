@@ -22,7 +22,7 @@ export default function Admin({ email }) {
         price: '',
         available: '',
         images: '',
-        rooms_info: {},
+        rooms_info: [],
         description: ''
     }
 
@@ -43,7 +43,7 @@ export default function Admin({ email }) {
             price: '',
             available: '',
             images: '',
-            rooms_info: {},
+            rooms_info: [],
             description: ''
         });
     console.log(property)
@@ -56,18 +56,24 @@ export default function Admin({ email }) {
 
     const [forms, setForms] = useState([]);
 
+    // const handleAddPerson = () => {
+    //     setForms([...forms, { info: '', id: Date.now() }]);
+    //     console.log(forms)
+    // };
     const handleAddPerson = () => {
-        // Копируем массив форм и добавляем новую пустую форму с уникальным id
-        setForms([...forms, { info: '', id: Date.now() }]);
+        //setForms([...forms, { info: '', id: Date.now() }]);
+        setProperty(prevState => ({ ...prevState, rooms_info: [...prevState.rooms_info, { info: '', id: Date.now() }] }));
         console.log(forms)
     };
+
     console.log(forms)
     const handleInputChange = (e, index) => {
         console.log(e)
         const { name, value } = e.target;
-        const newForms = [...forms];
+        const newForms = [...property.rooms_info];
         newForms[index][name] = value;
-        setForms(newForms);
+        //setForms(newForms);
+        setProperty(prevState => ({ ...prevState, rooms_info: newForms }));
     };
     // Обработчик события нажатия кнопки "Удалить форму"
     const handleAdd = (index) => {
@@ -270,15 +276,15 @@ export default function Admin({ email }) {
                                 <th align='right'></th>
                                 <th align='left'><button onClick={handleAddPerson}>Add room</button></th>
                             </tr>
-                            {forms.map((form, index) => (
+                            {property.rooms_info.map((form, index) => (
                                 <React.Fragment key={form.id} >
                                     <tr >
                                         <th align='right'><label>Room {index + 1}:</label></th>
-                                        <th align='left'><input type="file" name={index} multiple value={room.images} onChange={handleRoomChange} /></th>
+                                        <th align='left'><input type="file" name={index} multiple value={room.images} onChange={handleRoomChange} required /></th>
                                     </tr>
                                     <tr >
                                         <th align='right'><label>Room {index + 1} description:</label></th>
-                                        <th align='left'><textarea name='info' value={form.info} onChange={(e) => handleInputChange(e, index)} /></th>
+                                        <th align='left'><textarea name='info' value={form.info} onChange={(e) => handleInputChange(e, index)} required /></th>
                                     </tr>
                                 </React.Fragment>
 
