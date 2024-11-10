@@ -75,7 +75,7 @@ export default function AdminEdit({ email }) {
 
     };
     const handleFileImagesChange = (e) => { // SEND IMAGES PICS
-        //console.log(e.target.name)
+        console.log(e.target.name)
         const fileList = e.target.files
         const data = new FormData()
 
