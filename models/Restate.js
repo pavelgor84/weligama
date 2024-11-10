@@ -31,10 +31,7 @@ const propertySchema = new Schema({
             alt: String,
             public_id: String,
         }],
-    rooms_info: {
-        type: Schema.Types.Mixed,
-        default: {}
-    }
+    rooms_info: [{ info: String, id: Number }]
 
 })
 

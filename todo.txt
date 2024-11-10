@@ -1,1 +1,3 @@
-remove bug with add room
+#added new adding rooms in Admin
+- add rooms render in AdminEdit
+- add rooms render in the info page
