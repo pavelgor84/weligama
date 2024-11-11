@@ -48,8 +48,8 @@ export default function Admin({ email }) {
         });
     console.log(property)
     const [file, setFile] = useState([])
-    //console.log(file)
-    const [room, setRoom] = useState({})
+    console.log(file)
+    const [room, setRoom] = useState([])
     console.log(room)
     console.log(room.hasOwnProperty("room1") && room.room1.length != 0)
     const [loading, setLoading] = useState(false)
@@ -60,7 +60,8 @@ export default function Admin({ email }) {
     //     setForms([...forms, { info: '', id: Date.now() }]);
     //     console.log(forms)
     // };
-    const handleAddPerson = () => {
+    const handleAddPerson = (e) => {
+        e.preventDefault()
         //setForms([...forms, { info: '', id: Date.now() }]);
         setProperty(prevState => ({ ...prevState, rooms_info: [...prevState.rooms_info, { info: '', id: Date.now() }] }));
         console.log(forms)
@@ -76,11 +77,15 @@ export default function Admin({ email }) {
         setProperty(prevState => ({ ...prevState, rooms_info: newForms }));
     };
     // Обработчик события нажатия кнопки "Удалить форму"
-    const handleAdd = (index) => {
+    const handleDeleteRoom = (e, index) => {
+        e.preventDefault()
         // Копируем массив форм и удаляем форму по указанному индексу
-        const newForms = [...forms];
+        const newForms = [...property.rooms_info];
         newForms.splice(index, 1);
-        setForms(newForms);
+        setProperty(prevState => ({ ...prevState, rooms_info: newForms }));
+        const roomFiles = [...room]
+        roomFiles.splice(index, 1)
+        setRoom(roomFiles)
     };
 
 
@@ -98,10 +103,10 @@ export default function Admin({ email }) {
     };
     const handleRoomChange = (e) => {
         //console.log(e)
-        const _files = Array.from(e.target.files);
+        const _roomFiles = Array.from(e.target.files);
         const roomNumber = e.target.name
 
-        setRoom(prevState => ({ ...prevState, [roomNumber]: _files }));
+        setRoom(prevState => [...prevState, _roomFiles]);
 
     };
     const handleRoomInfoChange = (e) => {
@@ -274,7 +279,7 @@ export default function Admin({ email }) {
                             </tr>
                             <tr>
                                 <th align='right'></th>
-                                <th align='left'><button onClick={handleAddPerson}>Add room</button></th>
+                                <th align='left'><button onClick={(e) => handleAddPerson(e)}>Add room</button></th>
                             </tr>
                             {property.rooms_info.map((form, index) => (
                                 <React.Fragment key={form.id} >
@@ -285,6 +290,10 @@ export default function Admin({ email }) {
                                     <tr >
                                         <th align='right'><label>Room {index + 1} description:</label></th>
                                         <th align='left'><textarea name='info' value={form.info} onChange={(e) => handleInputChange(e, index)} required /></th>
+                                    </tr>
+                                    <tr >
+                                        <th align='right'><label>Delete room {index + 1}</label></th>
+                                        <th align='left'><button onClick={(e) => handleDeleteRoom(e, index)}>Delete </button></th>
                                     </tr>
                                 </React.Fragment>
 

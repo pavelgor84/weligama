@@ -29,7 +29,7 @@ export default function AdminEdit({ email }) {
             images: '',
             rooms: '',
             description: '',
-            rooms_info: {},
+            rooms_info: [],
             _id: '',
         });
     //console.log(property)

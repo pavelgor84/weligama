@@ -1,3 +1,4 @@
 #added new adding rooms in Admin
+- check for additional unwanted image in room files
 - add rooms render in AdminEdit
 - add rooms render in the info page
