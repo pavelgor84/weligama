@@ -1,4 +1,4 @@
 #added new adding rooms in Admin
-- check for additional unwanted image in room files
+- adminEdit Room info focus problem -> make separate Room component
 - add rooms render in AdminEdit
 - add rooms render in the info page

@@ -32,7 +32,7 @@ export default function AdminEdit({ email }) {
             rooms_info: [],
             _id: '',
         });
-    //console.log(property)
+    console.log(property)
 
     const inputRefs = useRef({});
     //console.log(inputRefs)
@@ -98,15 +98,24 @@ export default function AdminEdit({ email }) {
 
     };
 
-    const handleRoomInfoChange = (e) => {
-        //console.log(e)
+    // const handleRoomInfoChange = (e) => {
+    //     //console.log(e)
+    //     const { name, value } = e.target;
+    //     setProperty(prevState => ({ ...prevState, rooms_info: { ...prevState.rooms_info, [name]: value } }));
+    // }
+    const handleInputChange = (e, index) => {
+        console.log(e)
         const { name, value } = e.target;
-        setProperty(prevState => ({ ...prevState, rooms_info: { ...prevState.rooms_info, [name]: value } }));
-    }
+        const newForms = [...property.rooms_info];
+        newForms[index][name] = value;
+        //setForms(newForms);
+        setProperty(prevState => ({ ...prevState, rooms_info: newForms }));
+    };
     const handleFocus = (e) => {
+        console.log(e)
         const { name } = e.target;
         currentRef.current = name
-        //console.log(currentRef.current)
+        console.log(currentRef.current)
     }
 
     const handleSubmit = async (e) => {
@@ -239,8 +248,10 @@ export default function AdminEdit({ email }) {
             <input type="file" name={item} multiple onChange={handleFileRoomChange} />
             <label>Room {item} info:</label>
 
-            <textarea ref={el => inputRefs.current[item] = el} name={item} value={property.rooms_info[item] || ''}
-                onChange={handleRoomInfoChange} onFocus={handleFocus} />
+            {/* <textarea ref={el => inputRefs.current[item] = el} name={item} value={property.rooms_info[item]?.info || ''}
+                onChange={handleInputChange} onFocus={handleFocus} /> */}
+            <textarea ref={el => inputRefs.current[item] = el} name="info" value={property.rooms_info[item]?.info || ''}
+                onChange={(e) => handleInputChange(e, item)} onFocus={handleFocus} />
 
             <button disabled={loading} form="info_form" type="submit">Update info</button>
 
