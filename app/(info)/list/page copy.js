@@ -39,23 +39,38 @@ export default function List() {
     const [asset, setAsset] = useState([])
     console.log(asset)
 
-    let rooms
-    if (asset.rooms && asset.rooms.length != 0) {
-        rooms = asset.rooms.map((el, index) => {
-            if (!asset.occupied_rooms.includes(index.toString())) { // toString for search string number of the room
-                return (
-                    <div key={index} className={styles.room_containter}>
-                        <div className={styles.room_photos}>
-                            <h4 className={styles.room_header}> Room {index + 1}</h4>
-                            <Gallery photos={el} />
-                        </div>
+    const groupedByNumber = asset.rooms ? asset.rooms.reduce((acc, obj) => {
+        // Если ключ для этого number уже есть, добавляем объект в массив
+        if (!acc[obj.room_number]) {
+            acc[obj.room_number] = []; // Если нет, создаем новый массив для этого number
+        }
+        acc[obj.room_number].push(obj);
+        return acc;
+    }, {}) : null
 
-                        <div className={styles.room_info}>  {asset.rooms_info[index] != undefined ? asset.rooms_info[index].info : 'No additional information'} </div>
+    let rooms = []
+    let index = 0
+    for (const item in groupedByNumber) {
+
+        if (!asset.occupied_rooms.includes(item)) {
+            rooms.push(
+                <div key={index++} className={styles.room_containter}>
+                    <div className={styles.room_photos}>
+                        <h4 className={styles.room_header}> Room {item}</h4>
+                        <Gallery photos={groupedByNumber[item]} />
                     </div>
-                )
-            }
-        })
+                    <div className={styles.room_info}>  {asset.rooms_info != undefined ? asset.rooms_info[item] : 'No information'} </div>
+                </div>
+            )
+        }
+    }
+    function Rooms() {
+        return (
+            <>
+                {rooms}
 
+            </>
+        );
     }
 
 
@@ -68,7 +83,7 @@ export default function List() {
                 </div>
                 <div className={styles.phone_area}>
                     <div> Call: <a href={`tel:${asset.phone}`}>{asset.phone}</a></div>
-                    <div><a href={`https://api.whatsapp.com/send?phone=${asset.phone}&text=Hello! I would like to see the ${asset.name}.`}>Message to WhatsApp</a></div>
+                    <div><a href={`https://api.whatsapp.com/send?phone=${asset.phone}&text=Hello! I would like to see the ${asset.name}.When can we meet?`}>Message to WhatsApp</a></div>
                 </div>
                 <div className={styles.info_block}>
                     <div className={styles.info_block_left}>
@@ -97,7 +112,7 @@ export default function List() {
                 </div>
                 <h2>Where you sleep</h2>
                 <div className={styles.amenities}>
-                    {rooms}
+                    <Rooms />
 
                 </div>
 

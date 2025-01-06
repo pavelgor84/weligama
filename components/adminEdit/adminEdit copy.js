@@ -98,7 +98,11 @@ export default function AdminEdit({ email }) {
 
     };
 
-
+    // const handleRoomInfoChange = (e) => {
+    //     //console.log(e)
+    //     const { name, value } = e.target;
+    //     setProperty(prevState => ({ ...prevState, rooms_info: { ...prevState.rooms_info, [name]: value } }));
+    // }
     const handleInputChange = (e, index) => {
         console.log(e)
         const { name, value } = e.target;
@@ -204,49 +208,65 @@ export default function AdminEdit({ email }) {
         )
     }) : null
 
-    let rooms
-    if (property.rooms && property.rooms.length != 0) {
-        rooms = property.rooms.map((el, index) => {
-            return (
-                <div key={index} className={styles.images_container} style={{ backgroundColor: property.occupied_rooms.includes(index.toString()) && 'crimson' }}>
-                    <span> Room {index}</span>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={property.occupied_rooms.includes(index.toString())}
-                            onChange={() => handleCheckboxChange(index.toString())}
-                        />
-                        Occupied
-                    </label>
-                    <div></div>
-                    <div className={styles.images}>
-                        {el.map((room) => {
-                            return (
-                                <div key={room.public_id} >
-                                    <button id={room.public_id} onClick={(e) => handleDelete(e.target.id)} disabled={loading}> del</button>
-                                    <img src={room.src} width='60px' height='60px' />
-                                </div>
-                            )
-                        })}
-                    </div>
-
-                    <label>Upload Images:</label>
-                    <input type="file" name={index} multiple onChange={handleFileRoomChange} />
-                    <label>Room {index} info:</label>
 
 
-                    <textarea ref={el => inputRefs.current[index] = el} name="info" value={property.rooms_info[index]?.info || ''}
-                        onChange={(e) => handleInputChange(e, index)} onFocus={handleFocus} />
+    const groupedByNumber = property.rooms ? property.rooms.reduce((acc, obj) => {
+        // Если ключ для этого number уже есть, добавляем объект в массив
+        if (!acc[obj.room_number]) {
+            acc[obj.room_number] = []; // Если нет, создаем новый массив для этого number
+        }
+        acc[obj.room_number].push(obj);
+        return acc;
+    }, {}) : null
 
-                    <button disabled={loading} form="info_form" type="submit">Update info</button>
+    let rooms = []
+    let index = 0
+    for (const item in groupedByNumber) {
+        rooms.push(<div key={index++} className={styles.images_container} style={{ backgroundColor: property.occupied_rooms.includes(item) && 'crimson' }}>
+            <span> Room {item}</span>
+            <label>
+                <input
+                    type="checkbox"
+                    checked={property.occupied_rooms.includes(item)}
+                    onChange={() => handleCheckboxChange(item)}
+                />
+                Occupied
+            </label>
+            <div></div>
+            <div className={styles.images}>
+                {groupedByNumber[item].map((room) => {
+                    return (
+                        <div key={room.public_id} >
+                            <button id={room.public_id} onClick={(e) => handleDelete(e.target.id)} disabled={loading}> del</button>
+                            <img src={room.src} width='60px' height='60px' />
+                        </div>
+                    )
+                })}
+            </div>
+
+            <label>Upload Images:</label>
+            <input type="file" name={item} multiple onChange={handleFileRoomChange} />
+            <label>Room {item} info:</label>
+
+            {/* <textarea ref={el => inputRefs.current[item] = el} name={item} value={property.rooms_info[item]?.info || ''}
+                onChange={handleInputChange} onFocus={handleFocus} /> */}
+            <textarea ref={el => inputRefs.current[item] = el} name="info" value={property.rooms_info[item]?.info || ''}
+                onChange={(e) => handleInputChange(e, item)} onFocus={handleFocus} />
+
+            <button disabled={loading} form="info_form" type="submit">Update info</button>
 
 
-                </div>
-            )
-        })
-
+        </div>)
     }
 
+    function Rooms() {
+        return (
+            <>
+                {rooms}
+
+            </>
+        );
+    }
 
     function handleSelect(item) {
         let position = asset.findIndex(obj => obj.name == item)
@@ -410,8 +430,7 @@ export default function AdminEdit({ email }) {
 
                 </div>
                 <span>Room images</span>
-                {/* <Rooms /> */}
-                {rooms}
+                <Rooms />
             </div>
             <button className={styles.del_button} disabled={loading} onClick={() => handleDeleteProperty()}>Delete Property</button>
 

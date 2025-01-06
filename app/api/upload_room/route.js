@@ -45,11 +45,17 @@ export async function POST(request) {
                 { room_number: doc.room, src: images[i].secure_url, width: images[i].width, height: images[i].height, alt: images[i].original_filename, public_id: images[i].public_id }
             )
         }
+        // let respose = await Restate.updateOne({ _id: doc.id }, {
+        //     $push: {
+        //         rooms: {
+        //             $each: arrayOfImages
+        //         }
+        //     }
+        // }
+        // )
         let respose = await Restate.updateOne({ _id: doc.id }, {
             $push: {
-                rooms: {
-                    $each: arrayOfImages
-                }
+                rooms: arrayOfImages
             }
         }
         )

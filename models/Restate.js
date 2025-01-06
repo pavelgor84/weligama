@@ -23,14 +23,14 @@ const propertySchema = new Schema({
         public_id: String,
     }],
     rooms:
-        [{
+        [[{
             room_number: String,
             src: String,
             width: Number,
             height: Number,
             alt: String,
             public_id: String,
-        }],
+        }]],
     rooms_info: [{ info: String, id: Number }]
 
 })
