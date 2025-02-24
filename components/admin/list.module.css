@@ -31,3 +31,31 @@
     font-weight: 300;
     color: azure;
 }
+.button{
+    align-self: end;
+    border-radius: 55px;
+    width: 60px;
+    height: 60px;
+    color: rgb(11, 66, 66);
+}
+
+@media (max-width:768px) {
+    .block {
+        width: 100%;
+    
+        background-color: rgb(11, 66, 66);
+        object-fit: cover;
+        object-position: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 5px 0px;
+    }
+    .section{
+        width:100%;
+    }
+    .list_block{
+        width:100%;
+    }
+}
