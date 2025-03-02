@@ -229,9 +229,10 @@ export default function AdminEdit({ email }) {
                             )
                         })}
                     </div>
-
-                    <label>Upload Images:</label>
-                    <input type="file" name={index} multiple onChange={handleFileRoomChange} />
+                    <div className={styles.inputRoomImages}>
+                        <label>Upload Images:</label>
+                        <input type="file" name={index} multiple onChange={handleFileRoomChange} />
+                    </div>
                     <label>Room {index} info:</label>
 
 
@@ -405,13 +406,16 @@ export default function AdminEdit({ email }) {
                         {imageSet}
                     </div>
 
+
                     <label>Upload images:</label>
                     <input type="file" name="images" multiple disabled={loading} onChange={handleFileImagesChange} />
 
+
                 </div>
-                <span>Room images</span>
+                <span className={styles.roomsTitle}>Your rooms</span>
                 {/* <Rooms /> */}
                 {rooms}
+
             </div>
             <button className={styles.del_button} disabled={loading} onClick={() => handleDeleteProperty()}>Delete Property</button>
 

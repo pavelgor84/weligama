@@ -8,6 +8,7 @@ import * as maptilersdk from '@maptiler/sdk';
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 import { createRoot } from 'react-dom/client';
 import Popup from '../popup/popup';
+import { all } from 'axios';
 
 
 export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], pointId, scroll_to, html_popup }) {
@@ -110,7 +111,14 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
             });
 
             map.current.on('click', getPoint);
+
+            map.current.on('moveend', getCurrentPoints);
             console.log(map.current)
+
+            // const fe = map.current.queryRenderedFeatures({
+            //     layers: ['points']
+            // });
+            // console.log(fe);
 
 
         })
@@ -128,6 +136,15 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         }
 
     }, [html_popup])
+
+    useEffect(() => {
+        if (map.current.isReady === true) {
+            console.log('readyyy')
+            getCurrentPoints()
+
+        }
+
+    }, [map.current])
 
     useEffect(() => { //clear markers when no pointId and mouse is over the list
         if (map.current.style.map.isReady && !pointId) {
@@ -167,9 +184,14 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         return features;
     }
 
+    function getCurrentPoints() {
+
+        const allfeatures = getRenderedFeatures()
+        console.log(allfeatures)
+    }
+
     function getPoint(e) {
         const features = getRenderedFeatures(e.point);
-
 
         if (features.length) {
             console.log("click")
