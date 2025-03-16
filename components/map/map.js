@@ -115,10 +115,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
             map.current.on('moveend', getCurrentPoints);
             console.log(map.current)
 
-            // const fe = map.current.queryRenderedFeatures({
-            //     layers: ['points']
-            // });
-            // console.log(fe);
+            map.current.on('render', afterChangeComplete);
 
 
         })
@@ -188,6 +185,14 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
 
         const allfeatures = getRenderedFeatures()
         console.log(allfeatures)
+    }
+    function afterChangeComplete() {
+        if (!map.current.loaded()) { return } // still not loaded; bail out.
+
+        // now that the map is loaded, it's safe to query the features:
+        getCurrentPoints()
+
+        map.current.off('render', afterChangeComplete); // remove this handler now that we're done.
     }
 
     function getPoint(e) {
