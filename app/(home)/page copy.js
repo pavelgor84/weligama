@@ -1,7 +1,7 @@
 "use client"
 
 //import Image from 'next/image'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import styles from '../page.module.css'
 import { Icon_bed, Icon_cond, Icon_shower } from '@/components/icons/iconset'
 
@@ -54,9 +54,6 @@ export default function Home() {
   //console.log(nav)
   const [id, setId] = useState('')
   const [popup, setPopup] = useState('')
-
-  const [changePoints, setchangePoints] = useState('')
-
 
   useEffect(() => {
     fetch('/api')
@@ -145,7 +142,7 @@ export default function Home() {
       <div className={styles.right_block}>
         <div className={styles.map_place}>
           <div className={styles.block}>
-            {nav.positions.length != 0 ? <Map setchangePoints={setchangePoints} centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={scroll} html_popup={popup} /> : "Loading..."}
+            {nav.positions.length != 0 ? <Map centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={scroll} html_popup={popup} /> : "Loading..."}
           </div>
 
         </div>

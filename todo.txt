@@ -1,0 +1,47 @@
+A:12345, B:3456 - filter A(B)=345, filter B(345)=6
+A:12345, B:12 - filter A(B)=12, filter B(12) = null
+
+const mongoose = require('mongoose');
+
+// Assuming you have already connected to your MongoDB database
+const ids = [
+    mongoose.Types.ObjectId("60c72b2f9b1e8a3d88f3c1a1"),
+    mongoose.Types.ObjectId("60c72b2f9b1e8a3d88f3c1a2"),
+    mongoose.Types.ObjectId("60c72b2f9b1e8a3d88f3c1a3")
+];
+
+YourModel.find({ 
+    _id: { $in: ids },
+    available: "Yes" 
+})
+.then(docs => {
+    console.log(docs);
+})
+.catch(err => {
+    console.error(err);
+});
+
+----------
+const { MongoClient } = require('mongodb');
+
+async function fetchCoordinatesWithIds() {
+    const client = new MongoClient('mongodb://localhost:27017/');
+    try {
+        await client.connect();
+        const database = client.db('your_database');
+        const collection = database.collection('your_collection');
+
+        const documents = await collection.find(
+            { available: 1 }, // Query to filter documents
+            { projection: { coordinates: 1, _id: 1 } } // Projection to include both coordinates and _id
+        ).toArray();
+
+        console.log(documents);
+    } catch (err) {
+        console.error(err);
+    } finally {
+        await client.close();
+    }
+}
+
+fetchCoordinatesWithIds();

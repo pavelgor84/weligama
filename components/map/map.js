@@ -11,7 +11,7 @@ import Popup from '../popup/popup';
 import { all } from 'axios';
 
 
-export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], pointId, scroll_to, html_popup }) {
+export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], pointId, scroll_to, html_popup, setchangePoints }) {
     const geo = {
         "type": "FeatureCollection",
         "features": coords
@@ -33,6 +33,9 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
     const saved_html = useRef(null)
     const mark = useRef([0, 0])
     // const weligama = { lng: 80.430288, lat: 5.971817 };
+
+    const lastPoints = useRef(null)
+
     const weligama = { lng: cz[1], lat: cz[0] };
     //console.log(weligama)
 
@@ -185,7 +188,32 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
 
         const allfeatures = getRenderedFeatures()
         console.log(allfeatures)
+        splitPoints(allfeatures)
+
     }
+
+    function splitPoints(newPoints) {
+        if (!lastPoints.current) {
+            lastPoints.current = newPoints
+            //setchangePoints(newPoints)
+            return
+        }
+        let stay = []
+        let add = []
+        let del = []
+        let stayAdd = []
+        let prevPoints = lastPoints.current.map((item) => item.properties.home_id)
+        let freshPoints = newPoints.map((item) => item.properties.home_id)
+        stay = prevPoints.filter((item) => freshPoints.includes(item))// A:12345, B:3456 -> 3,4,5
+        add = freshPoints.filter((item) => !stay.includes(item))//B:3456, 345 -> 6
+        stayAdd.push(...stay, ...add)
+        del = prevPoints.filter((item) => !stayAdd.includes(item)) // A:12345, 345 & 6 -> 1,2
+        console.log("stay", stay)
+        console.log("add ", add)
+        console.log("del ", del)
+
+    }
+
     function afterChangeComplete() {
         if (!map.current.loaded()) { return } // still not loaded; bail out.
 
