@@ -198,19 +198,30 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
             //setchangePoints(newPoints)
             return
         }
-        let stay = []
-        let add = []
-        let del = []
+        let rezState = {
+            stay: [],
+            add: [],
+            del: []
+        }
+        //let stay = []
+        //let add = []
+        //let del = []
         let stayAdd = []
         let prevPoints = lastPoints.current.map((item) => item.properties.home_id)
         let freshPoints = newPoints.map((item) => item.properties.home_id)
-        stay = prevPoints.filter((item) => freshPoints.includes(item))// A:12345, B:3456 -> 3,4,5
-        add = freshPoints.filter((item) => !stay.includes(item))//B:3456, 345 -> 6
-        stayAdd.push(...stay, ...add)
-        del = prevPoints.filter((item) => !stayAdd.includes(item)) // A:12345, 345 & 6 -> 1,2
-        console.log("stay", stay)
-        console.log("add ", add)
-        console.log("del ", del)
+        rezState.stay = prevPoints.filter((item) => freshPoints.includes(item))// A:12345, B:3456 -> 3,4,5
+        rezState.add = freshPoints.filter((item) => !rezState.stay.includes(item))//B:3456, 345 -> 6
+        stayAdd.push(...rezState.stay, ...rezState.add)
+        rezState.del = prevPoints.filter((item) => !stayAdd.includes(item)) // A:12345, 345 & 6 -> 1,2
+        console.log("stay", rezState.stay)
+        console.log("add ", rezState.add)
+        console.log("del ", rezState.del)
+        lastPoints.current = newPoints
+        if (rezState.add.length != 0 || rezState.del.length != 0) {
+            console.log("update!")
+        }
+        else { console.log("calm!") }
+
 
     }
 
