@@ -13,25 +13,61 @@ import styles from './houses.module.css'
 
 export default function HousesMenu({ cards, handleOver, handleLeave }) {
 
+
     const [card, setCard] = useState([])
+    console.log(card)
 
     useEffect(() => {
         //get cards data, delete from state? request a new data, update the state
+        changeCards(cards)
 
     }, [cards]);
 
-    function changeCards() {
-        // not delete from state and not add? update state with incoming cards
-        //delete from state and no add? then delete from state and update
+    async function changeCards(cards) {
+        // + not delete from state and not add? update state with incoming cards
+        if (cards.add.length == 0 & cards.del.length == 0) {
+            console.log("first load")
+            let newState = await getNewCards(cards.stay)
+            setCard(newState)
+        }
+        // + delete from state and no add? then delete from state and update
+        if (cards.add.length == 0 & cards.del.length != 0) {
+            console.log("delete cards")
+            let prevState = [...card]
+            let newState = prevState.filter((item) => !cards.del.includes(item._id))
+            setCard(newState)
+        }
         //delete from state and add? then delete from state and request DB, then add new data to state and uppdate
+        if (cards.add.length != 0 & cards.del.length != 0) {
+            let prevState = [...card]
+            let newState = prevState.filter((item) => !cards.del.includes(item._id))
+            let newCards = await getNewCards(cards.add)
+            newState.push(...newCards)
+            setCard(newState)
+        }
         //not delete from state and add? then request DB and add new data to state and update
+        if (cards.add.length != 0 & cards.del.length == 0) {
+            console.log("add new cards")
+            let prevState = [...card]
+            let newCards = await getNewCards(cards.add)
+            prevState.push(...newCards)
+            setCard(prevState)
+        }
+        else console.log("nothing happened")
+
+
     }
 
-    async function getNewCards(cards) {
+    async function getNewCards(new_cards) {
+
+        const response = await axios.post('/api/get_more_houses', new_cards)
+        const result = await response.data
+        console.log({ result })
+        return result
 
     }
 
-    const menu = card.map((prop) => {
+    const menu = card ? card.map((prop) => {
         return (
             <div className={styles.card_container} key={prop._id} id={prop._id} onMouseEnter={handleOver} onMouseLeave={handleLeave} >
                 <div className={styles.card_left}>
@@ -60,7 +96,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave }) {
 
             </div>
         )
-    })
+    }) : NULL
 
     return (
         <div>{menu ? menu : NULL}</div>

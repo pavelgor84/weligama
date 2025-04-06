@@ -8,7 +8,6 @@ import * as maptilersdk from '@maptiler/sdk';
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 import { createRoot } from 'react-dom/client';
 import Popup from '../popup/popup';
-import { all } from 'axios';
 
 
 export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], pointId, scroll_to, html_popup, setchangePoints }) {
@@ -116,7 +115,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
             map.current.on('click', getPoint);
 
             map.current.on('moveend', getCurrentPoints);
-            console.log(map.current)
+            //console.log(map.current)
 
             map.current.on('render', afterChangeComplete);
 
@@ -193,19 +192,22 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
     }
 
     function splitPoints(newPoints) {
-        if (!lastPoints.current) {
-            lastPoints.current = newPoints
-            //setchangePoints(newPoints)
-            return
-        }
+
         let rezState = {
             stay: [],
             add: [],
             del: []
         }
-        //let stay = []
-        //let add = []
-        //let del = []
+
+        if (!lastPoints.current) {
+            let firstPoints = newPoints.map((item) => item.properties.home_id)
+            rezState.stay = firstPoints
+            lastPoints.current = newPoints
+            setchangePoints(rezState)
+            return
+        }
+
+
         let stayAdd = []
         let prevPoints = lastPoints.current.map((item) => item.properties.home_id)
         let freshPoints = newPoints.map((item) => item.properties.home_id)
@@ -219,6 +221,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         lastPoints.current = newPoints
         if (rezState.add.length != 0 || rezState.del.length != 0) {
             console.log("update!")
+            setchangePoints(rezState)
         }
         else { console.log("calm!") }
 
