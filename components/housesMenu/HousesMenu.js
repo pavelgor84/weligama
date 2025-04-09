@@ -99,6 +99,6 @@ export default function HousesMenu({ cards, handleOver, handleLeave }) {
     }) : NULL
 
     return (
-        <div>{menu ? menu : NULL}</div>
+        <>{menu ? menu : NULL}</>
     )
 }
