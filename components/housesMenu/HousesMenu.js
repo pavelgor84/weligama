@@ -1,7 +1,7 @@
 "use client"
 
 //import Image from 'next/image'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, forwardRef } from 'react'
 import { Icon_bed, Icon_cond, Icon_shower } from '@/components/icons/iconset'
 import axios from 'axios'
 
@@ -11,14 +11,16 @@ import Link from 'next/link'
 import styles from './houses.module.css'
 
 
-export default function HousesMenu({ cards, handleOver, handleLeave }) {
+const HousesMenu = forwardRef(({ cards, handleOver, handleLeave, targetId }, ref) => {
 
 
     const [card, setCard] = useState([])
     console.log(card)
+    console.log("scroll to ", targetId)
 
     useEffect(() => {
         //get cards data, delete from state? request a new data, update the state
+        console.log("CARDS CHANGED!")
         changeCards(cards)
 
     }, [cards]);
@@ -69,7 +71,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave }) {
 
     const menu = card ? card.map((prop) => {
         return (
-            <div className={styles.card_container} key={prop._id} id={prop._id} onMouseEnter={handleOver} onMouseLeave={handleLeave} >
+            <div className={prop._id === targetId ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onMouseEnter={handleOver} onMouseLeave={handleLeave} ref={prop._id === targetId ? ref : null}>
                 <div className={styles.card_left}>
                     <SliderTest img={prop.images} />
                 </div>
@@ -101,4 +103,5 @@ export default function HousesMenu({ cards, handleOver, handleLeave }) {
     return (
         <>{menu ? menu : NULL}</>
     )
-}
+})
+export default HousesMenu

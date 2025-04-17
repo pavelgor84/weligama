@@ -3,12 +3,12 @@
 //import Image from 'next/image'
 import { useEffect, useState, useRef } from 'react'
 import styles from '../page.module.css'
-import { Icon_bed, Icon_cond, Icon_shower } from '@/components/icons/iconset'
+//import { Icon_bed, Icon_cond, Icon_shower } from '@/components/icons/iconset'
 
-import SliderTest from '@/components/slider/SliderTest'
+//import SliderTest from '@/components/slider/SliderTest'
 
 import Map from '@/components/map/map'
-import Link from 'next/link'
+//import Link from 'next/link'
 
 import HousesMenu from '@/components/housesMenu/HousesMenu'
 
@@ -54,7 +54,20 @@ export default function Home() {
   const [popup, setPopup] = useState('')
 
   const [changePoints, setchangePoints] = useState('')
-  console.log(changePoints)
+  //console.log(changePoints)
+
+  const itemRef = useRef(null);
+
+  const [scrollTo, setScrollTo] = useState('')
+
+  const scrollToElement = (id) => {
+    setScrollTo(id); // Устанавливаем целевой идентификатор
+    if (itemRef.current) {
+      itemRef.current.scrollIntoView({ inline: "center", behavior: 'smooth' });
+    }
+  };
+
+
 
 
   useEffect(() => {
@@ -88,15 +101,15 @@ export default function Home() {
     backgroundColor: 'lightgray',
   };
 
-  const scroll = function (id) {
-    const pop = asset.find((el) => {
-      return el._id === id
-    })
-    if (pop) {
-      setPopup((prev) => pop)
-    }
+  // const scroll = function (id) {
+  //   const pop = asset.find((el) => {
+  //     return el._id === id
+  //   })
+  //   if (pop) {
+  //     setPopup((prev) => pop)
+  //   }
 
-  }
+  // }
 
 
   return (
@@ -104,12 +117,12 @@ export default function Home() {
 
       <div className={styles.left_block}>
         {/* {card ? card : NULL} */}
-        {changePoints ? <HousesMenu cards={changePoints} handleOver={handleOver} handleLeave={handleLeave} /> : "LOADING"}
+        {changePoints ? <HousesMenu cards={changePoints} handleOver={handleOver} handleLeave={handleLeave} ref={itemRef} targetId={scrollTo} /> : "LOADING"}
       </div>
       <div className={styles.right_block}>
         <div className={styles.map_place}>
           <div className={styles.block}>
-            {nav.positions.length != 0 ? <Map setchangePoints={setchangePoints} centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={scroll} html_popup={popup} /> : "Loading..."}
+            {nav.positions.length != 0 ? <Map setchangePoints={setchangePoints} centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={scrollToElement} html_popup={popup} /> : "Loading..."}
           </div>
 
         </div>

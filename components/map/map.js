@@ -136,14 +136,6 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
 
     }, [html_popup])
 
-    useEffect(() => {
-        if (map.current.isReady === true) {
-            console.log('readyyy')
-            getCurrentPoints()
-
-        }
-
-    }, [map.current])
 
     useEffect(() => { //clear markers when no pointId and mouse is over the list
         if (map.current.style.map.isReady && !pointId) {
@@ -186,7 +178,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
     function getCurrentPoints() {
 
         const allfeatures = getRenderedFeatures()
-        console.log(allfeatures)
+        //console.log(allfeatures)
         splitPoints(allfeatures)
 
     }
@@ -215,9 +207,9 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         rezState.add = freshPoints.filter((item) => !rezState.stay.includes(item))//B:3456, 345 -> 6
         stayAdd.push(...rezState.stay, ...rezState.add)
         rezState.del = prevPoints.filter((item) => !stayAdd.includes(item)) // A:12345, 345 & 6 -> 1,2
-        console.log("stay", rezState.stay)
-        console.log("add ", rezState.add)
-        console.log("del ", rezState.del)
+        // console.log("stay", rezState.stay)
+        // console.log("add ", rezState.add)
+        // console.log("del ", rezState.del)
         lastPoints.current = newPoints
         if (rezState.add.length != 0 || rezState.del.length != 0) {
             console.log("update!")
@@ -241,7 +233,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         const features = getRenderedFeatures(e.point);
 
         if (features.length) {
-            console.log("click")
+            //console.log("click")
             const element = features[0];
             location.current = element.geometry.coordinates
             scroll_to(element.properties.home_id)
@@ -255,9 +247,9 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
                 ]
             );
 
-            if (saved_popup.current != null && (saved_html.current._id == element.properties.home_id) && !saved_popup.current.isOpen()) { //check if popup is closed and reopen it using useRef vars
-                show_popup()
-            }
+            // if (saved_popup.current != null && (saved_html.current._id == element.properties.home_id) && !saved_popup.current.isOpen()) { //check if popup is closed and reopen it using useRef vars
+            //     show_popup()
+            // }
         }
 
 

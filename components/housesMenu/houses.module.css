@@ -9,6 +9,18 @@
   border-radius: 0px 5px 15px 0px;
   background-color: rgb(247 247 242);
 }
+.card_container_selected {
+  margin-top: 10px;
+  width: auto;
+  height: 170px;
+  display: flex;
+  -webkit-box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
+  -moz-box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
+  box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
+  border-radius: 0px 5px 15px 0px;
+  
+  background-color: rgb(239 193 176 / 59%);
+}
 
 .card_left {
   width: 30%;
