@@ -54,17 +54,18 @@ export default function Home() {
   const [popup, setPopup] = useState('')
 
   const [changePoints, setchangePoints] = useState('')
-  //console.log(changePoints)
+  console.log(changePoints.add)
 
-  const itemRef = useRef(null);
+
 
   const [scrollTo, setScrollTo] = useState('')
 
   const scrollToElement = (id) => {
-    setScrollTo(id); // Устанавливаем целевой идентификатор
-    if (itemRef.current) {
-      itemRef.current.scrollIntoView({ inline: "center", behavior: 'smooth' });
-    }
+    setScrollTo(id); // Устанавливаем целевой идентификатор and send scrollTo to HouseMenu
+    // if (itemRef.current) {
+    //   console.log(itemRef.current)
+    //   itemRef.current.scrollIntoView({ block: "center", behavior: 'smooth' });
+    // }
   };
 
 
@@ -117,12 +118,12 @@ export default function Home() {
 
       <div className={styles.left_block}>
         {/* {card ? card : NULL} */}
-        {changePoints ? <HousesMenu cards={changePoints} handleOver={handleOver} handleLeave={handleLeave} ref={itemRef} targetId={scrollTo} /> : "LOADING"}
+        {changePoints ? <HousesMenu cards={changePoints} handleOver={handleOver} handleLeave={handleLeave} targetId={scrollTo} /> : "LOADING"}
       </div>
       <div className={styles.right_block}>
         <div className={styles.map_place}>
           <div className={styles.block}>
-            {nav.positions.length != 0 ? <Map setchangePoints={setchangePoints} centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={scrollToElement} html_popup={popup} /> : "Loading..."}
+            {nav.positions.length != 0 ? <Map setchangePoints={setchangePoints} centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={setScrollTo} html_popup={popup} /> : "Loading..."}
           </div>
 
         </div>

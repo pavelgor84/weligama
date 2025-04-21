@@ -1,7 +1,7 @@
 "use client"
 
 //import Image from 'next/image'
-import { useEffect, useState, useRef, forwardRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Icon_bed, Icon_cond, Icon_shower } from '@/components/icons/iconset'
 import axios from 'axios'
 
@@ -11,12 +11,13 @@ import Link from 'next/link'
 import styles from './houses.module.css'
 
 
-const HousesMenu = forwardRef(({ cards, handleOver, handleLeave, targetId }, ref) => {
+export default function HousesMenu({ cards, handleOver, handleLeave, targetId }) {
 
 
     const [card, setCard] = useState([])
-    console.log(card)
     console.log("scroll to ", targetId)
+
+    const itemRef = useRef([]);
 
     useEffect(() => {
         //get cards data, delete from state? request a new data, update the state
@@ -24,6 +25,22 @@ const HousesMenu = forwardRef(({ cards, handleOver, handleLeave, targetId }, ref
         changeCards(cards)
 
     }, [cards]);
+
+    useEffect(() => {
+        if (targetId !== null) {
+            const index = itemRef.current.findIndex(item => item.id === targetId);
+            if (index !== -1) {
+                itemRef.current[index].scrollIntoView({ block: "center", behavior: 'smooth' });
+            }
+        }
+
+    }, [targetId])
+
+    const addToRefs = (el) => {
+        if (el && !itemRef.current.includes(el)) {
+            itemRef.current.push(el);
+        }
+    };
 
     async function changeCards(cards) {
         // + not delete from state and not add? update state with incoming cards
@@ -64,14 +81,14 @@ const HousesMenu = forwardRef(({ cards, handleOver, handleLeave, targetId }, ref
 
         const response = await axios.post('/api/get_more_houses', new_cards)
         const result = await response.data
-        console.log({ result })
+        //console.log({ result })
         return result
 
     }
 
-    const menu = card ? card.map((prop) => {
+    const menu = card ? card.map((prop, index) => {
         return (
-            <div className={prop._id === targetId ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onMouseEnter={handleOver} onMouseLeave={handleLeave} ref={prop._id === targetId ? ref : null}>
+            <div className={prop._id === targetId ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onMouseEnter={handleOver} onMouseLeave={handleLeave} ref={addToRefs} >
                 <div className={styles.card_left}>
                     <SliderTest img={prop.images} />
                 </div>
@@ -103,5 +120,4 @@ const HousesMenu = forwardRef(({ cards, handleOver, handleLeave, targetId }, ref
     return (
         <>{menu ? menu : NULL}</>
     )
-})
-export default HousesMenu
+}
