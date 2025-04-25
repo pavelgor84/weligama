@@ -15,13 +15,17 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
 
     const [card, setCard] = useState([])
-    console.log("scroll to ", targetId)
+    //console.log("scroll to ", targetId)
 
     const itemRef = useRef([]);
+    //console.log(itemRef.current)
+    const itemSelected = useRef(null);
+    console.log(itemSelected.current)
 
     useEffect(() => {
         //get cards data, delete from state? request a new data, update the state
-        console.log("CARDS CHANGED!")
+        //console.log("CARDS CHANGED!")
+        itemRef.current = []
         changeCards(cards)
 
     }, [cards]);
@@ -31,6 +35,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
             const index = itemRef.current.findIndex(item => item.id === targetId);
             if (index !== -1) {
                 itemRef.current[index].scrollIntoView({ block: "center", behavior: 'smooth' });
+                itemSelected.current = index
             }
         }
 
@@ -41,6 +46,19 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
             itemRef.current.push(el);
         }
     };
+
+    function hov(element) {
+        //console.log(element)
+        //itemRef.current[0].className = styles.card_container
+        //const index = itemRef.current.findIndex(item => item.id === element.target.id);
+        //console.log(index)
+        if (itemSelected.current) {
+            itemRef.current[itemSelected.current].className = styles.card_container
+        }
+
+        handleOver(element)
+
+    }
 
     async function changeCards(cards) {
         // + not delete from state and not add? update state with incoming cards
@@ -88,7 +106,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
     const menu = card ? card.map((prop, index) => {
         return (
-            <div className={prop._id === targetId ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onMouseEnter={handleOver} onMouseLeave={handleLeave} ref={addToRefs} >
+            <div className={prop._id === targetId ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onMouseEnter={hov} onMouseLeave={handleLeave} ref={addToRefs} >
                 <div className={styles.card_left}>
                     <SliderTest img={prop.images} />
                 </div>
