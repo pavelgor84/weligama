@@ -18,9 +18,20 @@
   -moz-box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
   box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
   border-radius: 0px 5px 15px 0px;  
-  background-color: rgb(239 193 176 / 59%);
+  background-color: rgb(247 247 242);
   transform: translateX(20px); /* Выдвигаем элемент вправо */
     transition: transform 0.3s ease; /* Плавный переход */
+}
+.card_container_selected .card_right_options_button {
+  background-color: #49735A;
+}
+
+.card_container_selected .card_right_h3 {
+  color: #febb02
+}
+
+.card_container_selected .card_right_price {
+  color: #49735A
 }
 
 .card_left {
@@ -133,6 +144,14 @@
   .card_right {
     padding-top: 5px;
   }
+  .card_container_selected {
+    z-index: 10;
+    white-space: nowrap;
+    width: 450px;
+    height: 135px;
+    border-radius: 15px 5px 15px 0px;
+    
+  }
 
 }
 
@@ -148,6 +167,16 @@
 
   .card_right {
     padding-top: 5px;
+  }
+
+  
+  .card_container_selected {
+    z-index: 10;
+    white-space: nowrap;
+    width: 450px;
+    height: 135px;
+    border-radius: 15px 5px 15px 0px;
+    
   }
 
 }

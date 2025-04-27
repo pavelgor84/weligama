@@ -233,7 +233,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         const features = getRenderedFeatures(e.point);
 
         if (features.length) {
-            //console.log("click")
+            console.log("click")
             const element = features[0];
             location.current = element.geometry.coordinates
             scroll_to(element.properties.home_id)

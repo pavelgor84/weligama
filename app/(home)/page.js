@@ -1,11 +1,9 @@
 "use client"
 
 //import Image from 'next/image'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import styles from '../page.module.css'
-//import { Icon_bed, Icon_cond, Icon_shower } from '@/components/icons/iconset'
 
-//import SliderTest from '@/components/slider/SliderTest'
 
 import Map from '@/components/map/map'
 //import Link from 'next/link'
@@ -34,12 +32,14 @@ export default function Home() {
   function handleLeave(e) {
 
     setId(false)
+    setScrollTo('') //prevent pass targetId to houseMenu for preventing clear selection
 
   }
 
   function handleOver(e) { // handle marker for the map
     //e.preventDefault()
     setId(e.target.id)
+    setScrollTo('') //prevent pass targetId to houseMenu for preventing clear selection
 
   }
 
@@ -54,22 +54,19 @@ export default function Home() {
   const [popup, setPopup] = useState('')
 
   const [changePoints, setchangePoints] = useState('')
-  console.log(changePoints.add)
-
-
 
   const [scrollTo, setScrollTo] = useState('')
 
+
+  useEffect(() => {
+    // Здесь можно выполнить действия при изменении scrollTo
+    console.log('Scroll to:', scrollTo);
+  }, [scrollTo]);
+
   const scrollToElement = (id) => {
     setScrollTo(id); // Устанавливаем целевой идентификатор and send scrollTo to HouseMenu
-    // if (itemRef.current) {
-    //   console.log(itemRef.current)
-    //   itemRef.current.scrollIntoView({ block: "center", behavior: 'smooth' });
-    // }
+
   };
-
-
-
 
   useEffect(() => {
     fetch('/api')
@@ -123,7 +120,7 @@ export default function Home() {
       <div className={styles.right_block}>
         <div className={styles.map_place}>
           <div className={styles.block}>
-            {nav.positions.length != 0 ? <Map setchangePoints={setchangePoints} centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={setScrollTo} html_popup={popup} /> : "Loading..."}
+            {nav.positions.length != 0 ? <Map setchangePoints={setchangePoints} centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={scrollToElement} html_popup={popup} /> : "Loading..."}
           </div>
 
         </div>
