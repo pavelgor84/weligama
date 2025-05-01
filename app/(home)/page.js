@@ -32,7 +32,7 @@ export default function Home() {
   function handleLeave(e) {
 
     setId(false)
-    setScrollTo('') //prevent pass targetId to houseMenu for preventing clear selection
+    //setScrollTo('') //prevent pass targetId to houseMenu for preventing clear selection
 
   }
 

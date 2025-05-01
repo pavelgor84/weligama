@@ -19,8 +19,6 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
     const itemRef = useRef([]);
     //console.log(itemRef.current)
-    const itemSelected = useRef(null);
-    //console.log(itemSelected.current)
 
     useEffect(() => {
         //get cards data, delete from state? request a new data, update the state
@@ -29,11 +27,13 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
     }, [cards]);
 
-
-    if (targetId !== null && itemSelected.current !== null && itemRef.current.length != 0) { //check for targetId, check for all refs for handle selection in menu
-        if (itemRef.current[itemSelected.current].id === targetId) {
-            itemRef.current[itemSelected.current].className = styles.card_container_selected
-        }
+    console.log(targetId)
+    if (targetId !== null && itemRef.current.length != 0) { //check for targetId, check for all refs for handle selection in menu
+        itemRef.current.forEach((item) => {
+            if (item.id === targetId) {
+                item.className = styles.card_container_selected //apply selected style to menu element
+            }
+        })
 
     }
     if (targetId !== null) {// scroll to given targetId, if not do nothing
@@ -41,11 +41,8 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
         if (index !== -1) {
 
             itemRef.current[index].scrollIntoView({ block: "center", behavior: 'smooth' });
-            itemSelected.current = index
         }
     }
-
-
 
     const addToRefs = (el) => { // add refs to every menu element
         if (el && !itemRef.current.includes(el)) {
@@ -53,26 +50,31 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
         }
     };
 
-    function hov(element) {// cear selection in menu
+    function hov(element) {// cear selection in menu if we pointed to another element
 
-        if (itemSelected.current) {
-            itemRef.current[itemSelected.current].className = styles.card_container
+        if (targetId !== null) { // if there is a point to select
+            if (element.target.id !== targetId) { // if current menu element isn't pointed
+                itemRef.current.forEach((item) => {
+                    if (item.id === targetId) {
+                        item.className = styles.card_container // remove current selection if we pointed to other element
+                    }
+                })
+                handleOver(element)// call update mark on the map for remove.
+            }
         }
-
-        handleOver(element)
 
     }
 
     async function changeCards(cards) {
         // + not delete from state and not add? update state with incoming cards
         if (cards.add.length == 0 & cards.del.length == 0) {
-            console.log("first load")
+            //console.log("first load")
             let newState = await getNewCards(cards.stay)
             setCard(newState)
         }
         // + delete from state and no add? then delete from state and update
         if (cards.add.length == 0 & cards.del.length != 0) {
-            console.log("delete cards")
+            //console.log("delete cards")
             let prevState = [...card]
             let newState = prevState.filter((item) => !cards.del.includes(item._id))
             setCard(newState)
@@ -87,7 +89,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
         }
         //not delete from state and add? then request DB and add new data to state and update
         if (cards.add.length != 0 & cards.del.length == 0) {
-            console.log("add new cards")
+            //console.log("add new cards")
             let prevState = [...card]
             let newCards = await getNewCards(cards.add)
             prevState.push(...newCards)

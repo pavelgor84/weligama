@@ -14,7 +14,7 @@
 }
 
 .left_block {
-  width: 30%;
+  width: 25%;
   height: 100%;
   padding-left: 5px;
   z-index: 1;
@@ -24,7 +24,7 @@
 
 .right_block {
   padding-top: 4px;
-  width: 70%;
+  width: 75%;
   height: 68vh;
   position: sticky;
   top: 30%;

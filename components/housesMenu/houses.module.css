@@ -1,6 +1,6 @@
 .card_container {
   margin-top: 10px;
-  width: auto;
+  width: 490px;
   height: 170px;
   display: flex;
   -webkit-box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
@@ -11,7 +11,7 @@
 }
 .card_container_selected {
   margin-top: 10px;
-  width: auto;
+  width: 490px;
   height: 170px;
   display: flex;
   -webkit-box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
@@ -43,7 +43,7 @@
 .card_right {
   /* background-color: rgb(247 247 242); */
   width: 70%;
-  padding: 20px 80px 20px 20px;
+  padding: 20px 40px 20px 20px;
   border-radius: 0px 5px 15px 0px;
   z-index: 3;
 }
