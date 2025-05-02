@@ -36,9 +36,9 @@ export default function Home() {
 
   }
 
-  function handleOver(e) { // handle marker for the map
+  function handleOver(property_id) { // handle marker for the map
     //e.preventDefault()
-    setId(e.target.id)
+    setId(property_id)
     setScrollTo('') //prevent pass targetId to houseMenu for preventing clear selection
 
   }
