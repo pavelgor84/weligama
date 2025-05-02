@@ -15,7 +15,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
 
     const [card, setCard] = useState([])
-    //console.log("scroll to ", targetId)
+    console.log("scroll to ", targetId)
 
     const itemRef = useRef([]);
     //console.log(itemRef.current)
@@ -51,8 +51,20 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
     };
 
     function hov(element) {// cear selection in menu if we pointed to another element
-        console.log('hover', element.currentTarget.id)
 
+        if (targetId !== null) { // if there is a point to select
+            if (element.currentTarget.id !== targetId) { // if current menu element isn't pointed
+                itemRef.current.forEach((item) => {
+                    if (item.id === targetId) {
+                        item.className = styles.card_container // remove current selection if we pointed to other element
+                    }
+                })
+                handleOver(element.currentTarget.id)// call update mark on the map for remove.
+            }
+        }
+    }
+    function touch(element) {
+        handleLeave()
         if (targetId !== null) { // if there is a point to select
             if (element.currentTarget.id !== targetId) { // if current menu element isn't pointed
                 itemRef.current.forEach((item) => {
@@ -112,7 +124,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
     const menu = card ? card.map((prop, index) => {
         return (
-            <div className={prop._id === targetId ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onTouchStart={hov} onMouseEnter={hov} onMouseLeave={handleLeave} ref={addToRefs} >
+            <div className={prop._id === targetId ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onTouchMove={touch} onMouseEnter={hov} onMouseLeave={handleLeave} ref={addToRefs} >
                 <div className={styles.card_left}>
                     <SliderTest img={prop.images} />
                 </div>
