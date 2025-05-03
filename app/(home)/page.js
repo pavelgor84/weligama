@@ -51,6 +51,7 @@ export default function Home() {
   })
   //console.log(nav)
   const [id, setId] = useState('')
+  console.log('id', id)
   const [popup, setPopup] = useState('')
 
   const [changePoints, setchangePoints] = useState('')
