@@ -33,10 +33,12 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
     const mark = useRef([0, 0])
     // const weligama = { lng: 80.430288, lat: 5.971817 };
 
+    const lastPoint = useRef('')
+
     const lastPoints = useRef(null)
 
     const weligama = { lng: cz[1], lat: cz[0] };
-    //console.log(weligama)
+    console.log('map point id', pointId)
 
 
     maptilersdk.config.apiKey = process.env.MAPTILER_API;
@@ -235,6 +237,8 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         if (features.length) {
             console.log("click")
             const element = features[0];
+            // lastPoint.current = element.properties.home_id
+            lastPoint.current = pointId
             location.current = element.geometry.coordinates
             scroll_to(element.properties.home_id)
 
@@ -260,7 +264,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
             let find = feaurez.find((el) => {
                 return el.properties.home_id == point
             })
-            //console.log(find)
+
             if (find) {
                 changeMarker(find.id) //if find then change color to selected
                 // map.current.flyTo({
@@ -282,24 +286,27 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         }
 
 
-        const find_home = getFeatureOfPoint(pointId) // get features in the map viewport
+        getFeatureOfPoint(pointId) // get features in the map viewport
 
-        if (!find_home) { // if no then go search geojson
-            const find_home_away = coords.find((el) => {
-                return el.properties.home_id == pointId
-            })
-            if (find_home_away) {
-                //map.current.setCenter(find_home_away.geometry.coordinates);
-                let z = map.current.flyTo({ // go to geojson feature coordinates
-                    center: find_home_away.geometry.coordinates
-                })
-                setTimeout(() => { //wait to load features to map viewport
-                    getFeatureOfPoint(pointId) //call find features in the map viewport 
-                }, 1000);
 
-            }
+        // lastPoint.current = pointId
 
-        }
+        // if (!find_home) { // if no then go search geojson
+        //     const find_home_away = coords.find((el) => {
+        //         return el.properties.home_id == pointId
+        //     })
+        //     if (find_home_away) {
+        //         //map.current.setCenter(find_home_away.geometry.coordinates);
+        //         let z = map.current.flyTo({ // go to geojson feature coordinates
+        //             center: find_home_away.geometry.coordinates
+        //         })
+        //         setTimeout(() => { //wait to load features to map viewport
+        //             getFeatureOfPoint(pointId) //call find features in the map viewport 
+        //         }, 1000);
+
+        //     }
+
+        // }
 
     }
     // const debounce = (mainFunction, delay) => {

@@ -28,25 +28,29 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
     }, [cards]);
 
-    useEffect(() => {
-        console.log(targetId)
-        if (targetId !== null && itemRef.current.length != 0) { //check for targetId, check for all refs for handle selection in menu
+
+    console.log(targetId)
+    if (targetId !== null && itemRef.current.length != 0) { //check for targetId, check for all refs for handle selection in menu
+        if (targetId !== selectedRef.current) {
             itemRef.current.forEach((item) => {
                 if (item.id === targetId) {
                     item.className = styles.card_container_selected //apply selected style to menu element
+                    item.scrollIntoView({ block: "center", behavior: 'smooth' });
+                    selectedRef.current = targetId
                 }
             })
-
-        }
-        if (targetId !== null) {// scroll to given targetId, if not do nothing
-            const index = itemRef.current.findIndex(item => item.id === targetId);
-            if (index !== -1) {
-
-                itemRef.current[index].scrollIntoView({ block: "center", behavior: 'smooth' });
-            }
         }
 
-    }, [targetId]);
+    }
+    // if (targetId !== null) {// scroll to given targetId, if not do nothing
+    //     const index = itemRef.current.findIndex(item => item.id === targetId);
+    //     if (index !== -1) {
+
+    //         itemRef.current[index].scrollIntoView({ block: "center", behavior: 'smooth' });
+    //     }
+    // }
+
+
 
 
 
@@ -60,10 +64,10 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
         if (targetId !== null) { // if there is a point to select
             if (element.currentTarget.id !== targetId) { // if current menu element isn't pointed
-                selectedRef.current = element.currentTarget.id
                 itemRef.current.forEach((item) => {
                     if (item.id === targetId) {
                         item.className = styles.card_container // remove current selection if we pointed to other element
+                        selectedRef.current = element.currentTarget.id
                     }
                 })
                 handleOver(element.currentTarget.id)// call update mark on the map for remove.
@@ -79,11 +83,15 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
                         item.className = styles.card_container // remove current selection if we pointed to other element
                     }
                 })
-                handleLeave()
+
                 handleOver(element.currentTarget.id)// call update mark on the map for remove.
             }
         }
-
+    }
+    function touchEnd(element) {
+        if (element.currentTarget.id !== selectedRef.current) {
+            handleLeave()
+        }
     }
 
     async function changeCards(cards) {
@@ -132,7 +140,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
     const menu = card ? card.map((prop, index) => {
         return (
-            <div className={prop._id === targetId ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onTouchMove={touch} onMouseEnter={hov} onMouseLeave={handleLeave} ref={addToRefs} >
+            <div className={prop._id === targetId ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onTouchStart={handleLeave} onTouchEnd={hov} onMouseEnter={hov} onMouseLeave={handleLeave} ref={addToRefs} >
                 <div className={styles.card_left}>
                     <SliderTest img={prop.images} />
                 </div>

@@ -30,9 +30,9 @@ export default function Home() {
 
   }
   function handleLeave(e) {
-
+    console.log('leave')
     setId(false)
-    //setScrollTo('') //prevent pass targetId to houseMenu for preventing clear selection
+    setScrollTo('') //prevent pass targetId to houseMenu for preventing clear selection
 
   }
 
