@@ -15,7 +15,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
 
     const [card, setCard] = useState([])
-    console.log("scroll to ", targetId)
+    //console.log("scroll to ", targetId)
 
     const itemRef = useRef([]);
     const selectedRef = useRef('');
@@ -29,7 +29,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
     }, [cards]);
 
 
-    console.log(targetId)
+    //console.log(targetId)
     if (targetId !== null && itemRef.current.length != 0) { //check for targetId, check for all refs for handle selection in menu
         if (targetId !== selectedRef.current) {
             itemRef.current.forEach((item) => {
@@ -140,7 +140,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
     const menu = card ? card.map((prop, index) => {
         return (
-            <div className={prop._id === targetId ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onTouchStart={handleLeave} onTouchEnd={hov} onMouseEnter={hov} onMouseLeave={handleLeave} ref={addToRefs} >
+            <div className={prop._id === targetId ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onTouchStart={hov} onMouseEnter={hov} onMouseLeave={handleLeave} ref={addToRefs} >
                 <div className={styles.card_left}>
                     <SliderTest img={prop.images} />
                 </div>

@@ -10,7 +10,7 @@ import { createRoot } from 'react-dom/client';
 import Popup from '../popup/popup';
 
 
-export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], pointId, scroll_to, html_popup, setchangePoints }) {
+export default function Map({ clearId, centerZoom, coords = [[5.971817, 80.430288]], pointId, scroll_to, html_popup, setchangePoints }) {
     const geo = {
         "type": "FeatureCollection",
         "features": coords
@@ -38,7 +38,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
     const lastPoints = useRef(null)
 
     const weligama = { lng: cz[1], lat: cz[0] };
-    console.log('map point id', pointId)
+    //console.log('map point id', pointId)
 
 
     maptilersdk.config.apiKey = process.env.MAPTILER_API;
@@ -141,7 +141,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
 
     useEffect(() => { //clear markers when no pointId and mouse is over the list
         if (map.current.style.map.isReady && !pointId) {
-            map.current.setLayoutProperty('points', 'icon-image', 'svg');
+            //map.current.setLayoutProperty('points', 'icon-image', 'svg');
         }
 
     }, [pointId])
@@ -235,12 +235,13 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
         const features = getRenderedFeatures(e.point);
 
         if (features.length) {
-            console.log("click")
+            //console.log("click")
             const element = features[0];
             // lastPoint.current = element.properties.home_id
             lastPoint.current = pointId
             location.current = element.geometry.coordinates
-            scroll_to(element.properties.home_id)
+
+            console.log('element id', element.id)
 
             map.current.setLayoutProperty('points', 'icon-image',
                 [
@@ -250,6 +251,8 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
                     'svg' // default
                 ]
             );
+            scroll_to(element.properties.home_id)
+            clearId(false)
 
             // if (saved_popup.current != null && (saved_html.current._id == element.properties.home_id) && !saved_popup.current.isOpen()) { //check if popup is closed and reopen it using useRef vars
             //     show_popup()
@@ -275,6 +278,7 @@ export default function Map({ centerZoom, coords = [[5.971817, 80.430288]], poin
             else return false
         }
         function changeMarker(id) {
+            console.log(id)
             map.current.setLayoutProperty('points', 'icon-image',
                 [
                     'match',
