@@ -30,7 +30,7 @@ export default function Home() {
 
   }
   function handleLeave(e) {
-    console.log('leave')
+    //console.log('leave')
     setId(false)
     setScrollTo('') //prevent pass targetId to houseMenu for preventing clear selection
 
@@ -44,7 +44,7 @@ export default function Home() {
   }
 
   const [asset, setAsset] = useState([])
-  //console.log(asset)
+  console.log(asset)
   const [nav, setNav] = useState({
     positions: [],
     currentPoint: ''
@@ -85,7 +85,7 @@ export default function Home() {
       "properties": {
         "@id": prop._id,
         "home_id": prop._id,
-        "price": ""
+        "price": prop.price
       },
       "id": prop._id,
       "geometry": {

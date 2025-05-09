@@ -101,8 +101,17 @@ export default function Map({ clearId, centerZoom, coords = [[5.971817, 80.43028
                 'source': 'marks',
                 'layout': {
                     'icon-image': 'svg',
+                    'text-field': ['get', 'price'],
+                    'text-size': 14,
+                    'text-font': ['Open Sans Semibold',
+                        'Arial Unicode MS Bold'],
+                    'text-offset': [0, 1.25],
+                    'text-anchor': 'top'
                 },
-                'paint': {}
+                'paint': {
+                    'text-color': '#2b4736',
+
+                }
             });
 
 
@@ -217,7 +226,7 @@ export default function Map({ clearId, centerZoom, coords = [[5.971817, 80.43028
             console.log("update!")
             setchangePoints(rezState)
         }
-        else { console.log("calm!") }
+        //else { console.log("calm!") }
 
 
     }
@@ -278,7 +287,7 @@ export default function Map({ clearId, centerZoom, coords = [[5.971817, 80.43028
             else return false
         }
         function changeMarker(id) {
-            console.log(id)
+            //console.log(id)
             map.current.setLayoutProperty('points', 'icon-image',
                 [
                     'match',
