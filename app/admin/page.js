@@ -10,7 +10,7 @@ export default async function AdminBlock() {
 
 
     return (
-        <div className={styles.container}>
+        <div >
             {session && (<AdminMenu email={session.user.email} />)}
 
         </div>
