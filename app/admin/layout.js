@@ -16,22 +16,7 @@ export default function RootLayout({ children }) {
         boxSizing: "border-box",
         padding: "0", margin: "0"
       }}>
-        <div className={styles.container}>
-          <div className={styles.menu}>
-            <div className={styles.left_items}>
-              <div className={styles.logo}>
-                PropertyHub
-              </div>
-              <div className={styles.left_links}>
-                <a href='#'>Add property</a>
-                <a href='#'>Edit property</a>
-              </div>
-            </div>
-            <div className={styles.right_items}>
-              <div className={styles.email}>user@gmail.com</div>
-            </div>
-          </div>
-        </div>
+
         {children}
         <div>FOOTER</div>
 
