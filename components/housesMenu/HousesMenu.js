@@ -155,8 +155,8 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
                         <div className={styles.card_right_options} >
                             <Icon_bed /> <span>{prop.bedroom}</span>
                             <Icon_shower /> <span>{prop.bath}</span>
-                            <Icon_cond /> <span>{prop.ac}</span>
-                            <div className={styles.card_right_options_txt}><span>View {prop.view}</span>  |  <span>Floors {prop.floor}</span>  |  <span>Elevator</span> | <span>Parking {prop.parking}</span></div>
+                            <Icon_cond /> <span>{prop.ac ? "Yes" : "No"}</span>
+                            <div className={styles.card_right_options_txt}><span>View {prop.view}</span>  |  <span>Floors {prop.floor}</span>  |  <span>Elevator</span> | <span>Parking {prop.parking ? "Yes" : "No"}</span></div>
                         </div>
                         <div className={styles.card_right_bottom}>
                             <div className={styles.card_right_date}><button className={styles.card_right_options_button}>Available</button></div>

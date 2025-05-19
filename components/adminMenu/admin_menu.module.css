@@ -128,7 +128,6 @@ box-shadow: 0px 2px 3px 0px rgba(34, 60, 80, 0.2);
     margin-top: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
 }
 .radio_option {
     display: flex;
@@ -241,11 +240,11 @@ box-shadow: 0px 2px 3px 0px rgba(34, 60, 80, 0.2);
     transition: transform 0.2s;
 }
 
-.toggle_input:checked + .toggle-slider {
+.toggle_input:checked + .toggle_slider {
     background-color: #2563eb;
 }
 
-.toggle_input:checked + .toggle-slider:after {
+.toggle_input:checked + .toggle_slider:after {
     transform: translateX(1.25rem);
     border-color: white;
 }

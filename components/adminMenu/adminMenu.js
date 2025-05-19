@@ -13,12 +13,12 @@ export default function AdminMenu({ email }) {
         coordinates: '',
         bedroom: '',
         bath: '',
-        ac: '',
+        ac: false,
         view: '',
         floor: '',
-        parking: '',
+        parking: false,
         price: '',
-        available: '',
+        available: true,
         images: '',
         rooms_info: [],
         description: ''
@@ -39,7 +39,7 @@ export default function AdminMenu({ email }) {
             floor: '',
             parking: '',
             price: '',
-            available: '',
+            available: true,
             images: '',
             rooms_info: [],
             description: ''
@@ -111,6 +111,11 @@ export default function AdminMenu({ email }) {
         //console.log(e)
         const { name, value } = e.target;
         setProperty(prevState => ({ ...prevState, rooms_info: { ...prevState.rooms_info, [name]: value } }));
+    }
+    const handleTogglechange = (e) => {
+        console.log(e)
+        const { name } = e.target;
+        setProperty(prevState => ({ ...prevState, [name]: !prevState[name] }));
     }
 
     async function send_data(data) {
@@ -223,7 +228,7 @@ export default function AdminMenu({ email }) {
                                 </div>
                                 <div>
                                     <label className={styles.input_label}>Coordinates</label>
-                                    <input className={styles.text_input} ype="text" placeholder='5.9744140972131685, 80.43011706614641' name="coordinates" value={property.coordinates} onChange={handleChange} required />
+                                    <input className={styles.text_input} ype="text" placeholder='e.g., 5.9744140972131685, 80.43011706614641' name="coordinates" value={property.coordinates} onChange={handleChange} required />
                                 </div>
                             </div>
                         </div>
@@ -248,7 +253,18 @@ export default function AdminMenu({ email }) {
                                 </div>
                             </div>
                             <div className={styles.radio_group}>
-                                <div className={styles.radio_option}>
+                                <div className={styles.toggle_container}>
+                                    <div>
+                                        <p className={styles.section_description}>
+                                            Air Conditioner
+                                        </p>
+                                    </div>
+                                    <label className={styles.toggle_switch}>
+                                        <input className={styles.toggle_input} type="checkbox" name='ac' checked={property.ac} onChange={handleTogglechange} />
+                                        <div className={styles.toggle_slider}></div>
+                                    </label>
+                                </div>
+                                {/* <div className={styles.radio_option}>
                                     <label>Air Conditioner</label>
                                     <div className={styles.radio_buttons}>
                                         <label>
@@ -260,19 +276,18 @@ export default function AdminMenu({ email }) {
                                             <span>No</span>
                                         </label>
                                     </div>
-                                </div>
-                                <div className={styles.radio_option}>
-                                    <label>Parking</label>
-                                    <div className={styles.radio_buttons}>
-                                        <label>
-                                            <input name="parking" type="radio" value="Yes" checked={property.parking === "Yes"} onChange={handleChange} />
-                                            <span>Yes</span>
-                                        </label>
-                                        <label>
-                                            <input name="parking" type="radio" value="No" checked={property.parking === "No"} onChange={handleChange} />
-                                            <span>No</span>
-                                        </label>
+                                </div> */}
+
+                                <div className={styles.toggle_container}>
+                                    <div>
+                                        <p className={styles.section_description}>
+                                            Parking
+                                        </p>
                                     </div>
+                                    <label className={styles.toggle_switch}>
+                                        <input className={styles.toggle_input} type="checkbox" name='parking' checked={property.parking} onChange={handleTogglechange} />
+                                        <div className={styles.toggle_slider}></div>
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -317,7 +332,7 @@ export default function AdminMenu({ email }) {
                                 </p>
                             </div>
                             <label className={styles.toggle_switch}>
-                                <input className={styles.toggle_input} type="checkbox" />
+                                <input className={styles.toggle_input} type="checkbox" name='available' checked={property.available} onChange={handleTogglechange} />
                                 <div className={styles.toggle_slider}></div>
                             </label>
                         </div>

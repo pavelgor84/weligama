@@ -21,6 +21,6 @@ export async function POST(request) {
     //     .catch(err => {
     //         console.error(err);
     //     });
-    return NextResponse.json(await Restate.find({ _id: { $in: housesIds }, "available": "Yes" }).exec())
+    return NextResponse.json(await Restate.find({ _id: { $in: housesIds }, "available": true }).exec())
 
 }
