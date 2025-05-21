@@ -162,6 +162,56 @@ box-shadow: 0px 2px 3px 0px rgba(34, 60, 80, 0.2);
 .textarea {
     min-height: 6rem;
 }
+.room_del_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.add_rooms_block{
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+
+}
+.roomButton {
+	background-color:#eff6ff;
+	border-radius:28px;
+	display:inline-block;
+	cursor:pointer;
+	color:blue;
+    border: 0px;
+	
+	font-size:17px;
+	padding:8px 34px;
+	text-decoration:none;
+}
+.roomButton:hover {
+	background-color:rgb(227, 238, 253);
+}
+.roomButton:active {
+	position:relative;
+	top:1px;
+}
+.roomButton_del {
+	background-color:#eff6ff;
+	border-radius:28px;
+	display:inline-block;
+	cursor:pointer;
+	color: #d7113d;
+    border: 0px;
+	
+	font-size:17px;
+	padding:8px 34px;
+	text-decoration:none;
+}
+.roomButton_del:hover {
+	background-color:rgb(227, 238, 253);
+}
+.roomButton_del:active {
+	position:relative;
+	top:1px;
+}
+
 .right_section {
     display: flex;
     flex-direction: column;

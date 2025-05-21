@@ -264,19 +264,6 @@ export default function AdminMenu({ email }) {
                                         <div className={styles.toggle_slider}></div>
                                     </label>
                                 </div>
-                                {/* <div className={styles.radio_option}>
-                                    <label>Air Conditioner</label>
-                                    <div className={styles.radio_buttons}>
-                                        <label>
-                                            <input name="ac" type="radio" value="Yes" checked={property.ac === "Yes"} onChange={handleChange} />
-                                            <span>Yes</span>
-                                        </label>
-                                        <label>
-                                            <input name="ac" type="radio" value="No" checked={property.ac === "No"} onChange={handleChange} />
-                                            <span>No</span>
-                                        </label>
-                                    </div>
-                                </div> */}
 
                                 <div className={styles.toggle_container}>
                                     <div>
@@ -306,6 +293,30 @@ export default function AdminMenu({ email }) {
                             <h2 className={styles.section_title}>Property Description</h2>
                             <textarea className={styles.text_input} placeholder="Describe the property in detail..." rows="4" name="description" value={property.description || ''} onChange={handleChange} required></textarea>
                         </div>
+                        <div className={styles.add_rooms_block}>
+                            <h2 className={styles.section_title}>If you have separate rooms:</h2>
+                            <button className={styles.roomButton} onClick={(e) => handleAddPerson(e)}>Add room</button>
+                        </div>
+                        {property.rooms_info.map((form, index) => (
+                            <React.Fragment key={form.id} >
+                                <div className={styles.form_section}>
+                                    <h2 className={styles.section_title}>Room {index + 1}</h2>
+                                    <p className={styles.section_description}>Upload nice photos of the room.</p>
+                                    <input className={styles.file_input} type="file" name={index} multiple value={room.images} onChange={handleRoomChange} required />
+
+                                    <h2 className={styles.section_title}>Room {index + 1} description</h2>
+                                    <textarea className={styles.text_input} placeholder="Describe this room in detail..." rows="4" name='info' value={form.info} onChange={(e) => handleInputChange(e, index)} required />
+                                    <div className={styles.room_del_container}>
+                                        <p className={styles.section_description}>Remove this room</p>
+                                        <button className={styles.roomButton_del} onClick={(e) => handleDeleteRoom(e, index)}>Delete</button>
+                                    </div>
+
+                                </div>
+                            </React.Fragment>
+
+
+                        ))}
+
                     </form>
                 </div >
 
