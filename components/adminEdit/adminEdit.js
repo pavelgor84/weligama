@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
-import styles from './list.module.css'
+import styles from './admin_edit.module.css'
 
 
 export default function AdminEdit({ email }) {
@@ -19,12 +19,12 @@ export default function AdminEdit({ email }) {
             coordinates: '',
             bedroom: '',
             bath: '',
-            ac: '',
+            ac: false,
             view: '',
             floor: '',
-            parking: '',
+            parking: false,
             price: '',
-            available: '',
+            available: true,
             occupied_rooms: [],
             images: '',
             rooms: '',
@@ -311,119 +311,12 @@ export default function AdminEdit({ email }) {
     }
 
 
-    return (asset.length ?
-        <section>
-            <div className={styles.block}>
-                {/* {JSON.stringify(asset)} */}
+    return (
 
-                <h2>Edit property for {email}</h2>
-                <label htmlFor="property">Choose your property:</label>
-
-                <select name="property" id="property_list" onChange={e => handleSelect(e.target.value)}>
-                    {selection}
-
-                </select>
-                <form id="info_form" className={styles.form} onSubmit={handleSubmit}>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <th align='right'><label>Available:</label></th>
-                                <th align='left'><label>
-                                    <input type="radio" name="available" value="Yes" checked={property.available === "Yes"} onChange={handleChange} />
-                                    Yes
-                                </label>
-                                    <label>
-                                        <input type="radio" name="available" value="No" checked={property.available === "No"} onChange={handleChange} />
-                                        No
-                                    </label></th>
-                            </tr>
-                            <tr>
-                                <th align='right'><label>Property Name:</label></th>
-                                <th align='left'><input type="text" name="name" value={property.name} onChange={handleChange} required /></th>
-                            </tr>
-                            <tr>
-                                <th align='right'><label>Phone number:</label></th>
-                                <th align='left'><input type="text" name="phone" value={property.phone} onChange={handleChange} required /></th>
-                            </tr>
-                            <tr>
-                                <th align='right'><label>Coordinates:</label></th>
-                                <th align='left'><input type="text" name="coordinates" value={property.coordinates} onChange={handleChange} required /></th>
-                            </tr>
-                            <tr>
-                                <th align='right'><label>Number of Bedrooms:</label></th>
-                                <th align='left'><input type="number" name="bedroom" max="99" value={property.bedroom} onChange={handleChange} required /></th>
-                            </tr>
-                            <tr>
-                                <th align='right'> <label>Number of Bathrooms:</label> </th>
-                                <th align='left'> <input type="number" name="bath" max="99" value={property.bath} onChange={handleChange} required /></th>
-                            </tr>
-                            <tr>
-                                <th align='right'><label>A/C:</label></th>
-                                <th align='left'><label>
-                                    <input type="radio" name="ac" value="Yes" checked={property.ac === "Yes"} onChange={handleChange} />
-                                    Yes
-                                </label>
-                                    <label>
-                                        <input type="radio" name="ac" value="No" checked={property.ac === "No"} onChange={handleChange} />
-                                        No
-                                    </label></th>
-                            </tr>
-                            <tr>
-                                <th align='right'><label>View:</label></th>
-                                <th align='left'><input type="text" name="view" value={property.view} onChange={handleChange} /></th>
-                            </tr>
-                            <tr>
-                                <th align='right'><label>Floor Number:</label></th>
-                                <th align='left'><input type="number" name="floor" max="99" value={property.floor} onChange={handleChange} required /></th>
-                            </tr>
-                            <tr>
-                                <th align='right'><label>Parking:</label></th>
-                                <th align='left'><label>
-                                    <input type="radio" name="parking" value="Yes" checked={property.parking === "Yes"} onChange={handleChange} />
-                                    Yes
-                                </label>
-                                    <label>
-                                        <input type="radio" name="parking" value="No" checked={property.parking === "No"} onChange={handleChange} />
-                                        No
-                                    </label></th>
-                            </tr>
-                            <tr>
-                                <th align='right'><label>Price:</label></th>
-                                <th align='left'><input type="text" name="price" value={property.price} onChange={handleChange} required /></th>
-                            </tr>
-                            <tr>
-                                <th align='right'><label>Property description:</label></th>
-                                <th align='left'><textarea name="description" value={property.description || ''} onChange={handleChange} /> </th>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                    <button disabled={loading} form="info_form" type="submit">Update</button>
-                </form>
-                <div className={styles.images_container}>
-                    <span>Property images</span>
-                    <div className={styles.images}>
-                        {imageSet}
-                    </div>
-
-
-                    <label>Upload images:</label>
-                    <input type="file" name="images" multiple disabled={loading} onChange={handleFileImagesChange} />
-
-
-                </div>
-                <span className={styles.roomsTitle}>Your rooms</span>
-                {/* <Rooms /> */}
-                {rooms}
-
-            </div>
-            <button className={styles.del_button} disabled={loading} onClick={() => handleDeleteProperty()}>Delete Property</button>
-
-
-        </section> :
-        <div className={styles.block}>
+        <div>
 
             <h2>No property added yet</h2>
+            {email}
         </div>
     )
 

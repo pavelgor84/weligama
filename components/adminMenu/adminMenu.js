@@ -199,7 +199,7 @@ export default function AdminMenu({ email }) {
                         </div>
                         <div className={styles.left_links}>
                             <a href='#'>Add property</a>
-                            <a href='#'>Edit property</a>
+                            <a href='/admin/edit'>Edit property</a>
                         </div>
                     </div>
                     <div className={styles.right_items}>
@@ -348,6 +348,8 @@ export default function AdminMenu({ email }) {
                             </label>
                         </div>
                     </div>
+                    <button className={styles.submit_button} disabled={loading} type="submit">Save Property</button>
+
                 </div>
 
 

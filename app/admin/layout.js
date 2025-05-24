@@ -14,7 +14,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={lato.className} style={{
         boxSizing: "border-box",
-        padding: "0", margin: "0"
+        padding: "0", margin: "0",
+        backgroundColor: "#bdced4"
       }}>
 
         {children}
