@@ -353,16 +353,6 @@ export default function AdminMenu({ email }) {
                 </div>
 
 
-
-
-
-
-
-
-
-
-
-
             </div >
 
         </>
