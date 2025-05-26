@@ -197,8 +197,8 @@ export default function AdminEdit({ email }) {
 
     const imageSet = property.images ? property.images.map((im) => {
         return (
-            <div key={im.public_id} >
-                <button id={im.public_id} onClick={(e) => handleDelete(e.target.id)} disabled={loading}> del</button>
+            <div className={styles.thumbnail_container} key={im.public_id} >
+                <button className={styles.delete_btn} id={im.public_id} onClick={(e) => handleDelete(e.target.id)} disabled={loading}>x</button>
                 <img src={im.src} width='60px' height='60px' />
             </div>
         )
@@ -215,8 +215,8 @@ export default function AdminEdit({ email }) {
                     <div className={styles.images}>
                         {el.map((room) => {
                             return (
-                                <div key={room.public_id} >
-                                    <button id={room.public_id} onClick={(e) => handleDelete(e.target.id)} disabled={loading}> del</button>
+                                <div className={styles.thumbnail_container} key={room.public_id} >
+                                    <button className={styles.delete_btn} id={room.public_id} onClick={(e) => handleDelete(e.target.id)} disabled={loading}>x</button>
                                     <img src={room.src} width='60px' height='60px' />
                                 </div>
                             )
