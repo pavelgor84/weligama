@@ -198,7 +198,6 @@ export default function AdminMenu({ email }) {
                             PropertyHub
                         </div>
                         <div className={styles.left_links}>
-                            <a href='#'>Add property</a>
                             <a href='/admin/edit'>Edit property</a>
                         </div>
                     </div>

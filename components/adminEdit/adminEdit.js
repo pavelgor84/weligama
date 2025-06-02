@@ -338,15 +338,17 @@ export default function AdminEdit({ email }) {
                         </div>
                         <div className={styles.left_links}>
                             <a href='/admin'>Add property</a>
-                            Select
-                            <div className={styles.dropdown_container}>
-                                <select className={styles.dropdown_select} name="property" id="property_list" onChange={e => handleSelect(e.target.value)}>
-                                    {selection}
-                                </select>
-                                <div className={styles.dropdown_icon}>
-                                    <svg className={styles.dropdown_svg} fill="currentColor" viewBox="0 0 20 20">
-                                        <path clipRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" fillRule="evenodd"></path>
-                                    </svg>
+                            <div className={styles.select_container}>
+                                Select
+                                <div className={styles.dropdown_container}>
+                                    <select className={styles.dropdown_select} name="property" id="property_list" onChange={e => handleSelect(e.target.value)}>
+                                        {selection}
+                                    </select>
+                                    <div className={styles.dropdown_icon}>
+                                        <svg className={styles.dropdown_svg} fill="currentColor" viewBox="0 0 20 20">
+                                            <path clipRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" fillRule="evenodd"></path>
+                                        </svg>
+                                    </div>
                                 </div>
                             </div>
                         </div>
