@@ -445,35 +445,14 @@ export default function AdminEdit({ email }) {
                             <h2 className={styles.section_title}>Property Description</h2>
                             <textarea className={styles.text_input} placeholder="Describe the property in detail..." rows="4" name="description" value={property.description || ''} onChange={handleChange} required></textarea>
                         </div>
-                        {/* <!-- Add rooms --> */}
-                        {/* <div className={styles.add_rooms_block}>
-                            <h2 className={styles.section_title}>If you have separate rooms:</h2>
-                            <button className={styles.roomButton} onClick={(e) => handleAddPerson(e)}>Add room</button>
-                        </div>
-                        {property.rooms_info.map((form, index) => (
-                            <React.Fragment key={form.id} >
-                                <div className={styles.form_section}>
-                                    <h2 className={styles.section_title}>Room {index + 1}</h2>
-                                    <p className={styles.section_description}>Upload nice photos of the room.</p>
-                                    <input className={styles.file_input} type="file" name={index} multiple value={room.images} onChange={handleRoomChange} required />
 
-                                    <h2 className={styles.section_title}>Room {index + 1} description</h2>
-                                    <textarea className={styles.text_input} placeholder="Describe this room in detail..." rows="4" name='info' value={form.info} onChange={(e) => handleInputChange(e, index)} required />
-                                    <div className={styles.room_del_container}>
-                                        <p className={styles.section_description}>Remove this room</p>
-                                        <button className={styles.roomButton_del} onClick={(e) => handleDeleteRoom(e, index)}>Delete</button>
-                                    </div>
-
-                                </div>
-                            </React.Fragment>
-
-
-                        ))} */}
-
-                        <Rooms />
 
                     </form>
                 </div >
+                {/* <!-- Add rooms --> */}
+                <div className={styles.room_block}>
+                    <Rooms />
+                </div>
 
                 {/* <!-- Right Side: Pricing, Description, Images, and Search Visibility --> */}
                 <div className={styles.right_section}>
@@ -512,7 +491,7 @@ export default function AdminEdit({ email }) {
                             </label>
                         </div>
                     </div>
-                    <button className={styles.submit_button} disabled={loading} type="submit">Save Property</button>
+                    <button className={styles.submit_button} disabled={loading} type="submit">Update Property Information</button>
 
                 </div>
 

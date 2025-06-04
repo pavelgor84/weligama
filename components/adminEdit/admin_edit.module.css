@@ -71,14 +71,18 @@
     margin-left: auto;
     margin-right: auto;
     padding: 1.5rem;
-    display: grid;
-    grid-template-columns: 1fr;
+    //display: grid;
+    //grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
 }
 
 @media (min-width: 768px) {
     .main_content {
+        display: grid;
         grid-template-columns: repeat(2, 1fr);
+       
     }
     .right_items{
     
@@ -422,3 +426,6 @@
     font-size: 12px;
     font-weight: bolder;
   }
+.room_block{
+    order: 2;
+}
