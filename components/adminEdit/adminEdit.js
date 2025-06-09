@@ -449,7 +449,7 @@ export default function AdminEdit({ email }) {
 
                     </form>
                 </div >
-                {/* <!-- Add rooms --> */}
+                {/* <!-- Rooms --> */}
                 <div className={styles.room_block}>
                     <Rooms />
                 </div>
