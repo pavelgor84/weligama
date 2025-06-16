@@ -204,60 +204,50 @@ export default function AdminEdit({ email }) {
         )
     }) : null
 
-    let rooms
-    if (property.rooms && property.rooms.length != 0) {
-        rooms = property.rooms.map((el, index) => {
-            return (
-                <div key={index} className={styles.form_section} style={{ backgroundColor: property.occupied_rooms.includes(index.toString()) && 'crimson' }}>
-                    <h2 className={styles.section_title}>Room {index + 1}</h2>
 
-                    <p className={styles.section_description}>Change photos of the room.</p>
-                    <div className={styles.images}>
-                        {el.map((room) => {
-                            return (
-                                <div className={styles.thumbnail_container} key={room.public_id} >
-                                    <button className={styles.delete_btn} id={room.public_id} onClick={(e) => handleDelete(e.target.id)} disabled={loading}>x</button>
-                                    <img src={room.src} width='60px' height='60px' />
-                                </div>
-                            )
-                        })}
-                    </div>
-                    <div className={styles.inputRoomImages}>
-                        <p className={styles.section_description}> Upload new images </p>
-                        <input className={styles.file_input} type="file" name={index} multiple onChange={handleFileRoomChange} />
-                    </div>
-                    <p className={styles.section_description}>Room description</p>
+    const rooms = property.rooms && property.rooms.length != 0 ? property.rooms.map((el, index) => {
 
-                    <textarea className={styles.text_input} placeholder="Describe this room in detail..." rows="4" ref={el => inputRefs.current[index] = el} name="info" value={property.rooms_info[index]?.info || ''}
-                        onChange={(e) => handleInputChange(e, index)} onFocus={handleFocus} />
-                    <div className={styles.submit_room}>
-                        <button className={styles.roomButton} disabled={loading} form="info_form" type="submit">Save</button>
-                    </div>
-
-                    <div className={styles.occupied} >
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={property.occupied_rooms.includes(index.toString())}
-                                onChange={() => handleCheckboxChange(index.toString())}
-                            />
-                            Occupied
-                        </label>
-                    </div>
-
-                </div>
-            )
-        })
-
-    }
-    function Rooms() {
         return (
-            <>
-                {rooms}
+            <div key={index} className={styles.form_section} style={{ backgroundColor: property.occupied_rooms.includes(index.toString()) && 'crimson' }}>
+                <h2 className={styles.section_title}>Room {index + 1}</h2>
 
-            </>
-        );
-    }
+                <p className={styles.section_description}>Change photos of the room.</p>
+                <div className={styles.images}>
+                    {el.map((room) => {
+                        return (
+                            <div className={styles.thumbnail_container} key={room.public_id} >
+                                <button className={styles.delete_btn} id={room.public_id} onClick={(e) => handleDelete(e.target.id)} disabled={loading}>x</button>
+                                <img src={room.src} width='60px' height='60px' />
+                            </div>
+                        )
+                    })}
+                </div>
+                <div className={styles.inputRoomImages}>
+                    <p className={styles.section_description}> Upload new images </p>
+                    <input className={styles.file_input} type="file" name={index} multiple onChange={handleFileRoomChange} />
+                </div>
+                <p className={styles.section_description}>Room description</p>
+
+                <textarea className={styles.text_input} placeholder="Describe this room in detail..." rows="4" ref={el => inputRefs.current[index] = el} name="info" value={property.rooms_info[index]?.info || ''}
+                    onChange={(e) => handleInputChange(e, index)} />
+                <div className={styles.submit_room}>
+                    <button className={styles.roomButton} disabled={loading} form="info_form" type="submit">Save</button>
+                </div>
+
+                <div className={styles.occupied} >
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={property.occupied_rooms.includes(index.toString())}
+                            onChange={() => handleCheckboxChange(index.toString())}
+                        />
+                        Occupied
+                    </label>
+                </div>
+
+            </div>
+        )
+    }) : null
 
 
     function handleSelect(item) {
@@ -362,7 +352,7 @@ export default function AdminEdit({ email }) {
             {/* <!-- Main Content --> */}
             <div className={styles.main_content}>
                 <div>
-                    <form className={styles.form_space} onSubmit={handleSubmit}>
+                    <form id='submit_form' className={styles.form_space} onSubmit={handleSubmit}>
                         {/* <!-- Basic Information --> */}
                         <div className={styles.form_section}>
                             <h2 className={styles.section_title}>Basic Information</h2>
@@ -451,7 +441,8 @@ export default function AdminEdit({ email }) {
                 </div >
                 {/* <!-- Rooms --> */}
                 <div className={styles.room_block}>
-                    <Rooms />
+
+                    {rooms}
                 </div>
 
                 {/* <!-- Right Side: Pricing, Description, Images, and Search Visibility --> */}
@@ -462,7 +453,7 @@ export default function AdminEdit({ email }) {
                         <p className={styles.section_description}>
                             Change photos of the property.
                         </p>
-                        {/* <input className={styles.file_input} type="file" name="images" multiple value={file.images} onChange={handleFileChange} required /> */}
+
                         <div className={styles.images_container}>
                             <div className={styles.images}>
                                 {imageSet}
@@ -491,9 +482,9 @@ export default function AdminEdit({ email }) {
                             </label>
                         </div>
                     </div>
-                    <button className={styles.submit_button} disabled={loading} type="submit">Update Property Information</button>
-
+                    <button className={styles.submit_button} form='submit_form' disabled={loading} type="submit">Update Property Information</button>
                 </div>
+                <button className={styles.del_button} disabled={loading} onClick={() => handleDeleteProperty()}>Delete Property</button>
 
 
             </div >

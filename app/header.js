@@ -5,8 +5,12 @@ export default function Header() {
         <div className={styles.container}>
 
             <div className={styles.title}>
-                <div className={styles.title_header}>Weligama houses</div>
-                <div className={styles.title_text}>Escape to paradise and experience the ultimate luxury at our exquisite villas in Weligama. Book your dream vacation today!</div>
+                <div className={styles.title_header}>Ceylon rooms</div>
+                <div className={styles.title_text}>More Economic Rental Choices to escape to paradise. Book your dream vacation today!</div>
+                <div className={styles.info_text}>
+                    The site is under development.
+                    <p>For any questions: pavelgor@gmail.com</p>
+                </div>
             </div>
 
         </div>

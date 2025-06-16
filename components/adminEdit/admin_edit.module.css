@@ -89,6 +89,18 @@
         font-size: small;
         color: #6b7280;
 }
+.del_button {
+    background-color: red;
+    width: 50%;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    align-self: self-end;
+    order: 3;
+}
 }
 
 
@@ -428,4 +440,16 @@
   }
 .room_block{
     order: 2;
+}
+.del_button {
+    background-color: red;
+    width: 100%;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    align-self: self-end;
+    order: 3;
 }

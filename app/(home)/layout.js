@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
       <body className={lato.className}>
         <Header />
         {children}
-        <div style={{ textAlign: "center" }}>More Economic Rental Choices</div>
+        <div style={{ textAlign: "center" }}>Under development. pavelgor@gmail.com</div>
       </body>
 
     </html>
