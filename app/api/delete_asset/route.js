@@ -11,6 +11,17 @@ export async function POST(request) {
 
     const body = await request.json()
 
+    let room_images = body.rooms.flat() // flat array of room images
+    room_images.push(...body.images) // add villa images to to room images
+    let all_filtered_images = room_images.filter((item) => { // check for images
+        return item.public_id
+    })
+    if (all_filtered_images.length == 0) {
+        let respose = await Restate.deleteOne({ _id: doc })
+        revalidatePath('/', 'layout')
+        return NextResponse.json({ "msg": respose }, { status: 200 })
+    }
+
     //console.log(body.images)
     const images_array = []
 
@@ -25,7 +36,7 @@ export async function POST(request) {
         console.log(images_array)
     }
 
-    extract_images([body.images, body.rooms])
+    extract_images([body.images, room_images])
 
 
     return new Promise((resolve, reject) => {

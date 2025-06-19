@@ -77,6 +77,20 @@
     flex-direction: column;
     gap: 1.5rem;
 }
+.main_content_noDB{
+    padding-top: 5rem;
+    max-width: 72rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1.5rem;
+    //display: grid;
+    //grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 50%;
+    text-align: center;
+}
 
 @media (min-width: 768px) {
     .main_content {

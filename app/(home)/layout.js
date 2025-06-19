@@ -7,8 +7,8 @@ import Header from '@/app/header'
 const lato = Lato({ subsets: ['latin'], weight: ['400'] })
 
 export const metadata = {
-  title: 'More Economic Rental Choices',
-  description: 'Weligama houses',
+  title: 'Ceylon rooms',
+  description: 'Direct rent in Sri-Lanka',
 }
 
 export default function RootLayout({ children }) {
