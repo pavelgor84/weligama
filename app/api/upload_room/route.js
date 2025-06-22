@@ -15,7 +15,7 @@ export async function POST(request) {
     //CHECK FOR DUPLICATES HERE!!!
 
     let obj_props = JSON.parse(props)
-    console.log(`PROPS ${obj_props.id}`)
+    console.log(`PROPS ${obj_props.id}, ${obj_props.room}`)
 
     const formDataEntryValues = Array.from(data.values()); // GET FILES
     let imagesArray = []
@@ -45,20 +45,21 @@ export async function POST(request) {
                 { room_number: doc.room, src: images[i].secure_url, width: images[i].width, height: images[i].height, alt: images[i].original_filename, public_id: images[i].public_id }
             )
         }
-        // let respose = await Restate.updateOne({ _id: doc.id }, {
-        //     $push: {
-        //         rooms: {
-        //             $each: arrayOfImages
-        //         }
-        //     }
-        // }
-        // )
         let respose = await Restate.updateOne({ _id: doc.id }, {
             $push: {
-                rooms: arrayOfImages
+                [`rooms.${+obj_props.room}`]: {
+                    $each: arrayOfImages
+                }
             }
         }
         )
+
+        // let respose = await Restate.updateOne({ _id: doc.id }, {
+        //     $push: {
+        //         rooms: arrayOfImages
+        //     }
+        // }
+        // )
         resolve(NextResponse.json({ "msg": respose }, { "images": images }, { status: 200 }))
     }
 

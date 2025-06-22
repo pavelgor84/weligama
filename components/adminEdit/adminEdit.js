@@ -205,7 +205,7 @@ export default function AdminEdit({ email }) {
                     {el.map((room) => {
                         return (
                             <div className={styles.thumbnail_container} key={room.public_id} >
-                                <button className={styles.delete_btn} id={room.public_id} onClick={(e) => handleDelete(e.target.id)} disabled={loading}>x</button>
+                                <button className={styles.delete_btn} id={room.public_id} onClick={(e) => handleDelete(e.target.id, index)} disabled={loading}>x</button>
                                 <img src={room.src} width='60px' height='60px' />
                             </div>
                         )
@@ -246,8 +246,8 @@ export default function AdminEdit({ email }) {
 
     }
 
-    function handleDelete(itemName) { //delete image
-        console.log(itemName)
+    function handleDelete(itemName, index_of_arr) { //delete image
+        console.log(itemName, index_of_arr)
 
         function sendForDelete(propertyState) {
             fetch('/api/delete', {
@@ -258,13 +258,13 @@ export default function AdminEdit({ email }) {
                 .then((json) => {
                     console.log(json)
                     fetch_data()
-                    // setAsset(json)
-                    // setProperty(json[0])
+
                 })
         }
 
         let checkForDeleteImages = property.images.find((item) => item.public_id === itemName)
-        let checkToDeleteRoomsImages = property.rooms.find((item) => item.public_id === itemName)
+        let flat_rooms_arr = property.rooms.flat()
+        let checkToDeleteRoomsImages = flat_rooms_arr.find((item) => item.public_id === itemName)
 
         if (checkForDeleteImages) {
             const imageToFilter = property.images.filter((item) => item.public_id != itemName)
@@ -275,9 +275,18 @@ export default function AdminEdit({ email }) {
 
         }
         if (checkToDeleteRoomsImages) {
-            const imageToFilter = property.rooms.filter((item) => item.public_id != itemName)
-            let propertyState = { ...property }
-            propertyState.rooms = imageToFilter
+            let propertyState = { ...property } // copy current state
+            let delIndex = propertyState.rooms[index_of_arr].findIndex((item) => { // find the index of deleting img in subarray with index_of_arr
+                return item.public_id == itemName
+            })
+            if (delIndex != -1) {
+                propertyState.rooms[index_of_arr].splice(delIndex, 1)
+            }
+            else {
+                console.log("IMAGE NOT FOUND!")
+                return
+            }
+
             propertyState.delete = checkToDeleteRoomsImages
             sendForDelete(propertyState)
 
