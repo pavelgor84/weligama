@@ -8,7 +8,6 @@ import * as maptilersdk from '@maptiler/sdk';
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 import { createRoot } from 'react-dom/client';
 import Popup from '../popup/popup';
-import Marker from '../marks/marker';
 
 
 export default function Map({ clearId, centerZoom, coords = [[5.971817, 80.430288]], pointId, scroll_to, html_popup, setchangePoints }) {
@@ -210,7 +209,7 @@ export default function Map({ clearId, centerZoom, coords = [[5.971817, 80.43028
     function getCurrentPoints() {
 
         const allfeatures = getRenderedFeatures()
-        console.log(allfeatures)
+        //console.log(allfeatures)
         splitPoints(allfeatures)
 
     }
@@ -364,14 +363,6 @@ export default function Map({ clearId, centerZoom, coords = [[5.971817, 80.43028
     return (
         <div className={styles.mapWrap}>
             <div ref={mapContainer} className={styles.map} />
-            {map.current && geo && geo.features?.map((feature) => {
-                return (<Marker
-                    key={feature.id}
-                    map={map.current}
-                    feature={feature}
-                    allPoints={lastPoints.current}
-                />)
-            })}
         </div>
     )
 }
