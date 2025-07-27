@@ -362,16 +362,42 @@ export default function Map({ clearId, centerZoom, coords = [[5.971817, 80.43028
     // testdata()
 
     return (
+        // <div className={styles.mapWrap}>
+        //     <div ref={mapContainer} className={styles.map} />
+        //     {map.current && geo && geo.features?.map((feature) => {
+        //         return (<Marker
+        //             key={feature.id}
+        //             map={map.current}
+        //             feature={feature}
+        //             allPoints={lastPoints.current}
+        //         />)
+        //     })}
+        // </div>
         <div className={styles.mapWrap}>
             <div ref={mapContainer} className={styles.map} />
             {map.current && geo && geo.features?.map((feature) => {
-                return (<Marker
-                    key={feature.id}
-                    map={map.current}
-                    feature={feature}
-                    allPoints={lastPoints.current}
-                />)
+                let find_viewport_point = lastPoints.current.find((el) => {
+                    return el.properties.home_id == feature.id
+                })
+                if (find_viewport_point) {
+                    return (<Marker
+                        key={feature.id}
+                        map={map.current}
+                        feature={feature}
+                        viewport={true}
+                    />)
+                }
+                else {
+                    return (<Marker
+                        key={feature.id}
+                        map={map.current}
+                        feature={feature}
+                        viewport={false}
+                    />)
+                }
+
             })}
         </div>
+
     )
 }
