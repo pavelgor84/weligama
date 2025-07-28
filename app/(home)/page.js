@@ -44,7 +44,7 @@ export default function Home() {
   }
 
   const [asset, setAsset] = useState([])
-  console.log(asset)
+  //console.log(asset)
   const [nav, setNav] = useState({
     positions: [],
     currentPoint: ''

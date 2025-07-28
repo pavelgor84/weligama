@@ -11,7 +11,7 @@ import Popup from '../popup/popup';
 import Marker from '../marks/marker';
 
 
-export default function Map({ clearId, centerZoom, coords = [[5.971817, 80.430288]], pointId, scroll_to, html_popup, setchangePoints }) {
+export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, html_popup, setchangePoints }) {
     const geo = {
         "type": "FeatureCollection",
         "features": coords
@@ -375,7 +375,7 @@ export default function Map({ clearId, centerZoom, coords = [[5.971817, 80.43028
         // </div>
         <div className={styles.mapWrap}>
             <div ref={mapContainer} className={styles.map} />
-            {map.current && geo && geo.features?.map((feature) => {
+            {map.current && lastPoints.current && geo && geo.features?.map((feature) => {
                 let find_viewport_point = lastPoints.current.find((el) => {
                     return el.properties.home_id == feature.id
                 })
