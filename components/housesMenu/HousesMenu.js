@@ -10,6 +10,8 @@ import SliderTest from '@/components/slider/SliderTest'
 import Link from 'next/link'
 import styles from './houses.module.css'
 
+import { useMapContext } from '@/app/context/MapContext'
+
 
 export default function HousesMenu({ cards, handleOver, handleLeave, targetId }) {
 
@@ -21,6 +23,8 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
     const selectedRef = useRef('');
     //console.log(itemRef.current)
 
+    const { scrollTo } = useMapContext()
+
     useEffect(() => {
         //get cards data, delete from state? request a new data, update the state
         itemRef.current = [] //clear refs during updating menu to prevent its rise 
@@ -29,28 +33,33 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
     }, [cards]);
 
 
-    //console.log(targetId)
-    if (targetId !== null && itemRef.current.length != 0) { //check for targetId, check for all refs for handle selection in menu
-        if (targetId !== selectedRef.current) {
+    console.log("scroll to", scrollTo)
+    if (scrollTo !== null && itemRef.current.length != 0) { //check for scrollTo, check for all refs for handle selection in menu
+        if (scrollTo !== selectedRef.current) {
             itemRef.current.forEach((item) => {
-                if (item.id === targetId) {
+                if (item.id === scrollTo) {
                     item.className = styles.card_container_selected //apply selected style to menu element
                     item.scrollIntoView({ block: "center", behavior: 'smooth' });
-                    selectedRef.current = targetId
+                    selectedRef.current = scrollTo
                 }
             })
         }
 
     }
-    // if (targetId !== null) {// scroll to given targetId, if not do nothing
-    //     const index = itemRef.current.findIndex(item => item.id === targetId);
-    //     if (index !== -1) {
 
-    //         itemRef.current[index].scrollIntoView({ block: "center", behavior: 'smooth' });
+    // console.log("scroll to", scrollTo)
+    // if (targetId !== null && itemRef.current.length != 0) { //check for targetId, check for all refs for handle selection in menu
+    //     if (targetId !== selectedRef.current) {
+    //         itemRef.current.forEach((item) => {
+    //             if (item.id === targetId) {
+    //                 item.className = styles.card_container_selected //apply selected style to menu element
+    //                 item.scrollIntoView({ block: "center", behavior: 'smooth' });
+    //                 selectedRef.current = targetId
+    //             }
+    //         })
     //     }
+
     // }
-
-
 
 
 
@@ -140,7 +149,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
     const menu = card ? card.map((prop, index) => {
         return (
-            <div className={prop._id === targetId ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onTouchStart={hov} onMouseEnter={hov} onMouseLeave={handleLeave} ref={addToRefs} >
+            <div className={prop._id === scrollTo ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onTouchStart={hov} onMouseEnter={hov} onMouseLeave={handleLeave} ref={addToRefs} >
                 <div className={styles.card_left}>
                     <SliderTest img={prop.images} />
                 </div>

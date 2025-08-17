@@ -385,7 +385,8 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
                         key={feature.id}
                         map={map.current}
                         feature={feature}
-                        viewport={true}
+                        viewport={true} //if marker in current viewport then show it
+                        selected={pointId}
                     />)
                 }
                 else {
@@ -393,7 +394,7 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
                         key={feature.id}
                         map={map.current}
                         feature={feature}
-                        viewport={false}
+                        viewport={false} // if marker isn't in current viewport then show it inactive
                     />)
                 }
 

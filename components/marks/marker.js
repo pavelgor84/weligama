@@ -3,14 +3,17 @@ import { useEffect, useRef } from "react"
 import * as maptilersdk from '@maptiler/sdk';
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 import { createPortal } from "react-dom";
+import { useMapContext } from "@/app/context/MapContext";
 
 
-const Marker = ({ map, feature, viewport }) => {
+const Marker = ({ map, feature, viewport, selected }) => {
     const { geometry, properties } = feature
     //console.log('All points', allPoints)
 
     const markerRef = useRef()
     const contentRef = useRef(document.createElement("div"));
+
+    const { setScrollTo } = useMapContext()
 
     useEffect(() => {
         markerRef.current = new maptilersdk.Marker({ element: contentRef.current })
@@ -26,18 +29,19 @@ const Marker = ({ map, feature, viewport }) => {
         return (
             <>
                 {createPortal(
-                    <div
+                    <div onMouseEnter={() => setScrollTo(properties.home_id)}
                         style={{
                             display: "inline-block",
                             padding: "2px 10px",
                             borderRadius: "50px",
-                            backgroundColor: "#fff",
+                            backgroundColor: properties.home_id == selected ? "#002" : "#fff",
                             boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.5)",
                             fontFamily: "Arial, sans-serif",
                             fontSize: "14px",
                             fontWeight: "bold",
-                            color: "#333",
+                            color: properties.home_id == selected ? "#ffd" : "#333",
                             textAlign: "center",
+                            cursor: "pointer",
                         }}
                     >
                         {properties.price}

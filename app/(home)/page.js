@@ -1,7 +1,7 @@
 "use client"
 
 //import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import styles from '../page.module.css'
 
 
@@ -9,6 +9,7 @@ import Map from '@/components/map/map'
 //import Link from 'next/link'
 
 import HousesMenu from '@/components/housesMenu/HousesMenu'
+import { MapContext } from '../context/MapContext'
 
 
 export default function Home() {
@@ -58,11 +59,16 @@ export default function Home() {
 
   const [scrollTo, setScrollTo] = useState('')
 
+  // Мемоизированное значение контекста
+  const contextValue = useMemo(() => ({
+    //hoveredId,
+    //setHoveredId,
+    scrollTo,
+    setScrollTo
+  }), [scrollTo]);
 
-  useEffect(() => {
-    // Здесь можно выполнить действия при изменении scrollTo
-    console.log('Scroll to:', scrollTo);
-  }, [scrollTo]);
+
+
 
   const scrollToElement = (id) => {
     setScrollTo(id); // Устанавливаем целевой идентификатор and send scrollTo to HouseMenu
@@ -100,34 +106,26 @@ export default function Home() {
     backgroundColor: 'lightgray',
   };
 
-  // const scroll = function (id) {
-  //   const pop = asset.find((el) => {
-  //     return el._id === id
-  //   })
-  //   if (pop) {
-  //     setPopup((prev) => pop)
-  //   }
-
-  // }
-
 
   return (
     <main className={styles.main}>
 
-      <div className={styles.left_block}>
-        {/* {card ? card : NULL} */}
-        {changePoints ? <HousesMenu cards={changePoints} handleOver={handleOver} handleLeave={handleLeave} targetId={scrollTo} /> : "LOADING"}
-      </div>
-      <div className={styles.right_block}>
-        <div className={styles.map_place}>
-          <div className={styles.block}>
-            {nav.positions.length != 0 ? <Map clearId={setId} setchangePoints={setchangePoints} centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={scrollToElement} html_popup={popup} /> : "Loading..."}
-          </div>
+      <MapContext.Provider value={contextValue}>
 
+        <div className={styles.left_block}>
+          {/* {card ? card : NULL} */}
+          {changePoints ? <HousesMenu cards={changePoints} handleOver={handleOver} handleLeave={handleLeave} s /> : "LOADING"}
         </div>
-      </div>
+        <div className={styles.right_block}>
+          <div className={styles.map_place}>
+            <div className={styles.block}>
+              {nav.positions.length != 0 ? <Map clearId={setId} setchangePoints={setchangePoints} centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={scrollToElement} html_popup={popup} /> : "Loading..."}
+            </div>
 
+          </div>
+        </div>
 
+      </MapContext.Provider>
     </main>
   )
 }
