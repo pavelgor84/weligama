@@ -21,12 +21,23 @@ export default function Home() {
     }
     //console.log(asset)
     asset.forEach((el) => {
-      let tempPosition = el.coordinates
-      //console.log(tempPosition)
-      let tempPositionNum = tempPosition.split(',').map((x) => +x)
-      coords.positions.push(tempPositionNum)
+      // Parse coordinates - handles both user-friendly string "lat, lng" AND GeoJSON array [lng, lat] formats
+      let coordArr;
+
+      if (typeof el.coordinates === 'string') {
+        // User-friendly format from adminEdit.js: "lat, lng"
+        coordArr = el.coordinates.split(',').map(x => +x);
+      } else if (Array.isArray(el.coordinates)) {
+        // GeoJSON array format [lng, lat] - just use as-is for nav positions
+        coordArr = el.coordinates;
+      } else {
+        console.error('Invalid coordinates format:', el._id, typeof el.coordinates, el.coordinates);
+        return;
+      }
+
+      coords.positions.push(coordArr);
     })
-    //console.log(coords)
+    console.log(coords)
     setNav((prev) => coords)
 
   }
@@ -96,7 +107,7 @@ export default function Home() {
       "id": prop._id,
       "geometry": {
         "type": "Point",
-        "coordinates": prop.coordinates.split(',').reverse().map((x) => +x)
+        "coordinates": prop.coordinates  // Already in [lat, lng] format from adminEdit.js
       }
     }
   });

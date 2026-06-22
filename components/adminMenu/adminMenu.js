@@ -25,25 +25,24 @@ export default function AdminMenu({ email }) {
     }
 
     const [asset, setAsset] = useState([])
-    const [property, setProperty] = useState(
-        {
-            mail: email,
-            phone: '',
-            name: '',
-            address: '',
-            coordinates: '',
-            bedroom: '',
-            bath: '',
-            ac: '',
-            view: '',
-            floor: '',
-            parking: '',
-            price: '',
-            available: true,
-            images: '',
-            rooms_info: [],
-            description: ''
-        });
+    const [property, setProperty] = useState({
+        mail: email,
+        phone: '',
+        name: '',
+        address: '',
+        coordinates: '',
+        bedroom: '',
+        bath: '',
+        ac: false,  // Fixed: boolean instead of empty string
+        view: '',
+        floor: '',
+        parking: false,  // Fixed: boolean instead of empty string
+        price: '',
+        available: true,
+        images: '',
+        rooms_info: [],
+        description: ''
+    });
     console.log(property)
     const [file, setFile] = useState([])
     console.log(file)
@@ -150,8 +149,19 @@ export default function AdminMenu({ email }) {
 
             data.append('rooms', room)
 
+            // Transform coordinates to GeoJSON [lng, lat] array format for database storage
+            let transformedProp = { ...property };
+            if (transformedProp.coordinates) {
+                const coordParts = transformedProp.coordinates.split(',');
+                if (coordParts.length >= 2) {
+                    const [lat, lng] = coordParts.map(part => parseFloat(part.trim()));
+                    // User input: "lat,lng" → Database expects GeoJSON: [lng, lat]
+                    transformedProp.coordinates = [lng, lat];
+                }
+            }
+
             console.log(property)
-            data.append('prop', JSON.stringify(property))
+            data.append('prop', JSON.stringify(transformedProp))
 
             const response = await axios.post('/api/upload', data)
             const result = await response.data

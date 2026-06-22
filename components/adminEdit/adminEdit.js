@@ -121,6 +121,18 @@ export default function AdminEdit({ email }) {
             add_occupied.occupied_rooms = isOccupied.current // set Ref variable to occupied, because of async useState
             //console.log(add_occupied)
 
+            // TRANSFORM coordinates: Convert user-friendly string "lat, lng" back to Maptiler [lng, lat] array format
+            if (add_occupied.coordinates) {
+                const parts = String(add_occupied.coordinates).split(',');
+                if (parts.length >= 2) {
+                    const lat = parseFloat(parts[0].trim());
+                    const lng = parseFloat(parts[1].trim());
+
+                    // Maptiler expects [lat, lng] array format for correct map display
+                    add_occupied.coordinates = [lng, lat];
+                }
+            }
+
             data.set('prop', JSON.stringify(add_occupied))
 
             const response = await axios.post('/api/add_images', data)
@@ -166,7 +178,15 @@ export default function AdminEdit({ email }) {
             .then((json) => {
                 if (json.length) { //if no assents in DB, then do nothing
                     setAsset(json)
-                    setProperty(json[propertyRef.current])//useRef <----
+
+                    // TRANSFORM coordinates: Convert DB GeoJSON format to user-friendly string
+                    const dbData = json[propertyRef.current];
+                    if (dbData.coordinates && Array.isArray(dbData.coordinates)) {
+                        const [lng, lat] = dbData.coordinates;
+                        dbData.coordinates = `${lat}, ${lng}`;  // User-friendly format for display
+                    }
+
+                    setProperty({ ...dbData });  // Include transformed coordinates
                 }
                 else {
                     console.log("no data")

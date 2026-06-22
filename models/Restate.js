@@ -4,7 +4,7 @@ const propertySchema = new Schema({
     mail: String,
     phone: String,
     name: String,
-    coordinates: String,
+    coordinates: [Number, Number],  // GeoJSON array format for map markers
     bedroom: Number,
     bath: Number,
     ac: Boolean,

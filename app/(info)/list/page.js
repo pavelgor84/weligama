@@ -92,8 +92,7 @@ export default function List() {
                     </div>
 
                     <div className={styles.info_block_right}>
-                        {asset.coordinates && <Map_info coords={asset.coordinates.split(',').reverse().map((x) => +x)} />}
-                    </div>
+                        {asset.coordinates && <Map_info coords={asset.coordinates} />}                    </div>
                 </div>
                 <h2>Where you sleep</h2>
                 <div className={styles.amenities}>
