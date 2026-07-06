@@ -3,14 +3,12 @@
 
 //import SliderTest from '@/components/slider/SliderTest'
 import { useEffect, useRef, useState } from 'react'
-import { throttle } from '@/utils/debounce';
 import styles from './map.module.css'
 import * as maptilersdk from '@maptiler/sdk';
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 //import { createRoot } from 'react-dom/client';
 //import Popup from '../popup/popup';
 import Marker from '../marks/marker';
-
 
 
 export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, html_popup, setchangePoints }) {
@@ -30,21 +28,18 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
     const [zoom, setZoom] = useState(14);
     const mapContainer = useRef(null);
     const map = useRef(null);
-    // Stable ref for the initial center — never changes after first render.
-    // This prevents React from re-running the effect on every parent re-render.
-    const initCenterRef = useRef({ lng: cz[1], lat: cz[0] });
-
     const location = useRef(null)
     const saved_popup = useRef(null)
     const saved_html = useRef(null)
     const mark = useRef([0, 0])
+    // const weligama = { lng: 80.430288, lat: 5.971817 };
 
     const lastPoint = useRef('')
 
     const lastPoints = useRef(null)
 
+    const weligama = { lng: cz[1], lat: cz[0] };
     //console.log('map point id', pointId)
-
 
 
     maptilersdk.config.apiKey = process.env.MAPTILER_API;
@@ -53,29 +48,36 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
 
     useEffect(() => {
 
-        // Destroy old map instance if it exists (handles Fast Refresh + dependency changes)
-        if (map.current && typeof map.current.remove === 'function') {
-            try { map.current.remove(); } catch (_) {}
-        }
 
-        const center = initCenterRef.current;
+        if (map.current) {
+
+            return;
+        } // stops map from intializing more than once
+
         map.current = new maptilersdk.Map({
             container: mapContainer.current,
             style: maptilersdk.MapStyle.STREETS,
-            center: [center.lng, center.lat],
+            center: [weligama.lng, weligama.lat],
             zoom: zoom
         });
 
         map.current.on('load', async function () {
-
 
             // Create an image from SVG
 
             // const svgImage_selected = new Image(140, 140);
             // const svgImage = new Image(140, 140);
 
-            // const pin_selected = `<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="242.64 161.414 51.656 47.497" width="51.656px" height="47.497px"><path d="M 268.421 208.911 C 269.476 208.911 272.789 202.436 273.726 200.819 L 274.733 200.836 L 283.561 200.836 C 294.158 200.836 294.296 200.361 294.296 190.102 L 294.296 172.149 C 294.296 161.962 294.021 161.414 283.561 161.414 L 253.374 161.414 C 242.567 161.414 242.64 161.551 242.64 172.149 L 242.64 190.102 C 242.64 200.37 243.783 200.836 253.374 200.836 L 262.108 200.836 L 263.082 200.819 C 264.02 202.436 267.366 208.911 268.421 208.911 Z" style="stroke-width: 1;" fill="#fb6f92"/></svg>`;
-            // const pin = `<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="242.64 161.414 51.656 47.497" width="51.656px" height="47.497px"><path d="M 268.421 208.911 C 269.476 208.911 272.789 202.436 273.726 200.819 L 274.733 200.836 L 283.561 200.836 C 294.158 200.836 294.296 200.361 294.296 190.102 L 294.296 172.149 C 294.296 161.962 294.021 161.414 283.561 161.414 L 253.374 161.414 C 242.567 161.414 242.64 161.551 242.64 172.149 L 242.64 190.102 C 242.64 200.37 243.783 200.836 253.374 200.836 L 262.108 200.836 L 263.082 200.819 C 264.02 202.436 267.366 208.911 268.421 208.911 Z" style="stroke-width: 1;" fill="#4E5EF2"/></svg>`
+            // const pin_selected = `<?xml version="1.0" encoding="utf-8"?>
+            // <svg xmlns="http://www.w3.org/2000/svg" viewBox="242.64 161.414 51.656 47.497" width="51.656px" height="47.497px">
+            //   <path d="M 268.421 208.911 C 269.476 208.911 272.789 202.436 273.726 200.819 L 274.733 200.836 L 283.561 200.836 C 294.158 200.836 294.296 200.361 294.296 190.102 L 294.296 172.149 C 294.296 161.962 294.021 161.414 283.561 161.414 L 253.374 161.414 C 242.567 161.414 242.64 161.551 242.64 172.149 L 242.64 190.102 C 242.64 200.37 243.783 200.836 253.374 200.836 L 262.108 200.836 L 263.082 200.819 C 264.02 202.436 267.366 208.911 268.421 208.911 Z" style="stroke-width: 1;" fill="#fb6f92"/>
+            // </svg>`;
+            // const pin = `<?xml version="1.0" encoding="utf-8"?>
+            // <svg xmlns="http://www.w3.org/2000/svg" viewBox="242.64 161.414 51.656 47.497" width="51.656px" height="47.497px">
+            //   <path d="M 268.421 208.911 C 269.476 208.911 272.789 202.436 273.726 200.819 L 274.733 200.836 L 283.561 200.836 C 294.158 200.836 294.296 200.361 294.296 190.102 L 294.296 172.149 C 294.296 161.962 294.021 161.414 283.561 161.414 L 253.374 161.414 C 242.567 161.414 242.64 161.551 242.64 172.149 L 242.64 190.102 C 242.64 200.37 243.783 200.836 253.374 200.836 L 262.108 200.836 L 263.082 200.819 C 264.02 202.436 267.366 208.911 268.421 208.911 Z" style="stroke-width: 1;" fill="#4E5EF2"/>
+            // </svg>`
+
+
 
             // svgImage_selected.onload = () => {
             //     map.current.addImage('svg_selected', svgImage_selected, {
@@ -100,6 +102,13 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
             //     })
             // }
 
+
+            // function svgStringToImageSrc(svgString) {
+            //     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString)
+            // }
+
+            // svgImage.src = svgStringToImageSrc(pin);
+            // svgImage_selected.src = svgStringToImageSrc(pin_selected);
 
             map.current.addSource('marks', {
                 type: 'geojson',
@@ -128,7 +137,6 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
             });
 
 
-
             map.current.on('mouseenter', 'points', (e) => {
                 map.current.getCanvas().style.cursor = 'pointer';
             });
@@ -139,23 +147,16 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
 
             //map.current.on('click', getPoint);
 
-
-            map.current.on('moveend', throttle(getCurrentPoints, 300));
+            map.current.on('moveend', getCurrentPoints);
             //console.log(map.current)
 
             map.current.on('render', afterChangeComplete);
 
 
+        })
 
-        }); // Close async function() and close map.on('load') handler
 
-        return () => {
-            if (map.current && typeof map.current.remove === 'function') {
-                try { map.current.remove(); } catch (_) {}
-            }
-        };
-    }, [zoom]); // Only re-init when zoom actually changes — centerZoom no longer triggers destroy/recreate
-
+    }, [weligama, zoom]);
 
     // useEffect(() => {
     //     if (html_popup !== '') {
@@ -167,7 +168,6 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
     //     }
 
     // }, [html_popup])
-
 
 
     // useEffect(() => { //clear the markers when no pointId and mouse is over the list
@@ -198,8 +198,6 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
     //         .addTo(map.current)
     //     saved_popup.current.addClassName(styles.visible)
     // }
-
-
 
 
     function getRenderedFeatures(point) {
@@ -251,6 +249,7 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
             setchangePoints(rezState)
         }
         //else { console.log("calm!") }
+
 
     }
 
@@ -325,8 +324,6 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
     //     getFeatureOfPoint(pointId) // get features in the map viewport
 
 
-
-
     //     // lastPoint.current = pointId
 
     //     // if (!find_home) { // if no then go search geojson
@@ -346,7 +343,7 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
 
     //     // }
 
-    //     // }
+    // }
 
     // const debounce = (mainFunction, delay) => {
     //     let timer;
@@ -366,6 +363,17 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
     // testdata()
 
     return (
+        // <div className={styles.mapWrap}>
+        //     <div ref={mapContainer} className={styles.map} />
+        //     {map.current && geo && geo.features?.map((feature) => {
+        //         return (<Marker
+        //             key={feature.id}
+        //             map={map.current}
+        //             feature={feature}
+        //             allPoints={lastPoints.current}
+        //         />)
+        //     })}
+        // </div>
         <div className={styles.mapWrap}>
             <div ref={mapContainer} className={styles.map} />
             {map.current && lastPoints.current && geo && geo.features?.map((feature) => {

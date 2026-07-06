@@ -15,6 +15,12 @@ import { MapContext } from '../context/MapContext'
 export default function Home() {
 
   function updateMarks() {
+    // Prevent "Cannot read properties of undefined (reading 'forEach')" error
+    if (!Array.isArray(asset)) {
+      console.warn('asset is not an array, skipping updateMarks');
+      return;
+    }
+    
     const coords = {
       positions: [],
       currentPoint: ''
@@ -87,30 +93,47 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetch('/api')
+    const abortController = new AbortController();
+    
+    fetch('/api', { signal: abortController.signal })
       .then((response) => response.json())
+      .catch((error) => {
+        if (error.name === 'AbortError') return; // Ignore aborted requests
+        console.error('Failed to fetch assets:', error);
+        throw error;
+      })
       .then((json) => setAsset(json))
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          console.error('Fetch error:', error);
+        }
+      });
+
+    return () => abortController.abort(); // Cleanup on unmount or asset change
   }, []);
 
   useEffect(() => {
     updateMarks()
   }, [asset]);
 
-  const marks = asset.map((prop, index) => {
-    return {
-      "type": "Feature",
-      "properties": {
-        "@id": prop._id,
-        "home_id": prop._id,
-        "price": prop.price
-      },
-      "id": prop._id,
-      "geometry": {
-        "type": "Point",
-        "coordinates": prop.coordinates  // Already in [lat, lng] format from adminEdit.js
-      }
-    }
-  });
+  // Prevent "Cannot read properties of undefined (reading 'map')" error
+  const marks = Array.isArray(asset) 
+    ? asset.map((prop, index) => {
+        return {
+          "type": "Feature",
+          "properties": {
+            "@id": prop._id,
+            "home_id": prop._id,
+            "price": prop.price ?? 0
+          },
+          "id": prop._id,
+          "geometry": {
+            "type": "Point",
+            "coordinates": prop.coordinates
+          }
+        }
+      })
+    : [] // Return empty array if asset is undefined/null/not an array
   //console.log(JSON.stringify(marks))
   const hverrStyle = {
     color: 'blue',
@@ -125,7 +148,13 @@ export default function Home() {
 
         <div className={styles.left_block}>
           {/* {card ? card : NULL} */}
-          {changePoints ? <HousesMenu cards={changePoints} handleOver={handleOver} handleLeave={handleLeave} s /> : "LOADING"}
+          {changePoints && typeof changePoints === 'object' ? (
+            <HousesMenu 
+              cards={changePoints} 
+              handleOver={handleOver} 
+              handleLeave={handleLeave}
+            />
+          ) : "LOADING"}
         </div>
         <div className={styles.right_block}>
           <div className={styles.map_place}>

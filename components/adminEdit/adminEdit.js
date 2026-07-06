@@ -4,35 +4,19 @@
 import { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
 import styles from './admin_edit.module.css'
-
+import { createEditProperty } from '../shared/defaultPropertyState'
 
 export default function AdminEdit({ email }) {
 
     const [inDB, setInDB] = useState(true)
     const [asset, setAsset] = useState([])
-    //console.log(asset)
-    const [property, setProperty] = useState(
-        {
-            mail: email,
-            name: '',
-            phone: '',
-            address: '',
-            coordinates: '',
-            bedroom: '',
-            bath: '',
-            ac: false,
-            view: '',
-            floor: '',
-            parking: false,
-            price: '',
-            available: true,
-            occupied_rooms: [],
-            images: '',
-            rooms: '',
-            description: '',
-            rooms_info: [],
-            _id: '',
-        });
+    // console.log(asset)
+    const [property, setProperty] = useState(() => ({
+        ...createEditProperty(email),
+        _id: '',           // edit-only field from DB
+        images: '',         // UI only — actual image data loaded from API
+        rooms: '',          // UI only — loaded as object array from API
+    }));
     console.log(property)
 
 
@@ -121,15 +105,18 @@ export default function AdminEdit({ email }) {
             add_occupied.occupied_rooms = isOccupied.current // set Ref variable to occupied, because of async useState
             //console.log(add_occupied)
 
-            // TRANSFORM coordinates: Convert user-friendly string "lat, lng" back to Maptiler [lng, lat] array format
-            if (add_occupied.coordinates) {
+            // TRANSFORM coordinates: "lat, lng" string → DB [lng, lat] (GeoJSON/Maptiler standard)
+            if (add_occupied.coordinates && typeof add_occupied.coordinates === 'string') {
                 const parts = String(add_occupied.coordinates).split(',');
                 if (parts.length >= 2) {
                     const lat = parseFloat(parts[0].trim());
                     const lng = parseFloat(parts[1].trim());
-
-                    // Maptiler expects [lat, lng] array format for correct map display
-                    add_occupied.coordinates = [lng, lat];
+                    // Guard against NaN — don't store invalid coordinates
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        add_occupied.coordinates = [lng, lat];
+                    } else {
+                        add_occupied.coordinates = [];  // Invalid → empty array fallback
+                    }
                 }
             }
 
@@ -181,6 +168,11 @@ export default function AdminEdit({ email }) {
 
                     // TRANSFORM coordinates: Convert DB GeoJSON format to user-friendly string
                     const dbData = json[propertyRef.current];
+                    if (!dbData) {
+                        propertyRef.current = 0;
+                        setProperty({ ...createEditProperty(email), _id: '', images: '', rooms: '' });
+                        return;
+                    }
                     if (dbData.coordinates && Array.isArray(dbData.coordinates)) {
                         const [lng, lat] = dbData.coordinates;
                         dbData.coordinates = `${lat}, ${lng}`;  // User-friendly format for display
@@ -261,7 +253,15 @@ export default function AdminEdit({ email }) {
 
     function handleSelect(item) {
         let position = asset.findIndex(obj => obj.name == item)
-        setProperty(prevState => (asset[position]))
+        const dbData = asset[position];
+        if (!dbData) return;
+        // TRANSFORM coordinates: Convert DB GeoJSON format to user-friendly string (same as fetch_data)
+        const displayData = { ...dbData };
+        if (displayData.coordinates && Array.isArray(displayData.coordinates)) {
+            const [lng, lat] = displayData.coordinates;
+            displayData.coordinates = `${lat}, ${lng}`;  // User-friendly format for display
+        }
+        setProperty(prevState => (displayData));
         propertyRef.current = position // update ref to current property number in array
 
     }
@@ -417,7 +417,7 @@ export default function AdminEdit({ email }) {
                                     </div>
                                     <div>
                                         <label className={styles.input_label}>Coordinates</label>
-                                        <input className={styles.text_input} ype="text" placeholder='e.g., 5.9744140972131685, 80.43011706614641' name="coordinates" value={property.coordinates} onChange={handleChange} required />
+                                        <input className={styles.text_input} type="text" placeholder='e.g., 5.9744140972131685, 80.43011706614641' name="coordinates" value={property.coordinates} onChange={handleChange} required />
                                     </div>
                                 </div>
                             </div>

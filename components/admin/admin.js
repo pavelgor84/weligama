@@ -1,208 +1,170 @@
 "use client"
 
-
 import React, { useState } from 'react'
 import styles from './list.module.css'
 import axios from 'axios'
+import { createAddProperty } from '../shared/defaultPropertyState'
 
+/** Transform UI coordinate string "lat, lng" → DB array [lng, lat] */
+function transformCoordinatesForDB(coords) {
+    if (!coords || typeof coords !== 'string') return []
+    const parts = String(coords).split(',').map(s => parseFloat(s.trim()))
+    // Return [lng, lat] for GeoJSON/Maptiler storage format
+    return parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])
+        ? [parts[1], parts[0]]   // DB stores [lng, lat]
+        : []
+}
 
 export default function Admin({ email }) {
-    const defaul_state = { // make it imported!!!
-        mail: email,
-        phone: '',
-        name: '',
-        address: '',
-        coordinates: '',
-        bedroom: '',
-        bath: '',
-        ac: '',
-        view: '',
-        floor: '',
-        parking: '',
-        price: '',
-        available: '',
-        images: '',
-        rooms_info: [],
-        description: ''
-    }
-
-    const [asset, setAsset] = useState([])
-    const [property, setProperty] = useState(
-        {
-            mail: email,
-            phone: '',
-            name: '',
-            address: '',
-            coordinates: '',
-            bedroom: '',
-            bath: '',
-            ac: '',
-            view: '',
-            floor: '',
-            parking: '',
-            price: '',
-            available: '',
-            images: '',
-            rooms_info: [],
-            description: ''
-        });
-    console.log(property)
+    const [property, setProperty] = useState(createAddProperty(email))
     const [file, setFile] = useState([])
-    console.log(file)
     const [room, setRoom] = useState([])
-    console.log(room)
-    console.log(room.hasOwnProperty("room1") && room.room1.length != 0)
     const [loading, setLoading] = useState(false)
 
-    const [forms, setForms] = useState([]);
-
-    // const handleAddPerson = () => {
-    //     setForms([...forms, { info: '', id: Date.now() }]);
-    //     console.log(forms)
-    // };
+    // Add a new room entry
     const handleAddPerson = (e) => {
         e.preventDefault()
-        //setForms([...forms, { info: '', id: Date.now() }]);
-        setProperty(prevState => ({ ...prevState, rooms_info: [...prevState.rooms_info, { info: '', id: Date.now() }] }));
-        console.log(forms)
-    };
+        setProperty(prevState => ({
+            ...prevState,
+            rooms_info: [...prevState.rooms_info, { info: '', id: Date.now() }]
+        }))
+    }
 
-    console.log(forms)
+    // Update text field — coerce number fields to actual Numbers for DB schema
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        if (['bedroom', 'bath', 'floor'].includes(name)) {
+            setProperty(prev => ({ ...prev, [name]: Number(value) || 0 }))
+        } else if (name === 'price') {
+            setProperty(prev => ({ ...prev, [name]: value === '' ? 0 : Number(value) }))
+        } else {
+            setProperty(prev => ({ ...prev, [name]: value }))
+        }
+    }
+
+    // Boolean toggle handler — sets true/false to match DB schema (not "Yes"/"No")
+    const handleBooleanChange = (e) => {
+        const { name } = e.target
+        // For radio buttons: value is "true"/"false", convert to actual boolean
+        setProperty(prev => ({ ...prev, [name]: e.target.value === 'true' }))
+    }
+
+    const handleFileChange = (e) => {
+        const _files = Array.from(e.target.files)
+        setFile(_files)
+    }
+
+    const handleRoomChange = (e) => {
+        const _roomFiles = Array.from(e.target.files)
+        setRoom(prevState => [...prevState, _roomFiles])
+    }
+
+    // Update room info text field
     const handleInputChange = (e, index) => {
-        console.log(e)
-        const { name, value } = e.target;
-        const newForms = [...property.rooms_info];
-        newForms[index][name] = value;
-        //setForms(newForms);
-        setProperty(prevState => ({ ...prevState, rooms_info: newForms }));
-    };
-    // Обработчик события нажатия кнопки "Удалить форму"
+        const { name, value } = e.target
+        const newForms = [...property.rooms_info]
+        newForms[index][name] = value
+        setProperty(prevState => ({ ...prevState, rooms_info: newForms }))
+    }
+
+    // Delete a room entry
     const handleDeleteRoom = (e, index) => {
         e.preventDefault()
-        // Копируем массив форм и удаляем форму по указанному индексу
-        const newForms = [...property.rooms_info];
-        newForms.splice(index, 1);
-        setProperty(prevState => ({ ...prevState, rooms_info: newForms }));
+        const newForms = [...property.rooms_info]
+        newForms.splice(index, 1)
+        setProperty(prevState => ({ ...prevState, rooms_info: newForms }))
         const roomFiles = [...room]
         roomFiles.splice(index, 1)
         setRoom(roomFiles)
-    };
-
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setProperty(prevState => ({ ...prevState, [name]: value }));
-    };
-
-
-    const handleFileChange = (e) => {
-        console.log(e)
-
-        const _files = Array.from(e.target.files);
-        setFile(_files);
-    };
-    const handleRoomChange = (e) => {
-        //console.log(e)
-        const _roomFiles = Array.from(e.target.files);
-        const roomNumber = e.target.name
-
-        setRoom(prevState => [...prevState, _roomFiles]);
-
-    };
-    const handleRoomInfoChange = (e) => {
-        //console.log(e)
-        const { name, value } = e.target;
-        setProperty(prevState => ({ ...prevState, rooms_info: { ...prevState.rooms_info, [name]: value } }));
     }
 
-    async function send_data(data) {
+    // Send room images to server
+    async function sendRoomData(data) {
         try {
-            const room_response = await axios.post('/api/upload_room', data)
-            const room_result = await room_response.data
-            console.log({ room_result })
-            setProperty(defaul_state)
-        }
-        catch (e) {
+            await axios.post('/api/upload_room', data)
+        } catch (e) {
             console.error(e)
         }
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        console.log(property)// You can perform any necessary action with the form data here ;
-        //console.log(property.images[0])
+        e.preventDefault()
 
-        if (!file) {
-            console.log("insufficient pics ")
+        if (!file || file.length === 0) {
+            console.log("insufficient pics")
             return
         }
 
+        setLoading(true)
+
         try {
+            // Deep clone and transform coordinates before sending to DB
+            const submissionData = JSON.parse(JSON.stringify(property))
+            submissionData.coordinates = transformCoordinatesForDB(submissionData.coordinates)
+
             const data = new FormData()
-            //data.set('file', property.images)
-            //----------------------------------------add property----------------------
+
+            // Append property images
             file.forEach((image, i) => {
                 data.append(image.name, image)
             })
 
+            // Append room images (array of FileLists)
             data.append('rooms', room)
 
-            console.log(property)
-            data.append('prop', JSON.stringify(property))
+            // Send property JSON with proper types and transformed coordinates
+            data.append('prop', JSON.stringify(submissionData))
 
             const response = await axios.post('/api/upload', data)
             const result = await response.data
             console.log({ result })
+
+            // Extract property ID for room uploads
             const id = result.msg._id
-            //----------------------------------------add property----------------------
 
-            //----------------------------------------add rooms-------------------------
-            if (room[Object.keys(room)[0]] && room[Object.keys(room)[0]].length != 0) { //room.room1 && room.room1.length > 0
-                for (const property in room) {
-                    let room_data = new FormData()
-                    let room_info = { "room": property, "id": id } //{ "room": "room1", "id": id }
+            // Upload room images with associated property ID
+            if (room.length > 0) {
+                for (const key in room) {
+                    if (Array.isArray(room[key]) && room[key].length > 0) {
+                        const roomData = new FormData()
+                        const roomInfo = { "room": `room${Number(key) + 1}`, "id": id }
 
-                    room[property].forEach((image, i) => {
-                        room_data.append(image.name, image)
-                    })
-                    room_data.append('room', JSON.stringify(room_info))
-                    send_data(room_data)
+                        room[key].forEach((image, i) => {
+                            roomData.append(image.name, image)
+                        })
+                        roomData.append('room', JSON.stringify(roomInfo))
+                        await sendRoomData(roomData)
+                    }
                 }
             }
-            //----------------------------------------add rooms-------------------------
 
-        }
-        catch (e) {
+            // Reset form to empty state matching schema defaults
+            setProperty(createAddProperty(email))
+
+        } catch (e) {
             console.error(e)
+        } finally {
+            setLoading(false)
         }
-
-    };
-
-    // useEffect(() => {
-    //     fetch('/api')
-    //         .then((response) => response.json())
-    //         .then((json) => setAsset(json))
-    // }, []);
+    }
 
     return (
         <section className={styles.section}>
             <div className={styles.block}>
-                {/* {JSON.stringify(asset)} */}
-
                 <h2>Add property for {email}</h2>
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <table>
                         <tbody>
                             <tr>
                                 <th align='right'><label>Available:</label></th>
-                                <th align='left'><label>
-                                    <input type="radio" name="available" value="Yes" checked={property.available === "Yes"} onChange={handleChange} />
-                                    Yes
-                                </label>
+                                <th align='left'>
                                     <label>
-                                        <input type="radio" name="available" value="No" checked={property.available === "No"} onChange={handleChange} />
-                                        No
-                                    </label></th>
+                                        <input type="radio" name="available" value="true" checked={property.available === true} onChange={handleBooleanChange} /> Yes
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="available" value="false" checked={property.available === false} onChange={handleBooleanChange} /> No
+                                    </label>
+                                </th>
                             </tr>
 
                             <tr>
@@ -211,7 +173,7 @@ export default function Admin({ email }) {
                             </tr>
                             <tr>
                                 <th align='right'><label>Phone number:</label></th>
-                                <th align='left'><input type="text" placeholder='+19058747474' name="phone" value={property.phone} onChange={handleChange} required /></th>
+                                <th align='left'><input type="text" placeholder='+190****7474' name="phone" value={property.phone} onChange={handleChange} required /></th>
                             </tr>
                             <tr align='right'>
                                 <th align='right'></th>
@@ -231,14 +193,14 @@ export default function Admin({ email }) {
                             </tr>
                             <tr>
                                 <th align='right'><label>A/C:</label></th>
-                                <th align='left'><label>
-                                    <input type="radio" name="ac" value="Yes" checked={property.ac === "Yes"} onChange={handleChange} />
-                                    Yes
-                                </label>
+                                <th align='left'>
                                     <label>
-                                        <input type="radio" name="ac" value="No" checked={property.ac === "No"} onChange={handleChange} />
-                                        No
-                                    </label></th>
+                                        <input type="radio" name="ac" value="true" checked={property.ac === true} onChange={handleBooleanChange} /> Yes
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="ac" value="false" checked={property.ac === false} onChange={handleBooleanChange} /> No
+                                    </label>
+                                </th>
                             </tr>
                             <tr>
                                 <th align='right'><label>View:</label></th>
@@ -250,14 +212,14 @@ export default function Admin({ email }) {
                             </tr>
                             <tr>
                                 <th align='right'><label>Parking:</label></th>
-                                <th align='left'><label>
-                                    <input type="radio" name="parking" value="Yes" checked={property.parking === "Yes"} onChange={handleChange} />
-                                    Yes
-                                </label>
+                                <th align='left'>
                                     <label>
-                                        <input type="radio" name="parking" value="No" checked={property.parking === "No"} onChange={handleChange} />
-                                        No
-                                    </label></th>
+                                        <input type="radio" name="parking" value="true" checked={property.parking === true} onChange={handleBooleanChange} /> Yes
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="parking" value="false" checked={property.parking === false} onChange={handleBooleanChange} /> No
+                                    </label>
+                                </th>
                             </tr>
 
                             <tr>
@@ -270,7 +232,7 @@ export default function Admin({ email }) {
                             </tr>
                             <tr>
                                 <th align='right'><label>Images:</label></th>
-                                <th align='left'><input type="file" name="images" multiple value={file.images} onChange={handleFileChange} required /></th>
+                                <th align='left'><input type="file" name="images" multiple onChange={handleFileChange} required /></th>
                             </tr>
                             <tr>
                                 <th align='right'></th>
@@ -285,11 +247,11 @@ export default function Admin({ email }) {
                                 <React.Fragment key={form.id} >
                                     <tr >
                                         <th align='right'><label>Room {index + 1}:</label></th>
-                                        <th align='left'><input type="file" name={index} multiple value={room.images} onChange={handleRoomChange} required /></th>
+                                        <th align='left'><input type="file" name={`room_${index}`} multiple onChange={handleRoomChange} /></th>
                                     </tr>
                                     <tr >
                                         <th align='right'><label>Room {index + 1} description:</label></th>
-                                        <th align='left'><textarea name='info' value={form.info} onChange={(e) => handleInputChange(e, index)} required /></th>
+                                        <th align='left'><textarea name='info' value={form.info} onChange={(e) => handleInputChange(e, index)} /></th>
                                     </tr>
                                     <tr >
                                         <th align='right'><label>Delete room {index + 1}</label></th>
