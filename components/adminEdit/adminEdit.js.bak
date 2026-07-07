@@ -3,12 +3,10 @@
 
 import { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
-import { useRouter } from 'next/navigation'
 import styles from './admin_edit.module.css'
 import { createEditProperty } from '../shared/defaultPropertyState'
 
 export default function AdminEdit({ email }) {
-    const router = useRouter()
 
     const [inDB, setInDB] = useState(true)
     const [asset, setAsset] = useState([])
@@ -30,13 +28,7 @@ export default function AdminEdit({ email }) {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (['bedroom', 'bath', 'floor'].includes(name)) {
-            setProperty(prev => ({ ...prev, [name]: Number(value) || 0 }))
-        } else if (name === 'price') {
-            setProperty(prev => ({ ...prev, [name]: value === '' ? 0 : Number(value) }))
-        } else {
-            setProperty(prev => ({ ...prev, [name]: value }))
-        }
+        setProperty(prevState => ({ ...prevState, [name]: value }));
     };
 
     async function send_data(data, where) {
@@ -163,29 +155,6 @@ export default function AdminEdit({ email }) {
 
     };
 
-    /** Convert any null/undefined values to safe defaults for controlled inputs. */
-    const normalize = (obj) => {
-        return {
-            ...obj,
-            name: obj.name ?? '',
-            phone: obj.phone ?? '',
-            coordinates: obj.coordinates ?? '',
-            bedroom: obj.bedroom ?? 0,
-            bath: obj.bath ?? 0,
-            ac: typeof obj.ac === 'boolean' ? obj.ac : false,
-            view: obj.view ?? '',
-            floor: obj.floor ?? 0,
-            parking: typeof obj.parking === 'boolean' ? obj.parking : false,
-            price: obj.price ?? 0,
-            available: typeof obj.available === 'boolean' ? obj.available : true,
-            description: obj.description ?? '',
-            images: Array.isArray(obj.images) ? obj.images : [],
-            rooms: Array.isArray(obj.rooms) ? obj.rooms : [],
-            rooms_info: Array.isArray(obj.rooms_info) ? obj.rooms_info : [],
-            occupied_rooms: Array.isArray(obj.occupied_rooms) ? obj.occupied_rooms : [],
-        }
-    }
-
     function fetch_data() {
         //console.log('new fetch')
         fetch('/api/get_data_edit', {
@@ -201,8 +170,7 @@ export default function AdminEdit({ email }) {
                     const dbData = json[propertyRef.current];
                     if (!dbData) {
                         propertyRef.current = 0;
-                        const empty = createEditProperty(email);
-                    setProperty({ ...empty, _id: '', images: '', rooms: '', occupied_rooms: empty.occupied_rooms });
+                        setProperty({ ...createEditProperty(email), _id: '', images: '', rooms: '' });
                         return;
                     }
                     if (dbData.coordinates && Array.isArray(dbData.coordinates)) {
@@ -210,7 +178,7 @@ export default function AdminEdit({ email }) {
                         dbData.coordinates = `${lat}, ${lng}`;  // User-friendly format for display
                     }
 
-                    setProperty(normalize(dbData));  // Include transformed coordinates
+                    setProperty({ ...dbData });  // Include transformed coordinates
                 }
                 else {
                     console.log("no data")
@@ -293,7 +261,7 @@ export default function AdminEdit({ email }) {
             const [lng, lat] = displayData.coordinates;
             displayData.coordinates = `${lat}, ${lng}`;  // User-friendly format for display
         }
-        294|        setProperty(normalize(displayData));
+        setProperty(prevState => (displayData));
         propertyRef.current = position // update ref to current property number in array
 
     }
@@ -355,15 +323,7 @@ export default function AdminEdit({ email }) {
                 .then((response) => response.json())
                 .then((json) => {
                     console.log(json)
-                    propertyRef.current = 0 // reset to first remaining property before reload
-                    
-                    // If this was the last property, redirect to admin menu to create new one
-                    const assetArray = Array.isArray(asset) ? asset : []
-                    if (assetArray.length <= 1) {
-                        router.push('/admin')
-                    } else {
-                        fetch_data()
-                    }
+                    fetch_data()
                 })
         }
 
@@ -469,20 +429,16 @@ export default function AdminEdit({ email }) {
                                 </h2>
                                 <div className={styles.grid_inputs}>
                                     <div>
-                                        <label className={styles.input_label}>Number of Bedrooms</label>
-                                        <input className={styles.text_input} placeholder="e.g., 3" type="number" name="bedroom" max="99" value={property.bedroom} onChange={handleChange} required />
-                                    </div>
-                                    <div>
                                         <label className={styles.input_label}>Number of Bathrooms</label>
-                                        <input className={styles.text_input} placeholder="e.g., 2" type="number" name="bath" max="99" value={property.bath} onChange={handleChange} required />
-                                    </div>
-                                    <div>
-                                        <label className={styles.input_label}>Number of Floors</label>
-                                        <input className={styles.text_input} placeholder="e.g., 2" type="number" name="floor" max="99" value={property.floor} onChange={handleChange} required />
+                                        <input className={styles.text_input} placeholder="e.g., 3" type="number" name="bath" max="99" value={property.bath} onChange={handleChange} required />
                                     </div>
                                     <div>
                                         <label className={styles.input_label}>View</label>
                                         <input className={styles.text_input} placeholder="e.g., Ocean View, City Skyline" type="text" name="view" value={property.view} onChange={handleChange} required />
+                                    </div>
+                                    <div>
+                                        <label className={styles.input_label}>Number of Floors</label>
+                                        <input className={styles.text_input} placeholder="e.g., 2" type="number" name="floor" max="99" value={property.floor} onChange={handleChange} required />
                                     </div>
                                 </div>
                                 <div className={styles.radio_group}>

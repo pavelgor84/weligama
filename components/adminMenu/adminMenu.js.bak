@@ -4,13 +4,45 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import styles from './admin_menu.module.css'
 
-import { createAddProperty } from '../shared/defaultPropertyState'
-
 export default function AdminMenu({ email }) {
-    const defaul_state = createAddProperty(email)
+    const defaul_state = { // make it imported!!!
+        mail: email,
+        phone: '',
+        name: '',
+        address: '',
+        coordinates: '',
+        bedroom: '',
+        bath: '',
+        ac: false,
+        view: '',
+        floor: '',
+        parking: false,
+        price: '',
+        available: true,
+        images: '',
+        rooms_info: [],
+        description: ''
+    }
 
     const [asset, setAsset] = useState([])
-    const [property, setProperty] = useState(defaul_state);
+    const [property, setProperty] = useState({
+        mail: email,
+        phone: '',
+        name: '',
+        address: '',
+        coordinates: '',
+        bedroom: '',
+        bath: '',
+        ac: false,  // Fixed: boolean instead of empty string
+        view: '',
+        floor: '',
+        parking: false,  // Fixed: boolean instead of empty string
+        price: '',
+        available: true,
+        images: '',
+        rooms_info: [],
+        description: ''
+    });
     console.log(property)
     const [file, setFile] = useState([])
     console.log(file)
@@ -56,13 +88,7 @@ export default function AdminMenu({ email }) {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (['bedroom', 'bath', 'floor'].includes(name)) {
-            setProperty(prev => ({ ...prev, [name]: Number(value) || 0 }))
-        } else if (name === 'price') {
-            setProperty(prev => ({ ...prev, [name]: value === '' ? 0 : Number(value) }))
-        } else {
-            setProperty(prev => ({ ...prev, [name]: value }))
-        }
+        setProperty(prevState => ({ ...prevState, [name]: value }));
     };
 
 
@@ -96,7 +122,7 @@ export default function AdminMenu({ email }) {
             const room_response = await axios.post('/api/upload_room', data)
             const room_result = await room_response.data
             console.log({ room_result })
-            setProperty(createAddProperty(property.mail))
+            setProperty(defaul_state)
         }
         catch (e) {
             console.error(e)
@@ -211,7 +237,7 @@ export default function AdminMenu({ email }) {
                                 </div>
                                 <div>
                                     <label className={styles.input_label}>Coordinates</label>
-                                    <input className={styles.text_input} type="text" placeholder='e.g., 5.9744140972131685, 80.43011706614641' name="coordinates" value={property.coordinates} onChange={handleChange} required />
+                                    <input className={styles.text_input} ype="text" placeholder='e.g., 5.9744140972131685, 80.43011706614641' name="coordinates" value={property.coordinates} onChange={handleChange} required />
                                 </div>
                             </div>
                         </div>
@@ -223,20 +249,16 @@ export default function AdminMenu({ email }) {
                             </h2>
                             <div className={styles.grid_inputs}>
                                 <div>
-                                    <label className={styles.input_label}>Number of Bedrooms</label>
-                                    <input className={styles.text_input} placeholder="e.g., 3" type="number" name="bedroom" max="99" value={property.bedroom} onChange={handleChange} required />
-                                </div>
-                                <div>
                                     <label className={styles.input_label}>Number of Bathrooms</label>
-                                    <input className={styles.text_input} placeholder="e.g., 2" type="number" name="bath" max="99" value={property.bath} onChange={handleChange} required />
-                                </div>
-                                <div>
-                                    <label className={styles.input_label}>Number of Floors</label>
-                                    <input className={styles.text_input} placeholder="e.g., 2" type="number" name="floor" max="99" value={property.floor} onChange={handleChange} required />
+                                    <input className={styles.text_input} placeholder="e.g., 3" type="number" name="bath" max="99" value={property.bath} onChange={handleChange} required />
                                 </div>
                                 <div>
                                     <label className={styles.input_label}>View</label>
                                     <input className={styles.text_input} placeholder="e.g., Ocean View, City Skyline" type="text" name="view" value={property.view} onChange={handleChange} required />
+                                </div>
+                                <div>
+                                    <label className={styles.input_label}>Number of Floors</label>
+                                    <input className={styles.text_input} placeholder="e.g., 2" type="number" name="floor" max="99" value={property.floor} onChange={handleChange} required />
                                 </div>
                             </div>
                             <div className={styles.radio_group}>
