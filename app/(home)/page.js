@@ -1,13 +1,9 @@
 "use client"
 
-//import Image from 'next/image'
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import styles from '../page.module.css'
 
-
 import Map from '@/components/map/map'
-//import Link from 'next/link'
-
 import HousesMenu from '@/components/housesMenu/HousesMenu'
 import { MapContext } from '../context/MapContext'
 
@@ -25,7 +21,6 @@ export default function Home() {
       positions: [],
       currentPoint: ''
     }
-    //console.log(asset)
     asset.forEach((el) => {
       // Parse coordinates - handles both user-friendly string "lat, lng" AND GeoJSON array [lng, lat] formats
       let coordArr;
@@ -43,31 +38,26 @@ export default function Home() {
 
       coords.positions.push(coordArr);
     })
-    console.log(coords)
-    setNav((prev) => coords)
-
+    setNav(coords)
   }
   function handleLeave(e) {
-    //console.log('leave')
     setId(false)
     setScrollTo('') //prevent pass targetId to houseMenu for preventing clear selection
 
   }
 
   function handleOver(property_id) { // handle marker for the map
-    //e.preventDefault()
     setId(property_id)
     setScrollTo('') //prevent pass targetId to houseMenu for preventing clear selection
 
   }
 
   const [asset, setAsset] = useState([])
-  //console.log(asset)
+  const [viewportBounds, setViewportBounds] = useState(null)
   const [nav, setNav] = useState({
     positions: [],
     currentPoint: ''
   })
-  //console.log(nav)
   const [id, setId] = useState('')
   console.log('id', id)
   const [popup, setPopup] = useState('')
@@ -76,41 +66,201 @@ export default function Home() {
 
   const [scrollTo, setScrollTo] = useState('')
 
-  // Мемоизированное значение контекста
-  const contextValue = useMemo(() => ({
-    //hoveredId,
-    //setHoveredId,
-    scrollTo,
-    setScrollTo
-  }), [scrollTo]);
+  // Ref to track all loaded property IDs globally — prevents duplicate fetches across viewport changes.
+  // Kept as a secondary dedup layer within-batch.
+  const loadedIdsRef = useRef(new Set())
+  
+  // Region-level cache: tracks which bounding box areas have been fetched from DB.
+  // Each entry is { west, south, east, north } (in degrees).
+  // Before querying the API, we check if any cached region fully contains the requested viewport + padding.
+  const cachedRegionsRef = useRef([])
 
+  // Debounce timer for viewport changes — avoids spamming API during rapid panning/zooming
+  const viewportTimerRef = useRef(null)
+  // AbortController for cancelling in-flight viewport requests
+  const currentFetchAbortRef = useRef(null)
+
+  /**
+   * Check if a given bounding box is fully covered by any cached region.
+   */
+  function isRegionCached(west, south, east, north) {
+    for (const region of cachedRegionsRef.current) {
+      if (region.west <= west && 
+          region.south <= south && 
+          region.east >= east && 
+          region.north >= north) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Add a new cached region, merging it with overlapping regions to keep the array compact.
+   * Also removes regions that are fully contained within larger ones.
+   */
+  function cacheRegion(west, south, east, north) {
+    const newRegions = [...cachedRegionsRef.current];
+
+    // Try to merge with an existing overlapping region
+    let merged = false;
+    for (let i = 0; i < newRegions.length; i++) {
+      const r = newRegions[i];
+      if (!(r.east < west || r.west > east || r.north < south || r.south > north)) {
+        // Overlaps — expand to cover both
+        newRegions[i] = {
+          west: Math.min(r.west, west),
+          south: Math.min(r.south, south),
+          east: Math.max(r.east, east),
+          north: Math.max(r.north, north)
+        };
+        merged = true;
+        break;
+      }
+    }
+
+    if (!merged) {
+      newRegions.push({ west, south, east, north });
+    }
+
+    // Clean up: remove regions fully contained within others to keep array small
+    const cleaned = [];
+    for (let i = 0; i < newRegions.length; i++) {
+      let dominated = false;
+      for (let j = 0; j < newRegions.length; j++) {
+        if (i !== j) {
+          const other = newRegions[j];
+          if (other.west <= newRegions[i].west && 
+              other.south <= newRegions[i].south && 
+              other.east >= newRegions[i].east && 
+              other.north >= newRegions[i].north) {
+            dominated = true;
+            break;
+          }
+        }
+      }
+      if (!dominated) cleaned.push(newRegions[i]);
+    }
+
+    cachedRegionsRef.current = cleaned;
+  }
+
+  // Memoized value context
+  const contextValue = useMemo(() => ({
+    scrollTo,
+    setScrollTo,
+    viewportBounds
+  }), [scrollTo, viewportBounds]);
 
 
 
   const scrollToElement = (id) => {
-    setScrollTo(id); // Устанавливаем целевой идентификатор and send scrollTo to HouseMenu
-
+    setScrollTo(id);
   };
 
-  useEffect(() => {
-    const abortController = new AbortController();
-    
-    fetch('/api', { signal: abortController.signal })
-      .then((response) => response.json())
-      .catch((error) => {
-        if (error.name === 'AbortError') return; // Ignore aborted requests
-        console.error('Failed to fetch assets:', error);
-        throw error;
-      })
-      .then((json) => setAsset(json))
-      .catch((error) => {
-        if (error.name !== 'AbortError') {
-          console.error('Fetch error:', error);
-        }
-      });
+  function handleViewportReady(bounds) {
+    setViewportBounds({
+      west: bounds.getWest(),
+      east: bounds.getEast(),
+      south: bounds.getSouth(),
+      north: bounds.getNorth()
+    });
 
-    return () => abortController.abort(); // Cleanup on unmount or asset change
-  }, []);
+    // Only fetch if this viewport area hasn't been cached yet.
+    // The 0.1 degree padding ensures markers near edges aren't clipped when user drags slightly.
+    const PADDING = 0.1;
+    const paddedWest = bounds.getWest() - PADDING;
+    const paddedSouth = bounds.getSouth() - PADDING;
+    const paddedEast = bounds.getEast() + PADDING;
+    const paddedNorth = bounds.getNorth() + PADDING;
+
+    if (!isRegionCached(paddedWest, paddedSouth, paddedEast, paddedNorth)) {
+      debouncedViewportFetch({ west: bounds.getWest(), east: bounds.getEast(), south: bounds.getSouth(), north: bounds.getNorth() });
+    }
+  }
+
+  /**
+   * Fetch markers within a bounding box, paginating through all pages.
+   * Deduplicates against loadedIdsRef and caches the region so future queries
+   * that overlap don't re-fetch from DB.
+   */
+  async function fetchWithinBounds(bounds, abortSignal) {
+    let page = 1;
+    const limit = 50;
+    const allNewItems = [];
+
+    while (true) {
+      if (abortSignal?.aborted) break;
+
+      const url = `/api?page=${page}&limit=${limit}` +
+        `&minLng=${bounds.west}` +
+        `&maxLng=${bounds.east}` +
+        `&minLat=${bounds.south}` +
+        `&maxLat=${bounds.north}`;
+
+      try {
+        const response = await fetch(url, { signal: abortSignal });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const json = await response.json();
+        const items = Array.isArray(json) ? json : (Array.isArray(json?.data) ? json.data : []);
+
+        let pageNewItems = [];
+        for (const item of items) {
+          if (!loadedIdsRef.current.has(item._id)) {
+            loadedIdsRef.current.add(item._id);
+            pageNewItems.push(item);
+          }
+        }
+        allNewItems.push(...pageNewItems);
+
+        // Termination: API returns fewer items than requested (or zero)
+        if (items.length === 0 || items.length < limit) break;
+        page++;
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+        console.error('Bounding-box fetch error:', error);
+        break;
+      }
+    }
+
+    // Cache this region so future overlapping queries skip the DB
+    cacheRegion(bounds.west, bounds.south, bounds.east, bounds.north);
+
+    // ONE setAsset call after the loop
+    if (allNewItems.length > 0) {
+      console.log(`[BBQ] Loaded ${allNewItems.length} new items for viewport (${bounds.west.toFixed(2)},${bounds.south.toFixed(2)})-(${bounds.east.toFixed(2)},${bounds.north.toFixed(2)}), total cached:`, loadedIdsRef.current.size);
+      setAsset(prev => prev.concat(allNewItems));
+    }
+  }
+
+  /**
+   * Debounced viewport-change handler.
+   * Waits for the user to stop panning/zooming before triggering API fetches.
+   */
+  function debouncedViewportFetch(bounds) {
+    // Cancel any in-flight request from a previous viewport state
+    if (currentFetchAbortRef.current) {
+      currentFetchAbortRef.current.abort();
+    }
+    const abortController = new AbortController();
+    currentFetchAbortRef.current = abortController;
+
+    if (viewportTimerRef.current) clearTimeout(viewportTimerRef.current);
+    viewportTimerRef.current = setTimeout(() => {
+      fetchWithinBounds(bounds, abortController.signal).catch((err) => {
+        if (!abortSignalIsAborted(err)) console.error('Viewport fetch error:', err);
+      });
+    }, 500);
+
+    function abortSignalIsAborted(error) {
+      return error && error.name === 'AbortError';
+    }
+
+    return () => {
+      clearTimeout(viewportTimerRef.current);
+      abortController.abort();
+    };
+  }
 
   useEffect(() => {
     updateMarks()
@@ -119,6 +269,25 @@ export default function Home() {
   // Prevent "Cannot read properties of undefined (reading 'map')" error
   const marks = Array.isArray(asset) 
     ? asset.map((prop, index) => {
+        // Parse coordinates - handles both user-friendly string "lat, lng" AND GeoJSON array [lng, lat] formats
+        let geoCoord;
+        if (typeof prop.coordinates === 'string') {
+          // DB stores "lat, lng", convert to [lng, lat] for MapTiler
+          const parts = prop.coordinates.split(',').map(x => +x);
+          // Reverse: [lat, lng] -> [lng, lat]
+          geoCoord = [parts[1], parts[0]];
+        } else if (Array.isArray(prop.coordinates)) {
+          // Already a GeoJSON array [lng, lat] or need to reverse [lat, lng]
+          // Check if it looks like [lat, lng] by checking magnitude: Weligama lat ~6-10, lng ~80-81
+          if (Math.abs(prop.coordinates[0]) < 20) {
+            // Likely [lat, lng], reverse to [lng, lat]
+            geoCoord = [prop.coordinates[1], prop.coordinates[0]];
+          } else {
+            // Already in correct order
+            geoCoord = [...prop.coordinates];
+          }
+        }
+
         return {
           "type": "Feature",
           "properties": {
@@ -129,12 +298,12 @@ export default function Home() {
           "id": prop._id,
           "geometry": {
             "type": "Point",
-            "coordinates": prop.coordinates
+            "coordinates": geoCoord || [80.430288, 5.971817] // default Weligama if parse fails
           }
         }
       })
-    : [] // Return empty array if asset is undefined/null/not an array
-  //console.log(JSON.stringify(marks))
+    : []
+
   const hverrStyle = {
     color: 'blue',
     backgroundColor: 'lightgray',
@@ -159,7 +328,7 @@ export default function Home() {
         <div className={styles.right_block}>
           <div className={styles.map_place}>
             <div className={styles.block}>
-              {nav.positions.length != 0 ? <Map clearId={setId} setchangePoints={setchangePoints} centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={scrollToElement} html_popup={popup} /> : "Loading..."}
+              {nav.positions.length != 0 ? <Map clearId={setId} setchangePoints={setchangePoints} centerZoom={nav.currentPoint} coords={marks} pointId={id} scroll_to={scrollToElement} html_popup={popup} onViewportReady={handleViewportReady} /> : "Loading..."}
             </div>
 
           </div>
