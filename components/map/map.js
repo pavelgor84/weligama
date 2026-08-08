@@ -60,7 +60,7 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
 
         // Destroy old map instance if it exists (handles Fast Refresh + dependency changes)
         if (map.current && typeof map.current.remove === 'function') {
-            try { map.current.remove(); } catch (_) {}
+            try { map.current.remove(); } catch (_) { }
         }
 
         const center = initCenterRef.current;
@@ -187,7 +187,7 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
 
         return () => {
             if (map.current && typeof map.current.remove === 'function') {
-                try { map.current.remove(); } catch (_) {}
+                try { map.current.remove(); } catch (_) { }
             }
         };
     }, [zoom]); // Only re-init when zoom actually changes
@@ -308,17 +308,21 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
         }
 
 
-        let stayAdd = []
-        let prevPoints = lastPoints.current.map((item) => item.properties.home_id)
-        let freshPoints = newPoints.map((item) => item.properties.home_id)
-        rezState.stay = prevPoints.filter((item) => freshPoints.includes(item))// A:12345, B:3456 -> 3,4,5
-        rezState.add = freshPoints.filter((item) => !rezState.stay.includes(item))//B:3456, 345 -> 6
-        stayAdd.push(...rezState.stay, ...rezState.add)
-        rezState.del = prevPoints.filter((item) => !stayAdd.includes(item)) // A:12345, 345 & 6 -> 1,2
-        
-        console.log('[MAP-SPLIT] Viewport change — stay:', stayAdd.length, 'add:', freshPoints.length - stayAdd.length, 'del:', prevPoints.length - stayAdd.length);
+
+        let prevPoints = new Set(lastPoints.current.map(item => item.properties.home_id));
+        let freshPoints = new Set(newPoints.map(item => item.properties.home_id));
+
+        // Остаются - пересечение множеств
+        rezState.stay = [...prevPoints].filter(id => freshPoints.has(id)); // A:12345, B:3456 -> 3,4,5
+        // Добавляются - есть в fresh, но нет в prev
+        rezState.add = [...freshPoints].filter(id => !prevPoints.has(id)); //B:3456, 345 -> 6
+        // Удаляются - есть в prev, но нет в fresh
+        rezState.del = [...prevPoints].filter(id => !freshPoints.has(id)); // A:12345, 345 & 6 -> 1,2
+
+        console.log('[MAP-SPLIT] Viewport change — stay:', rezState.stay.length, 'add:', rezState.add.length, 'del:', rezState.del.length);
         lastPoints.current = newPoints;
-        if (rezState.add.length != 0 || rezState.del.length != 0) {
+
+        if (rezState.add.length || rezState.del.length) {
             console.log("[MAP-SPLIT] Sending to sidebar: add", rezState.add.length, "del", rezState.del.length);
             setchangePoints(rezState)
         }
