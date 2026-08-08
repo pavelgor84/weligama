@@ -34,7 +34,6 @@ const propertySchema = new Schema({
     rooms_info: [{ info: String, id: Number }]
 
 })
-propertySchema.index({ coordinates: "2dsphere" });
 
 const Restate = models?.Restate || model('Restate', propertySchema)
 export default Restate

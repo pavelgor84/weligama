@@ -3,7 +3,7 @@
 
 //import SliderTest from '@/components/slider/SliderTest'
 import { useEffect, useRef, useState } from 'react'
-import { throttle } from '@/utils/debounce';
+import { debounce, throttle } from '@/utils/debounce';
 import styles from './map.module.css'
 import * as maptilersdk from '@maptiler/sdk';
 import "@maptiler/sdk/dist/maptiler-sdk.css";
@@ -13,7 +13,7 @@ import Marker from '../marks/marker';
 
 
 
-export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, html_popup, setchangePoints }) {
+export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, html_popup, setchangePoints, onViewportReady }) {
     const geo = {
         "type": "FeatureCollection",
         "features": coords
@@ -42,6 +42,10 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
     const lastPoint = useRef('')
 
     const lastPoints = useRef(null)
+
+    // Track whether we've already synced lastPoints for initial load (prevents double-sync on every coords ref change).
+    const hasSyncedInitialPointsRef = useRef(false);
+    const hasNotifiedInitialViewportRef = useRef(false);
 
     //console.log('map point id', pointId)
 
@@ -107,6 +111,16 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
                 data: geo
             });
 
+            console.log('[MAP-SOURCE] GeoJSON source added with', geo?.features?.length || 0, 'features');
+
+            // Trigger initial viewport fetch if we have no data yet — prevents blank map on first load.
+            // Without this, handleViewportReady only fires from moveend events after user interaction.
+            if (geo?.features?.length === 0 && typeof onViewportReady === 'function') {
+                const bounds = map.current.getBounds();
+                console.log('[MAP] Initial load: triggering viewport query for initial data fetch');
+                onViewportReady(bounds);
+            }
+
             map.current.addLayer({
                 'id': 'points',
                 'type': 'symbol',
@@ -140,7 +154,28 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
             //map.current.on('click', getPoint);
 
 
-            map.current.on('moveend', throttle(getCurrentPoints, 300));
+            let viewportTimerRef = null;
+
+            function handleViewportMove() {
+                clearTimeout(viewportTimerRef);
+                // Debounce: wait 300ms after user stops panning/zooming before querying rendered features.
+                // This avoids spamming the API during rapid movement and aligns with the document's recommendation to use idle + debounce.
+                viewportTimerRef = setTimeout(() => {
+                    if (map.current && map.current.loaded()) {
+                        getCurrentPoints();
+                        // Notify parent so it can fetch any new regions from DB
+                        const bounds = map.current.getBounds();
+                        if (typeof onViewportReady === 'function') {
+                            onViewportReady(bounds);
+                        }
+                    }
+                }, 300);
+            }
+
+            // MapTiler SDK: use 'moveend' for pan/zoom completion events.
+            // The debounce above ensures we only query after movement settles,
+            // matching the document's recommendation (idle + debounce).
+            map.current.on('moveend', handleViewportMove);
             //console.log(map.current)
 
             map.current.on('render', afterChangeComplete);
@@ -154,7 +189,42 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
                 try { map.current.remove(); } catch (_) {}
             }
         };
-    }, [zoom]); // Only re-init when zoom actually changes — centerZoom no longer triggers destroy/recreate
+    }, [zoom]); // Only re-init when zoom actually changes
+
+    // Update GeoJSON source when coords prop changes — avoids destroying/rebuilding the entire source
+    useEffect(() => {
+        if (!map.current || !map.current.getSource) return;
+        const source = map.current.getSource('marks');
+        if (source && Array.isArray(coords)) {
+            source.setData({ type: 'FeatureCollection', features: coords });
+
+            // After new data loads, sync lastPoints.current so JSX doesn't show "..." for all markers.
+            // CRITICAL: do this synchronously — if we wait for a timeout + MapTiler rendering,
+            // After new data loads, sync lastPoints.current so JSX doesn't show "..." for all markers.
+            if (!hasSyncedInitialPointsRef.current) {
+                const featuresToSet = coords.map(c => ({ properties: { home_id: c.id } }));
+                lastPoints.current = featuresToSet;
+                hasSyncedInitialPointsRef.current = true;
+                console.log('[MAP] Synced lastPoints synchronously:', featuresToSet.length, 'features');
+
+                // Send sidebar update immediately — use coords data directly instead of waiting for MapTiler.
+                // This avoids the race where getRenderedFeatures() returns empty (MapTiler not painted yet)
+                // and overwrites our correct sync with stale/empty data.
+                setchangePoints({ stay: featuresToSet.map(f => f.properties.home_id), add: [], del: [] });
+            } else {
+                // Subsequent viewport changes — wait for MapTiler to render, then diff rendered vs previous.
+                setTimeout(() => {
+                    if (!map.current || !map.current.loaded()) return;
+                    const rendered = getRenderedFeatures();
+                    console.log('[MAP] Re-querying features after coords updated:', rendered.length);
+
+                    if (rendered.length > 0) {
+                        splitPoints(rendered);
+                    }
+                }, 150); // give maptiler a tick to render the new markers before querying
+            }
+        }
+    }, [coords]);
 
 
     // useEffect(() => {
@@ -211,11 +281,12 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
     }
 
     function getCurrentPoints() {
-
-        const allfeatures = getRenderedFeatures()
-        console.log(allfeatures)
+        const allfeatures = getRenderedFeatures();
+        console.log('[MAP-FEATURES] Rendered features (in viewport):', allfeatures.length, 'Total map features:', geo?.features?.length);
+        if (allfeatures.length > 0) {
+            console.log('[MAP-FEATURES] Sample feature ids:', allfeatures.slice(0, 3).map(f => f.properties.home_id));
+        }
         splitPoints(allfeatures)
-
     }
 
     function splitPoints(newPoints) {
@@ -231,6 +302,7 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
             rezState.stay = firstPoints
             lastPoints.current = newPoints
             setchangePoints(rezState)
+            console.log('[MAP-SPLIT] Initial load:', firstPoints.length, 'points into viewport');
             return
         }
 
@@ -242,12 +314,11 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
         rezState.add = freshPoints.filter((item) => !rezState.stay.includes(item))//B:3456, 345 -> 6
         stayAdd.push(...rezState.stay, ...rezState.add)
         rezState.del = prevPoints.filter((item) => !stayAdd.includes(item)) // A:12345, 345 & 6 -> 1,2
-        // console.log("stay", rezState.stay)
-        // console.log("add ", rezState.add)
-        // console.log("del ", rezState.del)
-        lastPoints.current = newPoints
+        
+        console.log('[MAP-SPLIT] Viewport change — stay:', stayAdd.length, 'add:', freshPoints.length - stayAdd.length, 'del:', prevPoints.length - stayAdd.length);
+        lastPoints.current = newPoints;
         if (rezState.add.length != 0 || rezState.del.length != 0) {
-            console.log("update!")
+            console.log("[MAP-SPLIT] Sending to sidebar: add", rezState.add.length, "del", rezState.del.length);
             setchangePoints(rezState)
         }
         //else { console.log("calm!") }
@@ -257,9 +328,20 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
     function afterChangeComplete() {
         if (!map.current.loaded()) { return } // still not loaded; bail out.
 
-        // now that the map is loaded, it's safe to query the features:
-        getCurrentPoints()
+        // CRITICAL FIX: Notify parent of initial viewport bounds so it can trigger an API fetch.
+        if (!hasNotifiedInitialViewportRef.current && typeof onViewportReady === 'function') {
+            hasNotifiedInitialViewportRef.current = true;
+            const bounds = map.current.getBounds();
+            console.log('[MAP] Initial viewport ready, notifying parent to fetch data');
+            onViewportReady(bounds);
+        }
 
+        // NOTE: do NOT call getCurrentPoints() here — this event fires during React's render phase
+        // BEFORE maptiler actually paints anything. getRenderedFeatures() would return empty or stale
+        // features. Let the 150ms timeout in the coords useEffect handle viewport sync after both
+        // React and maptiler have finished rendering. Removing getCurrentPoints here prevents an
+        // infinite loop where: afterChangeComplete → getCurrentPoints(splitPoints([])) → setchangePoints
+        // → parent re-render → new coords prop → Map re-renders → more render events.
         map.current.off('render', afterChangeComplete); // remove this handler now that we're done.
     }
 
