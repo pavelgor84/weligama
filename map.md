@@ -2,24 +2,9 @@
 
 ## 1. map.js — Main Map Component (Worst offender)
 
-
-### P1 — `splitPoints` uses O(n*m) linear search on every viewport change (lines 292-326)
-```js
-rezState.stay = prevPoints.filter((item) => freshPoints.includes(item))
-rezState.add = freshPoints.filter((item) => !rezState.stay.includes(item))
-```
-Both `prevPoints` and `freshPoints` are arrays. `.includes()` on an array is O(n). For 50+ markers this becomes significant during panning. Should use `Set` for O(1) lookups:
-```js
-const prevSet = new Set(prevPoints);
-const freshSet = new Set(freshPoints);
-// stay = intersection, add = difference — all O(n+m)
-```
-
 ### P1 — `map.current.on('render', afterChangeComplete)` fires at 60fps (line 181)
 The `'render'` event in Maptiler fires on every frame during rendering. Even though `afterChangeComplete` removes itself, the event listener is registered inside the 'load' callback and fires continuously until the first render cycle completes. This creates massive CPU overhead.
 
-### P1 — Console.log throughout code (lines 114, 205, 219, 287, 305, 318, 321)
-Multiple console.log statements fire during panning/zooming and initial load. In production these add overhead; in dev they flood the buffer. Should be guarded: `if (process.env.NODE_ENV === 'development')`.
 
 ### P2 — Coordinate parsing runs on every render for every house (page.js lines 274-309)
 ```js

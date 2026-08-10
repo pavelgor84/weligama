@@ -74,38 +74,6 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
         map.current.on('load', async function () {
 
 
-            // Create an image from SVG
-
-            // const svgImage_selected = new Image(140, 140);
-            // const svgImage = new Image(140, 140);
-
-            // const pin_selected = `<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="242.64 161.414 51.656 47.497" width="51.656px" height="47.497px"><path d="M 268.421 208.911 C 269.476 208.911 272.789 202.436 273.726 200.819 L 274.733 200.836 L 283.561 200.836 C 294.158 200.836 294.296 200.361 294.296 190.102 L 294.296 172.149 C 294.296 161.962 294.021 161.414 283.561 161.414 L 253.374 161.414 C 242.567 161.414 242.64 161.551 242.64 172.149 L 242.64 190.102 C 242.64 200.37 243.783 200.836 253.374 200.836 L 262.108 200.836 L 263.082 200.819 C 264.02 202.436 267.366 208.911 268.421 208.911 Z" style="stroke-width: 1;" fill="#fb6f92"/></svg>`;
-            // const pin = `<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="242.64 161.414 51.656 47.497" width="51.656px" height="47.497px"><path d="M 268.421 208.911 C 269.476 208.911 272.789 202.436 273.726 200.819 L 274.733 200.836 L 283.561 200.836 C 294.158 200.836 294.296 200.361 294.296 190.102 L 294.296 172.149 C 294.296 161.962 294.021 161.414 283.561 161.414 L 253.374 161.414 C 242.567 161.414 242.64 161.551 242.64 172.149 L 242.64 190.102 C 242.64 200.37 243.783 200.836 253.374 200.836 L 262.108 200.836 L 263.082 200.819 C 264.02 202.436 267.366 208.911 268.421 208.911 Z" style="stroke-width: 1;" fill="#4E5EF2"/></svg>`
-
-            // svgImage_selected.onload = () => {
-            //     map.current.addImage('svg_selected', svgImage_selected, {
-            //         stretchX: [
-            //             [25, 55],
-            //             [85, 115]
-            //         ],
-
-            //         content: [25, 25, 115, 100],
-            //         pixelRatio: 2
-            //     })
-            // }
-            // svgImage.onload = () => {
-            //     map.current.addImage('svg', svgImage, {
-            //         stretchX: [
-            //             [25, 55],
-            //             [85, 115]
-            //         ],
-
-            //         content: [25, 25, 115, 100],
-            //         pixelRatio: 2
-            //     })
-            // }
-
-
             map.current.addSource('marks', {
                 type: 'geojson',
                 generateId: true,

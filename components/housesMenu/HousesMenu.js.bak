@@ -1,6 +1,5 @@
 "use client"
 
-//import Image from 'next/image'
 import { useEffect, useState, useRef } from 'react'
 import { Icon_bed, Icon_cond, Icon_shower } from '@/components/icons/iconset'
 import axios from 'axios'
@@ -13,15 +12,12 @@ import styles from './houses.module.css'
 import { useMapContext } from '@/app/context/MapContext'
 
 
-export default function HousesMenu({ cards, handleOver, handleLeave, targetId }) {
-
+export default function HousesMenu({ cards, handleOver, handleLeave }) {
 
     const [card, setCard] = useState([])
-    //console.log("scroll to ", targetId)
 
     const itemRef = useRef([]);
     const selectedRef = useRef('');
-    //console.log(itemRef.current)
 
     const { scrollTo } = useMapContext()
 
@@ -47,20 +43,6 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
     }
 
-    // console.log("scroll to", scrollTo)
-    // if (targetId !== null && itemRef.current.length != 0) { //check for targetId, check for all refs for handle selection in menu
-    //     if (targetId !== selectedRef.current) {
-    //         itemRef.current.forEach((item) => {
-    //             if (item.id === targetId) {
-    //                 item.className = styles.card_container_selected //apply selected style to menu element
-    //                 item.scrollIntoView({ block: "center", behavior: 'smooth' });
-    //                 selectedRef.current = targetId
-    //             }
-    //         })
-    //     }
-
-    // }
-
 
 
     const addToRefs = (el) => { // add refs to every menu element
@@ -71,48 +53,30 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
     function hov(element) {// cear selection in menu if we pointed to another element
 
-        if (targetId !== null) { // if there is a point to select
-            if (element.currentTarget.id !== targetId) { // if current menu element isn't pointed
-                itemRef.current.forEach((item) => {
-                    if (item.id === targetId) {
-                        item.className = styles.card_container // remove current selection if we pointed to other element
-                        selectedRef.current = element.currentTarget.id
-                    }
-                })
-                handleOver(element.currentTarget.id)// call update mark on the map for remove.
-            }
-        }
-    }
-    function touch(element) {
-        if (targetId !== null) { // if there is a point to select
-            if (element.currentTarget.id !== selectedRef.current) { // if current menu element isn't pointed
+        if (!itemRef.current.length) return;
+        
+        const targetId = element.currentTarget.id;
+        itemRef.current.forEach((item) => {
+            if (item.id === targetId && item.className !== styles.card_container_selected) {
+                item.className = styles.card_container // remove current selection if we pointed to other element
                 selectedRef.current = element.currentTarget.id
-                itemRef.current.forEach((item) => {
-                    if (item.id === targetId) {
-                        item.className = styles.card_container // remove current selection if we pointed to other element
-                    }
-                })
-
-                handleOver(element.currentTarget.id)// call update mark on the map for remove.
             }
-        }
+        })
+        handleOver(element.currentTarget.id)// call update mark on the map for remove.
     }
-    function touchEnd(element) {
-        if (element.currentTarget.id !== selectedRef.current) {
-            handleLeave()
-        }
+    
+    function touchEnd() {
+        handleLeave()
     }
 
     async function changeCards(cards) {
         // + not delete from state and not add? update state with incoming cards
         if (cards.add.length == 0 & cards.del.length == 0) {
-            //console.log("first load")
             let newState = await getNewCards(cards.stay)
             setCard(newState)
         }
         // + delete from state and no add? then delete from state and update
         if (cards.add.length == 0 & cards.del.length != 0) {
-            //console.log("delete cards")
             let prevState = [...card]
             let newState = prevState.filter((item) => !cards.del.includes(item._id))
             setCard(newState)
@@ -127,14 +91,11 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
         }
         //not delete from state and add? then request DB and add new data to state and update
         if (cards.add.length != 0 & cards.del.length == 0) {
-            //console.log("add new cards")
             let prevState = [...card]
             let newCards = await getNewCards(cards.add)
             prevState.push(...newCards)
             setCard(prevState)
         }
-        else console.log("nothing happened")
-
 
     }
 
@@ -142,7 +103,6 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
 
         const response = await axios.post('/api/get_more_houses', new_cards)
         const result = await response.data
-        //console.log({ result })
         return result
 
     }
@@ -179,6 +139,8 @@ export default function HousesMenu({ cards, handleOver, handleLeave, targetId })
     }) : NULL
 
     return (
-        <>{menu ? menu : NULL}</>
+        <>
+            {menu ? menu : NULL}
+        </>
     )
 }
