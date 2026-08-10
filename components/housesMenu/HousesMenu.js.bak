@@ -29,19 +29,20 @@ export default function HousesMenu({ cards, handleOver, handleLeave }) {
     }, [cards]);
 
 
-    console.log("scroll to", scrollTo)
-    if (scrollTo !== null && itemRef.current.length != 0) { //check for scrollTo, check for all refs for handle selection in menu
-        if (scrollTo !== selectedRef.current) {
-            itemRef.current.forEach((item) => {
-                if (item.id === scrollTo) {
-                    item.className = styles.card_container_selected //apply selected style to menu element
-                    item.scrollIntoView({ block: "center", behavior: 'smooth' });
-                    selectedRef.current = scrollTo
-                }
-            })
+    useEffect(() => {
+        console.log("scroll to", scrollTo)
+        if (scrollTo && itemRef.current.length > 0) { //check for scrollTo, check for all refs for handle selection in menu
+            if (scrollTo !== selectedRef.current) {
+                itemRef.current.forEach((item) => {
+                    if (item.id === scrollTo) {
+                        item.className = styles.card_container_selected //apply selected style to menu element
+                        item.scrollIntoView({ block: "center", behavior: 'smooth' });
+                        selectedRef.current = scrollTo
+                    }
+                })
+            }
         }
-
-    }
+    }, [scrollTo])
 
 
 

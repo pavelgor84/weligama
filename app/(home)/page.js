@@ -142,7 +142,12 @@ export default function Home() {
       if (!dominated) cleaned.push(newRegions[i]);
     }
 
-    cachedRegionsRef.current = cleaned;
+    // Cap at most recent N regions to prevent unbounded growth
+    if (cleaned.length > 100) {
+      cachedRegionsRef.current = cleaned.slice(-100);
+    } else {
+      cachedRegionsRef.current = cleaned;
+    }
   }
 
   // Memoized value context
