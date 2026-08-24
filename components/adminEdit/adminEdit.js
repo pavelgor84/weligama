@@ -6,6 +6,7 @@ import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import styles from './admin_edit.module.css'
 import { createEditProperty } from '../shared/defaultPropertyState'
+import CoordinatePicker from '../coordinatePicker/maptiler'
 
 export default function AdminEdit({ email }) {
     const router = useRouter()
@@ -455,9 +456,10 @@ export default function AdminEdit({ email }) {
                                         <label className={styles.input_label}>Phone Number</label>
                                         <input className={styles.text_input} placeholder="e.g., +1 555 123 4567" type="tel" name="phone" value={property.phone} onChange={handleChange} required />
                                     </div>
-                                    <div>
+                                    <div className={styles.coordinates_wrapper}>
                                         <label className={styles.input_label}>Coordinates</label>
                                         <input className={styles.text_input} type="text" placeholder='e.g., 5.9744140972131685, 80.43011706614641' name="coordinates" value={property.coordinates} onChange={handleChange} required />
+                                        <CoordinatePicker value={property.coordinates} onChange={(coordStr) => handleChange({ target: { name: 'coordinates', value: coordStr } })} />
                                     </div>
                                 </div>
                             </div>
