@@ -142,7 +142,12 @@ export default function Home() {
       if (!dominated) cleaned.push(newRegions[i]);
     }
 
-    cachedRegionsRef.current = cleaned;
+    // Cap at most recent N regions to prevent unbounded growth
+    if (cleaned.length > 100) {
+      cachedRegionsRef.current = cleaned.slice(-100);
+    } else {
+      cachedRegionsRef.current = cleaned;
+    }
   }
 
   // Memoized value context
@@ -270,43 +275,45 @@ export default function Home() {
     updateMarks()
   }, [asset]);
 
-  // Prevent "Cannot read properties of undefined (reading 'map')" error
-  const marks = Array.isArray(asset) 
-    ? asset.map((prop, index) => {
-        // Parse coordinates - handles both user-friendly string "lat, lng" AND GeoJSON array [lng, lat] formats
-        let geoCoord;
-        if (typeof prop.coordinates === 'string') {
-          // DB stores "lat, lng", convert to [lng, lat] for MapTiler
-          const parts = prop.coordinates.split(',').map(x => +x);
-          // Reverse: [lat, lng] -> [lng, lat]
-          geoCoord = [parts[1], parts[0]];
-        } else if (Array.isArray(prop.coordinates)) {
-          // Already a GeoJSON array [lng, lat] or need to reverse [lat, lng]
-          // Check if it looks like [lat, lng] by checking magnitude: Weligama lat ~6-10, lng ~80-81
-          if (Math.abs(prop.coordinates[0]) < 20) {
-            // Likely [lat, lng], reverse to [lng, lat]
-            geoCoord = [prop.coordinates[1], prop.coordinates[0]];
-          } else {
-            // Already in correct order
-            geoCoord = [...prop.coordinates];
+  // Memoize coordinate parsing so the prop reference stays stable when asset hasn't changed.
+  const marks = useMemo(() => {
+    return Array.isArray(asset) 
+      ? asset.map((prop, index) => {
+          // Parse coordinates - handles both user-friendly string "lat, lng" AND GeoJSON array [lng, lat] formats
+          let geoCoord;
+          if (typeof prop.coordinates === 'string') {
+            // DB stores "lat, lng", convert to [lng, lat] for MapTiler
+            const parts = prop.coordinates.split(',').map(x => +x);
+            // Reverse: [lat, lng] -> [lng, lat]
+            geoCoord = [parts[1], parts[0]];
+          } else if (Array.isArray(prop.coordinates)) {
+            // Already a GeoJSON array [lng, lat] or need to reverse [lat, lng]
+            // Check if it looks like [lat, lng] by checking magnitude: Weligama lat ~6-10, lng ~80-81
+            if (Math.abs(prop.coordinates[0]) < 20) {
+              // Likely [lat, lng], reverse to [lng, lat]
+              geoCoord = [prop.coordinates[1], prop.coordinates[0]];
+            } else {
+              // Already in correct order
+              geoCoord = [...prop.coordinates];
+            }
           }
-        }
 
-        return {
-          "type": "Feature",
-          "properties": {
-            "@id": prop._id,
-            "home_id": prop._id,
-            "price": prop.price ?? 0
-          },
-          "id": prop._id,
-          "geometry": {
-            "type": "Point",
-            "coordinates": geoCoord || [80.430288, 5.971817] // default Weligama if parse fails
+          return {
+            "type": "Feature",
+            "properties": {
+              "@id": prop._id,
+              "home_id": prop._id,
+              "price": prop.price ?? 0
+            },
+            "id": prop._id,
+            "geometry": {
+              "type": "Point",
+              "coordinates": geoCoord || [80.430288, 5.971817] // default Weligama if parse fails
+            }
           }
-        }
-      })
-    : []
+        })
+      : []
+  }, [asset]);
 
   const hverrStyle = {
     color: 'blue',

@@ -334,7 +334,7 @@ export default function Home() {
               handleOver={handleOver} 
               handleLeave={handleLeave}
             />
-          ) : "LOADING"}
+          ) : <div className={styles.loader} />}
         </div>
         <div className={styles.right_block}>
           <div className={styles.map_place}>
