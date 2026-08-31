@@ -8,12 +8,10 @@ import { Icon_bed, Icon_cond, Icon_shower } from '@/components/icons/iconset'
 import SliderTest from '@/components/slider/SliderTest'
 
 import Link from 'next/link'
-import { useCurrency } from '@/app/context/CurrencyContext'
 
 
 export default function Popup({ pop, close }) {
     console.log(pop)
-    const { formatPrice } = useCurrency()
     return (
         <div className={styles.card_container} key={pop._id} id={pop._id} >
             <div className={styles.card_left}>
@@ -36,7 +34,7 @@ export default function Popup({ pop, close }) {
                     </div>
                     <div className={styles.card_right_bottom}>
                         <div className={styles.card_right_date}><button className={styles.card_right_options_button}>Available {pop.available}</button></div>
-                        <div className={styles.card_right_price}>from <span>{formatPrice(pop.price)}</span> /day</div>
+                        <div className={styles.card_right_price}>from <span>Rs.{pop.price}</span> /day</div>
                     </div>
                 </Link>
             </div>

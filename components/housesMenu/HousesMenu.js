@@ -10,6 +10,7 @@ import Link from 'next/link'
 import styles from './houses.module.css'
 
 import { useMapContext } from '@/app/context/MapContext'
+import { useCurrency } from '@/app/context/CurrencyContext'
 
 
 export default function HousesMenu({ cards, handleOver, handleLeave }) {
@@ -21,6 +22,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave }) {
     const prevStayIdsRef = useRef([]); // track stay IDs to skip redundant API calls (Issue #3)
 
     const { scrollTo } = useMapContext()
+    const { formatPrice } = useCurrency()
 
     useEffect(() => {
         //get cards data, delete from state? request a new data, update the state
@@ -136,7 +138,7 @@ export default function HousesMenu({ cards, handleOver, handleLeave }) {
                         </div>
                         <div className={styles.card_right_bottom}>
                             <div className={styles.card_right_date}><button className={styles.card_right_options_button}>Available</button></div>
-                            <div className={styles.card_right_price}>from <span>Rs.{prop.price}</span> /day</div>
+                            <div className={styles.card_right_price}>from <span>{formatPrice(prop.price)}</span> /day</div>
                         </div>
                     </Link>
                 </div>

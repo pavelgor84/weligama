@@ -1,0 +1,58 @@
+.wrap {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    z-index: 20;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid #8a8a8a;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #222;
+    cursor: pointer;
+    font: inherit;
+}
+
+.button:hover {
+    background: #fff;
+}
+
+.arrow {
+    font-size: 10px;
+}
+
+.menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin: 4px 0 0;
+    padding: 4px 0;
+    list-style: none;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    min-width: 120px;
+}
+
+.menu li {
+    padding: 6px 14px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.menu li:hover {
+    background: #eef3f5;
+}
+
+.menu li.active {
+    color: #0a6e8a;
+    font-weight: 700;
+}

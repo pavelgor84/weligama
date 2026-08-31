@@ -271,7 +271,7 @@ export default function AdminMenu({ email }) {
                         <div className={styles.form_section}>
                             <h2 className={styles.section_title}>Pricing</h2>
                             <div>
-                                <label className={styles.input_label}>Price for a day (USD)</label>
+                                <label className={styles.input_label}>Price for a day</label>
                                 <div className={styles.price_input}>
                                     <input className={styles.text_input} placeholder="e.g., 15000" type="text" name="price" value={property.price} onChange={handleChange} required />
                                 </div>

@@ -2,7 +2,7 @@
 
 
 //import SliderTest from '@/components/slider/SliderTest'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { debounce, throttle } from '@/utils/debounce';
 import styles from './map.module.css'
 import * as maptilersdk from '@maptiler/sdk';
@@ -14,10 +14,11 @@ import Marker from '../marks/marker';
 
 
 export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, html_popup, setchangePoints, onViewportReady }) {
-    const geo = {
-        "type": "FeatureCollection",
-        "features": coords
-    }
+    // Memoize FeatureCollection so it keeps a stable reference when coords haven't changed.
+    const geo = useMemo(
+        () => ({ "type": "FeatureCollection", features: coords }),
+        [coords]
+    );
 
     var cz
     if (centerZoom == '' || !centerZoom) {
@@ -45,9 +46,7 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
 
     // Track whether we've already synced lastPoints for initial load (prevents double-sync on every coords ref change).
     const hasSyncedInitialPointsRef = useRef(false);
-
-    // Track if we've already notified parent of initial viewport bounds (prevents double-fetch).
-    let hasNotifiedParentOfInitialViewport = false;
+    const hasNotifiedInitialViewportRef = useRef(false);
 
     //console.log('map point id', pointId)
 
@@ -61,7 +60,7 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
 
         // Destroy old map instance if it exists (handles Fast Refresh + dependency changes)
         if (map.current && typeof map.current.remove === 'function') {
-            try { map.current.remove(); } catch (_) {}
+            try { map.current.remove(); } catch (_) { }
         }
 
         const center = initCenterRef.current;
@@ -73,38 +72,6 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
         });
 
         map.current.on('load', async function () {
-
-
-            // Create an image from SVG
-
-            // const svgImage_selected = new Image(140, 140);
-            // const svgImage = new Image(140, 140);
-
-            // const pin_selected = `<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="242.64 161.414 51.656 47.497" width="51.656px" height="47.497px"><path d="M 268.421 208.911 C 269.476 208.911 272.789 202.436 273.726 200.819 L 274.733 200.836 L 283.561 200.836 C 294.158 200.836 294.296 200.361 294.296 190.102 L 294.296 172.149 C 294.296 161.962 294.021 161.414 283.561 161.414 L 253.374 161.414 C 242.567 161.414 242.64 161.551 242.64 172.149 L 242.64 190.102 C 242.64 200.37 243.783 200.836 253.374 200.836 L 262.108 200.836 L 263.082 200.819 C 264.02 202.436 267.366 208.911 268.421 208.911 Z" style="stroke-width: 1;" fill="#fb6f92"/></svg>`;
-            // const pin = `<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="242.64 161.414 51.656 47.497" width="51.656px" height="47.497px"><path d="M 268.421 208.911 C 269.476 208.911 272.789 202.436 273.726 200.819 L 274.733 200.836 L 283.561 200.836 C 294.158 200.836 294.296 200.361 294.296 190.102 L 294.296 172.149 C 294.296 161.962 294.021 161.414 283.561 161.414 L 253.374 161.414 C 242.567 161.414 242.64 161.551 242.64 172.149 L 242.64 190.102 C 242.64 200.37 243.783 200.836 253.374 200.836 L 262.108 200.836 L 263.082 200.819 C 264.02 202.436 267.366 208.911 268.421 208.911 Z" style="stroke-width: 1;" fill="#4E5EF2"/></svg>`
-
-            // svgImage_selected.onload = () => {
-            //     map.current.addImage('svg_selected', svgImage_selected, {
-            //         stretchX: [
-            //             [25, 55],
-            //             [85, 115]
-            //         ],
-
-            //         content: [25, 25, 115, 100],
-            //         pixelRatio: 2
-            //     })
-            // }
-            // svgImage.onload = () => {
-            //     map.current.addImage('svg', svgImage, {
-            //         stretchX: [
-            //             [25, 55],
-            //             [85, 115]
-            //         ],
-
-            //         content: [25, 25, 115, 100],
-            //         pixelRatio: 2
-            //     })
-            // }
 
 
             map.current.addSource('marks', {
@@ -188,7 +155,7 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
 
         return () => {
             if (map.current && typeof map.current.remove === 'function') {
-                try { map.current.remove(); } catch (_) {}
+                try { map.current.remove(); } catch (_) { }
             }
         };
     }, [zoom]); // Only re-init when zoom actually changes
@@ -202,13 +169,16 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
 
             // After new data loads, sync lastPoints.current so JSX doesn't show "..." for all markers.
             // CRITICAL: do this synchronously — if we wait for a timeout + MapTiler rendering,
-            // React will render the first frame with stale lastPoints and every feature fails .find().
-            if (!lastPoints.current || lastPoints.current.length === 0) {
+            // After new data loads, sync lastPoints.current so JSX doesn't show "..." for all markers.
+            if (!hasSyncedInitialPointsRef.current) {
                 const featuresToSet = coords.map(c => ({ properties: { home_id: c.id } }));
                 lastPoints.current = featuresToSet;
+                hasSyncedInitialPointsRef.current = true;
                 console.log('[MAP] Synced lastPoints synchronously:', featuresToSet.length, 'features');
 
-                // Send the sidebar update so HousesMenu shows the new items immediately.
+                // Send sidebar update immediately — use coords data directly instead of waiting for MapTiler.
+                // This avoids the race where getRenderedFeatures() returns empty (MapTiler not painted yet)
+                // and overwrites our correct sync with stale/empty data.
                 setchangePoints({ stay: featuresToSet.map(f => f.properties.home_id), add: [], del: [] });
             } else {
                 // Subsequent viewport changes — wait for MapTiler to render, then diff rendered vs previous.
@@ -306,17 +276,21 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
         }
 
 
-        let stayAdd = []
-        let prevPoints = lastPoints.current.map((item) => item.properties.home_id)
-        let freshPoints = newPoints.map((item) => item.properties.home_id)
-        rezState.stay = prevPoints.filter((item) => freshPoints.includes(item))// A:12345, B:3456 -> 3,4,5
-        rezState.add = freshPoints.filter((item) => !rezState.stay.includes(item))//B:3456, 345 -> 6
-        stayAdd.push(...rezState.stay, ...rezState.add)
-        rezState.del = prevPoints.filter((item) => !stayAdd.includes(item)) // A:12345, 345 & 6 -> 1,2
-        
-        console.log('[MAP-SPLIT] Viewport change — stay:', stayAdd.length, 'add:', freshPoints.length - stayAdd.length, 'del:', prevPoints.length - stayAdd.length);
+
+        let prevPoints = new Set(lastPoints.current.map(item => item.properties.home_id));
+        let freshPoints = new Set(newPoints.map(item => item.properties.home_id));
+
+        // Остаются - пересечение множеств
+        rezState.stay = [...prevPoints].filter(id => freshPoints.has(id)); // A:12345, B:3456 -> 3,4,5
+        // Добавляются - есть в fresh, но нет в prev
+        rezState.add = [...freshPoints].filter(id => !prevPoints.has(id)); //B:3456, 345 -> 6
+        // Удаляются - есть в prev, но нет в fresh
+        rezState.del = [...prevPoints].filter(id => !freshPoints.has(id)); // A:12345, 345 & 6 -> 1,2
+
+        console.log('[MAP-SPLIT] Viewport change — stay:', rezState.stay.length, 'add:', rezState.add.length, 'del:', rezState.del.length);
         lastPoints.current = newPoints;
-        if (rezState.add.length != 0 || rezState.del.length != 0) {
+
+        if (rezState.add.length || rezState.del.length) {
             console.log("[MAP-SPLIT] Sending to sidebar: add", rezState.add.length, "del", rezState.del.length);
             setchangePoints(rezState)
         }
@@ -328,11 +302,8 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
         if (!map.current.loaded()) { return } // still not loaded; bail out.
 
         // CRITICAL FIX: Notify parent of initial viewport bounds so it can trigger an API fetch.
-        // Without this, no data is fetched until the user moves/zooms the map — which causes the
-        // "blank map on first load" bug. The debounced moveend handler also calls onViewportReady,
-        // but only after user interaction. This ensures initial viewport query fires immediately.
-        if (!hasNotifiedParentOfInitialViewport && typeof onViewportReady === 'function') {
-            hasNotifiedParentOfInitialViewport = true;
+        if (!hasNotifiedInitialViewportRef.current && typeof onViewportReady === 'function') {
+            hasNotifiedInitialViewportRef.current = true;
             const bounds = map.current.getBounds();
             console.log('[MAP] Initial viewport ready, notifying parent to fetch data');
             onViewportReady(bounds);

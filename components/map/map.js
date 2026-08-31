@@ -97,7 +97,7 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
                 'layout': {
                     'icon-image': 'svg',
                     'icon-text-fit': 'both',
-                    'text-field': ['get', 'price'],
+                    'text-field': ['get', 'display_price'],
                     'text-size': 14,
                     'text-font': ['Open Sans Semibold',
                         'Arial Unicode MS Bold'],

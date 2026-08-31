@@ -2,7 +2,6 @@ import { Lato } from 'next/font/google'
 import '../globals.css'
 
 import Header from '@/app/header'
-import { CurrencyProvider } from '../context/CurrencyContext'
 
 
 const lato = Lato({ subsets: ['latin'], weight: ['400'] })
@@ -18,10 +17,8 @@ export default function RootLayout({ children }) {
 
     <html lang="en">
       <body className={lato.className}>
-        <CurrencyProvider>
-          <Header />
-          {children}
-        </CurrencyProvider>
+        <Header />
+        {children}
         <div style={{ textAlign: "center" }}>Under development. pavelgor@gmail.com</div>
       </body>
 
