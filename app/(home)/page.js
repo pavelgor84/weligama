@@ -7,6 +7,7 @@ import Map from '@/components/map/map'
 import HousesMenu from '@/components/housesMenu/HousesMenu'
 import { MapContext } from '../context/MapContext'
 import { useCurrency } from '../context/CurrencyContext'
+import { useFilter } from '../context/FilterContext'
 
 
 export default function Home() {
@@ -68,6 +69,7 @@ export default function Home() {
   const [scrollTo, setScrollTo] = useState('')
 
   const { currency, formatPrice } = useCurrency()
+  const { maxPrice } = useFilter()
 
   // Ref to track all loaded property IDs globally — prevents duplicate fetches across viewport changes.
   // Kept as a secondary dedup layer within-batch.
@@ -208,7 +210,8 @@ export default function Home() {
         `&minLng=${bounds.west}` +
         `&maxLng=${bounds.east}` +
         `&minLat=${bounds.south}` +
-        `&maxLat=${bounds.north}`;
+        `&maxLat=${bounds.north}` +
+        `&maxPrice=${maxPrice}`;
 
       try {
         const response = await fetch(url, { signal: abortSignal });
@@ -278,10 +281,30 @@ export default function Home() {
     updateMarks()
   }, [asset]);
 
+  // When the max-price limit is RAISED, the previous fetch was narrower — re-fetch
+  // the current (or initial) viewport so newly-eligible properties load. Lowering
+  // the limit needs no fetch: the client-side filter on `marks` handles it instantly.
+  const maxPriceRef = useRef(maxPrice)
+  useEffect(() => {
+    const prev = maxPriceRef.current
+    maxPriceRef.current = maxPrice
+    if (prev === undefined || maxPrice <= prev) return
+    const bounds = viewportBounds
+      ? viewportBounds
+      : { west: 80.0, east: 81.0, south: 5.8, north: 6.1 } // fallback: Weligama area (initial view)
+    debouncedViewportFetch(bounds)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [maxPrice]);
+
   // Memoize coordinate parsing so the prop reference stays stable when asset hasn't changed.
+  // The price gate lives here (client-side) so dragging the slider filters instantly,
+  // and it also trims the GeoJSON sent to the map. Raising the limit re-fetches
+  // (see the refetch effect below), so the map and sidebar always stay in sync.
   const marks = useMemo(() => {
     return Array.isArray(asset) 
-      ? asset.map((prop, index) => {
+      ? asset
+        .filter((prop) => Number(prop.price) <= maxPrice)
+        .map((prop, index) => {
           // Parse coordinates - handles both user-friendly string "lat, lng" AND GeoJSON array [lng, lat] formats
           let geoCoord;
           if (typeof prop.coordinates === 'string') {
@@ -317,7 +340,7 @@ export default function Home() {
           }
         })
       : []
-  }, [asset, currency, formatPrice]);
+  }, [asset, currency, formatPrice, maxPrice]);
 
   const hverrStyle = {
     color: 'blue',

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { initMongoose } from "@/db/mongoose";
 import Restate from "@/models/Restate";
+import { buildFilterQuery } from "@/utils/filters";
 
 // export async function handle(req, res) {
 //     await initMongoose()
@@ -23,8 +24,13 @@ export async function GET(request) {
         return NextResponse.json({ error: 'Missing or invalid bounding-box params' }, { status: 400 })
     }
 
+    // Whitelisted, typed filters (e.g. ?maxPrice=1000) merged into the base query.
+    // See utils/filters.js — add future filters there, not here.
+    const priceFilter = buildFilterQuery(Object.fromEntries(searchParams))
+
     const filter = {
         available: true,
+        ...priceFilter,
         coordinates: {
             $geoWithin: {
                 $box: [[minLng, minLat], [maxLng, maxLat]]   // GeoJSON order: [lng, lat]

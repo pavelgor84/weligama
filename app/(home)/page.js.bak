@@ -6,6 +6,7 @@ import styles from '../page.module.css'
 import Map from '@/components/map/map'
 import HousesMenu from '@/components/housesMenu/HousesMenu'
 import { MapContext } from '../context/MapContext'
+import { useCurrency } from '../context/CurrencyContext'
 
 
 export default function Home() {
@@ -65,6 +66,8 @@ export default function Home() {
   const [changePoints, setchangePoints] = useState('')
 
   const [scrollTo, setScrollTo] = useState('')
+
+  const { currency, formatPrice } = useCurrency()
 
   // Ref to track all loaded property IDs globally — prevents duplicate fetches across viewport changes.
   // Kept as a secondary dedup layer within-batch.
@@ -303,7 +306,8 @@ export default function Home() {
             "properties": {
               "@id": prop._id,
               "home_id": prop._id,
-              "price": prop.price ?? 0
+              "price": prop.price ?? 0,
+              "display_price": formatPrice(prop.price ?? 0)
             },
             "id": prop._id,
             "geometry": {
@@ -313,7 +317,7 @@ export default function Home() {
           }
         })
       : []
-  }, [asset]);
+  }, [asset, currency, formatPrice]);
 
   const hverrStyle = {
     color: 'blue',
@@ -334,7 +338,7 @@ export default function Home() {
               handleOver={handleOver} 
               handleLeave={handleLeave}
             />
-          ) : "LOADING"}
+          ) : <div className={styles.loader} />}
         </div>
         <div className={styles.right_block}>
           <div className={styles.map_place}>

@@ -1,8 +1,10 @@
 import styles from '../components/header/header.module.css'
+import CurrencySwitcher from '@/components/currencySwitcher/CurrencySwitcher'
 
 export default function Header() {
     return (
         <div className={styles.container}>
+            <CurrencySwitcher />
 
             <div className={styles.title}>
                 <div className={styles.title_header}>Ceylon rooms</div>

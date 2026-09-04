@@ -36,7 +36,6 @@ export async function GET(request) {
     const skip        = (page - 1) * limit
 
     const data = await Restate.find(filter, projection).skip(skip).limit(limit).exec()
-    const total = await Restate.countDocuments(filter)
 
-    return NextResponse.json({ data, total, page })
+    return NextResponse.json({ data, page })
 }

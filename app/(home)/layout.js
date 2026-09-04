@@ -3,6 +3,7 @@ import '../globals.css'
 
 import Header from '@/app/header'
 import { CurrencyProvider } from '../context/CurrencyContext'
+import { FilterProvider } from '../context/FilterContext'
 
 
 const lato = Lato({ subsets: ['latin'], weight: ['400'] })
@@ -19,8 +20,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={lato.className}>
         <CurrencyProvider>
-          <Header />
-          {children}
+          <FilterProvider>
+            <Header />
+            {children}
+          </FilterProvider>
         </CurrencyProvider>
         <div style={{ textAlign: "center" }}>Under development. pavelgor@gmail.com</div>
       </body>

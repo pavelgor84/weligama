@@ -1,0 +1,54 @@
+"use client"
+
+import { useState } from 'react'
+import { useFilter, PRICE_FILTER_MIN, PRICE_FILTER_MAX, PRICE_FILTER_STEP, PRICE_FILTER_DEFAULT } from '@/app/context/FilterContext'
+import { useCurrency } from '@/app/context/CurrencyContext'
+import styles from './PriceFilter.module.css'
+
+export default function PriceFilter() {
+  const { maxPrice, setMaxPrice } = useFilter()
+  const { formatPrice } = useCurrency()
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className={styles.wrap}>
+      <button
+        className={styles.button}
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+      >
+        ≤ {formatPrice(maxPrice)} <span className={styles.arrow}>{open ? '▲' : '▼'}</span>
+      </button>
+
+      {open && (
+        <div className={styles.panel} role="dialog" aria-label="Maximum price per day">
+          <div className={styles.label}>
+            <span>Max price / day</span>
+            <span className={styles.value}>{formatPrice(maxPrice)}</span>
+          </div>
+          <input
+            type="range"
+            className={styles.slider}
+            min={PRICE_FILTER_MIN}
+            max={PRICE_FILTER_MAX}
+            step={PRICE_FILTER_STEP}
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(Number(e.target.value))}
+            aria-label="Maximum price per day"
+          />
+          <div className={styles.range_marks">
+            <span>{formatPrice(PRICE_FILTER_MIN)}</span>
+            <span>{formatPrice(PRICE_FILTER_MAX)}</span>
+          </div>
+          <button
+            className={styles.reset}
+            onClick={() => setMaxPrice(PRICE_FILTER_DEFAULT)}
+          >
+            Reset to {formatPrice(PRICE_FILTER_DEFAULT)}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
