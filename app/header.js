@@ -1,12 +1,14 @@
 import styles from '../components/header/header.module.css'
 import CurrencySwitcher from '@/components/currencySwitcher/CurrencySwitcher'
 import PriceFilter from '@/components/priceFilter/PriceFilter'
+import AmenityFilter from '@/components/amenityFilter/AmenityFilter'
 
 export default function Header() {
     return (
         <div className={styles.container}>
             <CurrencySwitcher />
             <PriceFilter />
+            <AmenityFilter />
 
             <div className={styles.title}>
                 <div className={styles.title_header}>Ceylon rooms</div>

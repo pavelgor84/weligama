@@ -1,0 +1,73 @@
+/* Amenities filter — always-visible horizontal pill row.
+   Full-width strip directly under the top-left price pill (both viewports). */
+.wrap {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    top: 62px; /* just below the 40px price pill at top:14px */
+    z-index: 20;
+}
+
+/* Single horizontal strip of tags — touch-scrollable, hidden scrollbar,
+   edge fade so the row reads as boundaryless. */
+.scrollRow {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 2px;
+    scrollbar-width: none;      /* Firefox */
+    -ms-overflow-style: none;   /* legacy Edge/IE */
+    mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+}
+
+.scrollRow::-webkit-scrollbar {
+    display: none;              /* Chrome/Safari */
+}
+
+.tag,
+.tagSelected {
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 8px 14px;
+    border-radius: 18px;
+    border: 1px solid #ccc;
+    background: #f4f4f4;
+    color: #333;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.tag:hover {
+    background: #e8e8e8;
+}
+
+.tagSelected,
+.tagSelected:hover {
+    background: #0a6e8a;
+    border-color: #0a6e8a;
+    color: #fff;
+}
+
+/* Reset lives inline at the end of the scroll row so it stays reachable. */
+.reset {
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 8px 14px;
+    border-radius: 18px;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #0a6e8a;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.reset:hover {
+    background: #eef3f5;
+}

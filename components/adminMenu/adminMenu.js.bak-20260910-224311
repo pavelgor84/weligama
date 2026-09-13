@@ -126,9 +126,6 @@ export default function AdminMenu({ email }) {
 
             // Transform coordinates to GeoJSON [lng, lat] array format for database storage
             let transformedProp = { ...property };
-            // Room counts: total = base + added, available = total (none occupied on creation)
-            transformedProp.numRooms = 1 + property.rooms_info.length;
-            transformedProp.availableRooms = transformedProp.numRooms;
             if (transformedProp.coordinates) {
                 const coordParts = transformedProp.coordinates.split(',');
                 if (coordParts.length >= 2) {
@@ -242,10 +239,6 @@ export default function AdminMenu({ email }) {
                                 <div>
                                     <label className={styles.input_label}>View</label>
                                     <input className={styles.text_input} placeholder="e.g., Ocean View, City Skyline" type="text" name="view" value={property.view} onChange={handleChange} required />
-                                </div>
-                                <div>
-                                    <label className={styles.input_label}>Number of Rooms</label>
-                                    <input className={styles.text_input} type="number" readOnly value={1 + property.rooms_info.length} title="Updates automatically when you add rooms" />
                                 </div>
                             </div>
                             <div className={styles.radio_group}>

@@ -19,9 +19,6 @@ const FILTER_WHITELIST = {
   parking: { field: 'parking', op: 'eq',  type: 'boolean' },
   view:    { field: 'view',    op: '$in', type: 'string' },
 
-  // Room count filter (tag source: components/amenityFilter/amenityTags.js)
-  availableRooms: { field: 'availableRooms', op: '$gte', type: 'number' },
-
   // ---- future filters go here ----
   // minPrice:  { field: 'price',     op: '$gte', type: 'number' },
   // roomsMin:  { field: 'rooms',     op: '$gte', type: 'number' },

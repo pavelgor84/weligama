@@ -24,8 +24,8 @@ export async function GET(request) {
         return NextResponse.json({ error: 'Missing or invalid bounding-box params' }, { status: 400 })
     }
 
-    // Whitelisted, typed filters (e.g. ?maxPrice=1000) merged into the base query.
-    // See utils/filters.js — add future filters there, not here.
+    // Whitelisted, typed filters (e.g. ?maxPrice=1000&ac=true&view=Ocean,City)
+    // merged into the base query. See utils/filters.js — add future filters there, not here.
     const priceFilter = buildFilterQuery(Object.fromEntries(searchParams))
 
     const filter = {
@@ -38,7 +38,9 @@ export async function GET(request) {
         }
     }
 
-    const projection  = { coordinates: 1, _id: 1, price: 1 }
+    // ac/parking/view are projected so the client can gate already-loaded
+    // markers instantly (see components/amenityFilter/amenityTags.js).
+    const projection  = { coordinates: 1, _id: 1, price: 1, ac: 1, parking: 1, view: 1 }
     const skip        = (page - 1) * limit
 
     const data = await Restate.find(filter, projection).skip(skip).limit(limit).exec()

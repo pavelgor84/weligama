@@ -23,7 +23,6 @@ const typedDefaults = {
     parking: false,         // Boolean in Restate  (not "Yes"/"No")
     price: 0,               // Number in Restate   (not string)
     available: true,        // Boolean in Restate  (not "Yes"/"No")
-    numRooms: 1,            // Number in Restate — available rooms; default 1 (base room)
 }
 
 const arrayDefaults = {

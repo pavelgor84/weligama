@@ -46,12 +46,13 @@ export async function POST(request) {
     }
 
     async function updateImages(doc, images) {
-        const arrayOfImages = []
+
         for (let i = 0; i < images.length; i++) {
-            arrayOfImages.push(
+            doc.images.push(
                 { src: images[i].secure_url, width: images[i].width, height: images[i].height, alt: images[i].original_filename, public_id: images[i].public_id }
             )
         }
-        await Restate.updateOne({ _id: doc._id }, { $push: { images: { $each: arrayOfImages } } })
+        //console.log(doc)
+        await Restate.updateOne({ _id: doc._id }, { $set: doc })
     }
 }

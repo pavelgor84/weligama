@@ -14,23 +14,11 @@ const FILTER_WHITELIST = {
   // param name  -> { field, op, type }
   maxPrice: { field: 'price', op: '$lte', type: 'number' },
 
-  // Amenities filter (tag source: components/amenityFilter/amenityTags.js)
-  ac:      { field: 'ac',      op: 'eq',  type: 'boolean' },
-  parking: { field: 'parking', op: 'eq',  type: 'boolean' },
-  view:    { field: 'view',    op: '$in', type: 'string' },
-
-  // Room count filter (tag source: components/amenityFilter/amenityTags.js)
-  availableRooms: { field: 'availableRooms', op: '$gte', type: 'number' },
-
   // ---- future filters go here ----
   // minPrice:  { field: 'price',     op: '$gte', type: 'number' },
   // roomsMin:  { field: 'rooms',     op: '$gte', type: 'number' },
   // available: { field: 'available', op: 'eq',   type: 'boolean' },
   // type:      { field: 'type',      op: 'eq',   type: 'string' },
-}
-
-function escapeRegExp(s) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 /**
@@ -53,21 +41,6 @@ export function buildFilterQuery(params) {
         filter[def.field] = raw === 'true' || raw === '1'
       } else {
         filter[def.field] = String(raw)
-      }
-      continue
-    }
-
-    // $in — comma-separated list of strings (e.g. view=Ocean,City).
-    // `view` is free text in the DB, so each value is matched with an
-    // anchored case-insensitive regex: a stray lowercase "garden" still
-    // matches the curated "Garden" tag.
-    if (def.op === '$in') {
-      const values = String(raw)
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean)
-      if (values.length > 0) {
-        filter[def.field] = { $in: values.map((v) => new RegExp(`^${escapeRegExp(v)}$`, 'i')) }
       }
       continue
     }

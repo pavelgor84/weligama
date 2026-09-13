@@ -1,0 +1,55 @@
+"use client"
+
+import { useState } from 'react'
+import { useFilter } from '@/app/context/FilterContext'
+import { AMENITY_TAGS } from './amenityTags'
+import styles from './AmenityFilter.module.css'
+
+export default function AmenityFilter() {
+  const { selectedAmenities, toggleAmenity, resetAmenities } = useFilter()
+  const [open, setOpen] = useState(false)
+
+  const count = selectedAmenities.length
+
+  return (
+    <div className={styles.wrap}>
+      <button
+        className={styles.button}
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+      >
+        Amenities{count > 0 ? ` (${count})` : ''} <span className={styles.arrow}>{open ? '▲' : '▼'}</span>
+      </button>
+
+      {open && (
+        <div className={styles.panel} role="dialog" aria-label="Amenities filter">
+          <div className={styles.label}>
+            <span>Show properties with</span>
+            {count > 0 && (
+              <button className={styles.reset} onClick={() => resetAmenities()}>
+                Reset
+              </button>
+            )}
+          </div>
+          <div className={styles.scrollRow} role="listbox" aria-label="Select amenities">
+            {AMENITY_TAGS.map((tag) => {
+              const selected = selectedAmenities.includes(tag.id)
+              return (
+                <button
+                  key={tag.id}
+                  role="option"
+                  aria-selected={selected}
+                  className={selected ? styles.tagSelected : styles.tag}
+                  onClick={() => toggleAmenity(tag.id)}
+                >
+                  {tag.label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

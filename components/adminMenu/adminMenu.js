@@ -126,6 +126,9 @@ export default function AdminMenu({ email }) {
 
             // Transform coordinates to GeoJSON [lng, lat] array format for database storage
             let transformedProp = { ...property };
+            // Room counts: total = added rooms, available = total (none occupied on creation)
+            transformedProp.numRooms = property.rooms_info.length;
+            transformedProp.availableRooms = transformedProp.numRooms;
             if (transformedProp.coordinates) {
                 const coordParts = transformedProp.coordinates.split(',');
                 if (coordParts.length >= 2) {
@@ -238,7 +241,23 @@ export default function AdminMenu({ email }) {
                                 </div>
                                 <div>
                                     <label className={styles.input_label}>View</label>
-                                    <input className={styles.text_input} placeholder="e.g., Ocean View, City Skyline" type="text" name="view" value={property.view} onChange={handleChange} required />
+                                    <select className={styles.text_input} name="view" value={property.view} onChange={handleChange} required>
+                                        <option value="">Select view</option>
+                                        <option value="Ocean">Ocean</option>
+                                        <option value="Beach">Beach</option>
+                                        <option value="Lake">Lake</option>
+                                        <option value="Lagoon">Lagoon</option>
+                                        <option value="City">City</option>
+                                        <option value="Mountain">Mountain</option>
+                                        <option value="River">River</option>
+                                        <option value="Forest">Forest</option>
+                                        <option value="Sunset">Sunset</option>
+                                        <option value="Garden">Garden</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className={styles.input_label}>Number of Rooms</label>
+                                    <input className={styles.text_input} type="number" readOnly value={property.rooms_info.length} title="Updates automatically when you add rooms" />
                                 </div>
                             </div>
                             <div className={styles.radio_group}>
