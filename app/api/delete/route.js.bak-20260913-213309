@@ -1,29 +1,19 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { join } from "path";
 import { initMongoose } from "@/db/mongoose";
 import Restate from "@/models/Restate";
 import { DeleteImage } from "@/app/lib/delete";
 import { revalidatePath } from "next/cache";
-import { requireAdminEmail } from "@/auth";
+
 
 export async function POST(request) {
-    const sessionEmail = await requireAdminEmail();
-    if (typeof sessionEmail !== "string") return sessionEmail; // 401 response
-
     await initMongoose()
 
     const body = await request.json()
+    //const path = join(process.cwd(), '/', 'public', body.delete.src) // process.cwd() may be deleted
+    //console.log(body)
 
     try {
-        if (!body?._id || !body?.delete?.public_id) {
-            return NextResponse.json({ error: 'Missing _id or delete payload' }, { status: 400 })
-        }
-
-        // Ownership: only the property owner may delete its images
-        const doc = await Restate.findOne({ _id: body._id })
-        if (!doc || doc.mail !== sessionEmail) {
-            return NextResponse.json({ error: 'Not found or not your property' }, { status: 403 })
-        }
-
         const result_delete = await DeleteImage(body.delete.public_id)
         console.log(result_delete)
 

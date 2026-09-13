@@ -3,58 +3,61 @@ import { initMongoose } from "@/db/mongoose";
 import Restate from "@/models/Restate";
 import { UploadImage } from "@/app/lib/upload";
 import { revalidatePath } from "next/cache";
+import { requireAdminEmail } from "@/auth";
 
+const MAX_IMAGES = 15;
 
 export async function POST(request) {
+    const sessionEmail = await requireAdminEmail();
+    if (typeof sessionEmail !== "string") return sessionEmail; // 401 response
+
     await initMongoose()
 
     const data = await request.formData()
     const props = data.get('prop')          //GET PROPS
     if (!props) {
-        return NextResponse.json({ "success": false })
+        return NextResponse.json({ success: false }, { status: 400 })
     }
-    //CHECK FOR DUPLICATES HERE!!!
 
-    let obj_props = JSON.parse(props)
-    //console.log(obj_props)
+    let obj_props;
+    try {
+        obj_props = JSON.parse(props)
+    } catch {
+        return NextResponse.json({ success: false, error: 'Invalid property payload' }, { status: 400 })
+    }
 
     const formDataEntryValues = Array.from(data.values()); // GET FILES
     let imagesArray = []
     for (const formDataEntryValue of formDataEntryValues) {
         if (typeof formDataEntryValue === "object" && "arrayBuffer" in formDataEntryValue) {
-
             imagesArray.push(formDataEntryValue)
-
         }
     }
 
+    if (imagesArray.length > MAX_IMAGES) {
+        return NextResponse.json(
+            { success: false, error: `Maximum ${MAX_IMAGES} images allowed.` },
+            { status: 400 }
+        )
+    }
 
-    return new Promise((resolve, reject) => {
-        const uploads = imagesArray.map((im) => UploadImage(im, "sri-lanka"))
-        Promise.all(uploads).then((values) => {
-            createDocument(obj_props, values, resolve)
+    // Owner is the authenticated session, never client-supplied
+    obj_props.mail = sessionEmail
 
-        }
-        ).catch((err) => reject(err))
-    })
+    try {
+        const values = await Promise.all(imagesArray.map((im) => UploadImage(im, "sri-lanka")))
 
-    async function createDocument(doc, images, resolve) {
-        //console.log(images)
-        const arrayOfImages = []
-        for (let i = 0; i < images.length; i++) {
-            arrayOfImages.push(
-                { src: images[i].secure_url, width: images[i].width, height: images[i].height, alt: images[i].original_filename, public_id: images[i].public_id }
-            )
-        }
-        doc.images = arrayOfImages
-        let respose = await Restate.create(doc)
+        const arrayOfImages = values.map((img) => ({
+            src: img.secure_url, width: img.width, height: img.height,
+            alt: img.original_filename, public_id: img.public_id
+        }))
+        obj_props.images = arrayOfImages
+
+        const respose = await Restate.create(obj_props)
         revalidatePath('/', 'layout')
-        resolve(NextResponse.json({ "msg": respose }, { "images": images }, { status: 200 }))
+        return NextResponse.json({ "msg": respose }, { status: 200 })
+    } catch (err) {
+        console.error('upload failed:', err)
+        return NextResponse.json({ error: err.message || 'Upload failed' }, { status: 500 })
     }
-
-
-
-
-
-
 }

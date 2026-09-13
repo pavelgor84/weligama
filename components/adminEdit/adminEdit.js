@@ -21,8 +21,7 @@ export default function AdminEdit({ email }) {
         rooms: '',          // UI only — loaded as object array from API
         totalRooms: 1,      // total rooms (base + added)
         availableRooms: 1,  // currently unoccupied rooms
-    }));
-    console.log(property)
+    }))
 
 
     //console.log(JSON.stringify(currentRef.current))
@@ -45,8 +44,7 @@ export default function AdminEdit({ email }) {
     async function send_data(data, where) {
         try {
             const response = await axios.post(where, data)
-            const result = await response.data
-            console.log({ result })
+            await response.data
             fetch_data()
 
         }
@@ -57,7 +55,18 @@ export default function AdminEdit({ email }) {
 
     const handleFileRoomChange = (e) => { // SEND ROOM PICS
         //console.log(e.target.name)
-        const fileList = e.target.files
+        const fileList = Array.from(e.target.files);
+        const roomIndex = e.target.name;
+        const roomImages = property.rooms && property.rooms[roomIndex] ? property.rooms[roomIndex] : [];
+        const existingCount = roomImages.length;
+        const totalAfter = existingCount + fileList.length;
+
+        if (totalAfter > 15) {
+            alert('Maximum 15 images per room allowed. Room ' + (parseInt(roomIndex) + 1) + ' already has ' + existingCount + ', cannot add ' + fileList.length + '.');
+            e.target.value = '';
+            return;
+        }
+
         const data = new FormData()
 
         for (let i = 0; i < fileList.length; i++) {
@@ -69,8 +78,16 @@ export default function AdminEdit({ email }) {
 
     };
     const handleFileImagesChange = (e) => { // SEND IMAGES PICS
-        console.log(e.target.name)
-        const fileList = e.target.files
+        const fileList = Array.from(e.target.files);
+        const existingCount = property.images ? property.images.length : 0;
+        const totalAfter = existingCount + fileList.length;
+
+        if (totalAfter > 15) {
+            alert('Maximum 15 property images allowed. You already have ' + existingCount + ', cannot add ' + fileList.length + '.');
+            e.target.value = '';
+            return;
+        }
+
         const data = new FormData()
 
         for (let i = 0; i < fileList.length; i++) {
@@ -94,7 +111,6 @@ export default function AdminEdit({ email }) {
 
 
     const handleInputChange = (e, index) => {
-        console.log(e)
         const { name, value } = e.target;
         const newForms = [...property.rooms_info];
         newForms[index][name] = value;
@@ -131,15 +147,14 @@ export default function AdminEdit({ email }) {
                 }
             }
 
-            // Calculate room counts for DB storage
-            add_occupied.numRooms = (add_occupied.rooms_info || []).length;
+            // Calculate room counts for DB storage (numRooms = base room + added rooms)
+            add_occupied.numRooms = 1 + (add_occupied.rooms_info || []).length;
             add_occupied.availableRooms = add_occupied.numRooms - (add_occupied.occupied_rooms || []).length;
 
             data.set('prop', JSON.stringify(add_occupied))
 
             const response = await axios.post('/api/add_images', data)
-            const result = await response.data
-            console.log({ result })
+            await response.data
 
         }
         catch (e) {
@@ -153,14 +168,11 @@ export default function AdminEdit({ email }) {
 
     const handleCheckboxChange = (roomId) => {   // toggle Occupied room
 
-        isOccupied.current = property.occupied_rooms //get current state of occupied rooms from state
-
-        if (isOccupied.current.includes(roomId)) { //work with Ref variable
-            isOccupied.current = isOccupied.current.filter((id) => id !== roomId)
-        } else {
-            isOccupied.current.push(roomId)
-        }
-        //console.log(isOccupied.current)
+        const current = Array.isArray(property.occupied_rooms) ? property.occupied_rooms : []
+        // Never mutate the state array in place — build a new one
+        isOccupied.current = current.includes(roomId)
+            ? current.filter((id) => id !== roomId)
+            : [...current, roomId]
 
         setProperty((prevOccupied) => { //update current state. It's async updaing
             return { ...prevOccupied, occupied_rooms: isOccupied.current };
@@ -302,13 +314,12 @@ export default function AdminEdit({ email }) {
             const [lng, lat] = displayData.coordinates;
             displayData.coordinates = `${lat}, ${lng}`;  // User-friendly format for display
         }
-        294|        setProperty(normalize(displayData));
+        setProperty(normalize(displayData));
         propertyRef.current = position // update ref to current property number in array
 
     }
 
     function handleDelete(itemName, index_of_arr) { //delete image
-        console.log(itemName, index_of_arr)
 
         function sendForDelete(propertyState) {
             fetch('/api/delete', {
@@ -319,8 +330,7 @@ export default function AdminEdit({ email }) {
                     if (!response.ok) return response.text().then(text => { throw new Error(text) })
                     return response.json()
                 })
-                .then((json) => {
-                    console.log(json)
+                .then(() => {
                     fetch_data()
                 })
                 .catch((err) => {
@@ -347,7 +357,10 @@ export default function AdminEdit({ email }) {
                 return item.public_id == itemName
             })
             if (delIndex != -1) {
-                propertyState.rooms[index_of_arr].splice(delIndex, 1)
+                // Copy instead of mutating state in place
+                propertyState.rooms = propertyState.rooms.map((roomArr, i) =>
+                    i === index_of_arr ? roomArr.filter((item) => item.public_id !== itemName) : roomArr
+                )
             }
             else {
                 console.log("IMAGE NOT FOUND!")
@@ -368,8 +381,7 @@ export default function AdminEdit({ email }) {
                 body: JSON.stringify(property)
             })
                 .then((response) => response.json())
-                .then((json) => {
-                    console.log(json)
+                .then(() => {
                     propertyRef.current = 0 // reset to first remaining property before reload
                     
                     // If this was the last property, redirect to admin menu to create new one
@@ -384,7 +396,6 @@ export default function AdminEdit({ email }) {
 
     }
     const handleTogglechange = (e) => {
-        console.log(e)
         const { name } = e.target;
         setProperty(prevState => ({ ...prevState, [name]: !prevState[name] }));
     }

@@ -1,10 +1,14 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { initMongoose } from "@/db/mongoose";
 import Restate from "@/models/Restate";
+import { requireAdminEmail } from "@/auth";
 
 
+export async function POST(req) {
 
-export async function POST(req, res) {
+    // Only the authenticated user may read their own properties (no IDOR)
+    const sessionEmail = await requireAdminEmail();
+    if (typeof sessionEmail !== "string") return sessionEmail; // 401 response
 
     await initMongoose()
 
@@ -12,6 +16,6 @@ export async function POST(req, res) {
 
     console.log("body " + JSON.stringify(body))
 
-    return NextResponse.json(await Restate.find({ mail: body }).exec())
-
+    // Query anchored to the session email, not client-supplied
+    return NextResponse.json(await Restate.find({ mail: sessionEmail }).exec())
 }

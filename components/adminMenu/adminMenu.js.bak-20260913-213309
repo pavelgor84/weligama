@@ -71,6 +71,11 @@ export default function AdminMenu({ email }) {
         console.log(e)
 
         const _files = Array.from(e.target.files);
+        if (_files.length > 15) {
+            alert('Maximum 15 property images allowed. You selected ' + _files.length + '.');
+            e.target.value = '';
+            return;
+        }
         setFile(_files);
     };
     const handleRoomChange = (e) => {
@@ -78,6 +83,11 @@ export default function AdminMenu({ email }) {
         const _roomFiles = Array.from(e.target.files);
         const roomNumber = e.target.name
 
+        if (_roomFiles.length > 15) {
+            alert('Maximum 15 images per room allowed. You selected ' + _roomFiles.length + '.');
+            e.target.value = '';
+            return;
+        }
         setRoom(prevState => [...prevState, _roomFiles]);
 
     };
@@ -316,7 +326,7 @@ export default function AdminMenu({ email }) {
                             <div className={styles.form_section}>
                                 <h2 className={styles.section_title}>Room {index + 1}</h2>
                                 <p className={styles.section_description}>Upload nice photos of the room.</p>
-                                <input className={styles.file_input} type="file" name={index} multiple value={room.images} onChange={handleRoomChange} required />
+                                <input className={styles.file_input} type="file" name={index} multiple maxFiles="15" value={room.images} onChange={handleRoomChange} required />
 
                                 <h2 className={styles.section_title}>Room {index + 1} description</h2>
                                 <textarea className={styles.text_input} placeholder="Describe this room in detail..." rows="4" name='info' value={form.info} onChange={(e) => handleInputChange(e, index)} required />
@@ -341,7 +351,7 @@ export default function AdminMenu({ email }) {
                         <p className={styles.section_description}>
                             Upload nice photos of the property.
                         </p>
-                        <input className={styles.file_input} type="file" name="images" multiple value={file.images} onChange={handleFileChange} required />
+                        <input className={styles.file_input} type="file" name="images" multiple maxFiles="15" value={file.images} onChange={handleFileChange} required />
                     </div>
 
                     {/* <!-- Search Visibility Toggle --> */}

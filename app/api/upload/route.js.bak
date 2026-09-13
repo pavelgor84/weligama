@@ -13,8 +13,10 @@ export async function POST(request) {
     if (!props) {
         return NextResponse.json({ "success": false })
     }
+    //CHECK FOR DUPLICATES HERE!!!
 
     let obj_props = JSON.parse(props)
+    //console.log(obj_props)
 
     const formDataEntryValues = Array.from(data.values()); // GET FILES
     let imagesArray = []
@@ -27,31 +29,32 @@ export async function POST(request) {
     }
 
 
-    if (imagesArray.length == 0) { //If no images included the update info
-        console.log("PROPS UPDATE")
-        const update_info = await Restate.updateOne({ _id: obj_props._id }, { $set: obj_props })
-        revalidatePath('/', 'layout')
-        return NextResponse.json({ "msg": update_info }, { status: 200 })
-    } else {
-        return new Promise((resolve, reject) => {
-            console.log("IMAGES UPDATE")
-            const uploads = imagesArray.map((im) => UploadImage(im, "sri-lanka"))
-            Promise.all(uploads).then((values) => {
-                updateImages(obj_props, values)
-                revalidatePath('/', 'layout')
-                resolve(NextResponse.json({ "msg": values }, { status: 200 }))
-            }
-            ).catch((err) => reject(err))
-        })
-    }
+    return new Promise((resolve, reject) => {
+        const uploads = imagesArray.map((im) => UploadImage(im, "sri-lanka"))
+        Promise.all(uploads).then((values) => {
+            createDocument(obj_props, values, resolve)
 
-    async function updateImages(doc, images) {
+        }
+        ).catch((err) => reject(err))
+    })
+
+    async function createDocument(doc, images, resolve) {
+        //console.log(images)
         const arrayOfImages = []
         for (let i = 0; i < images.length; i++) {
             arrayOfImages.push(
                 { src: images[i].secure_url, width: images[i].width, height: images[i].height, alt: images[i].original_filename, public_id: images[i].public_id }
             )
         }
-        await Restate.updateOne({ _id: doc._id }, { $push: { images: { $each: arrayOfImages } } })
+        doc.images = arrayOfImages
+        let respose = await Restate.create(doc)
+        revalidatePath('/', 'layout')
+        resolve(NextResponse.json({ "msg": respose }, { "images": images }, { status: 200 }))
     }
+
+
+
+
+
+
 }
