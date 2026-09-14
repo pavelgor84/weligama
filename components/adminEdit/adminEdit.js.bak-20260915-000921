@@ -19,7 +19,7 @@ export default function AdminEdit({ email }) {
         _id: '',           // edit-only field from DB
         images: '',         // UI only — actual image data loaded from API
         rooms: '',          // UI only — loaded as object array from API
-        totalRooms: 1,      // total rooms = max(1, added rooms)
+        totalRooms: 1,      // total rooms (base + added)
         availableRooms: 1,  // currently unoccupied rooms
     }))
 
@@ -147,8 +147,8 @@ export default function AdminEdit({ email }) {
                 }
             }
 
-            // Calculate room counts for DB storage (numRooms = max(1, added rooms))
-            add_occupied.numRooms = Math.max(1, (add_occupied.rooms_info || []).length);
+            // Calculate room counts for DB storage (numRooms = base room + added rooms)
+            add_occupied.numRooms = 1 + (add_occupied.rooms_info || []).length;
             add_occupied.availableRooms = add_occupied.numRooms - (add_occupied.occupied_rooms || []).length;
 
             data.set('prop', JSON.stringify(add_occupied))
@@ -509,7 +509,7 @@ export default function AdminEdit({ email }) {
                                     </div>
                                     <div>
                                         <label className={styles.input_label}>Number of Rooms</label>
-                                        <input className={styles.text_input} type="number" readOnly value={Math.max(1, property.rooms_info.length)} title="Updates automatically when you add rooms" />
+                                        <input className={styles.text_input} type="number" readOnly value={property.rooms_info.length} title="Updates automatically when you add rooms" />
                                     </div>
                                     <div>
                                         <label className={styles.input_label}>View</label>

@@ -13,8 +13,8 @@ const propertySchema = new Schema({
     parking: Boolean,
     price: Number,
     available: Boolean,
-    numRooms: Number,          // total rooms (base + added); used by the "rooms N" filter
-    availableRooms: Number,    // currently unoccupied rooms = numRooms - occupied_rooms.length
+    numRooms: Number,
+    availableRooms: Number,
     occupied_rooms: [String],
     description: String,
     images: [{

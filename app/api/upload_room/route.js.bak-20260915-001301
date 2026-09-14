@@ -5,7 +5,7 @@ import { UploadImage } from "@/app/lib/upload";
 import { requireAdminEmail } from "@/auth";
 
 const MAX_IMAGES_PER_ROOM = 15;
-// Total rooms per property: max(1, added rooms)
+// Total rooms per property: 1 base room + added rooms
 const MAX_ROOMS = 10;
 
 export async function POST(request) {
@@ -34,9 +34,9 @@ export async function POST(request) {
             return NextResponse.json({ success: false, error: 'Invalid room index' }, { status: 400 })
         }
 
-        // Server-side cap: total rooms (max(1, added)) must not exceed MAX_ROOMS,
-        // so the highest valid index for an added room is MAX_ROOMS - 1
-        if (roomIndex >= MAX_ROOMS) {
+        // Server-side cap: total rooms (1 base + added) must not exceed MAX_ROOMS,
+        // so the highest valid index for an added room is MAX_ROOMS - 2
+        if (roomIndex >= MAX_ROOMS - 1) {
             return NextResponse.json(
                 { success: false, error: `Maximum ${MAX_ROOMS} rooms per property allowed.` },
                 { status: 400 }

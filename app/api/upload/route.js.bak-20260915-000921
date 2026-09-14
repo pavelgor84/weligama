@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdminEmail } from "@/auth";
 
 const MAX_IMAGES = 15;
-// Total rooms per property: max(1, added rooms)
+// Total rooms per property: 1 base room + added rooms
 const MAX_ROOMS = 10;
 
 export async function POST(request) {
@@ -28,9 +28,9 @@ export async function POST(request) {
         return NextResponse.json({ success: false, error: 'Invalid property payload' }, { status: 400 })
     }
 
-    // Server-side cap: total rooms (max(1, added)) must not exceed MAX_ROOMS
+    // Server-side cap: total rooms (1 base + added) must not exceed MAX_ROOMS
     const addedRooms = Array.isArray(obj_props.rooms_info) ? obj_props.rooms_info.length : 0
-    if (addedRooms > MAX_ROOMS) {
+    if (1 + addedRooms > MAX_ROOMS) {
         return NextResponse.json(
             { success: false, error: `Maximum ${MAX_ROOMS} rooms per property allowed.` },
             { status: 400 }

@@ -6,8 +6,6 @@ import { revalidatePath } from "next/cache";
 import { requireAdminEmail } from "@/auth";
 
 const MAX_IMAGES = 15;
-// Total rooms per property: max(1, added rooms)
-const MAX_ROOMS = 10;
 
 // Fields allowed on the info-update path. images/rooms are managed by
 // dedicated push/splice operations and must never be $set from UI state.
@@ -55,14 +53,6 @@ export async function POST(request) {
             const updateFields = {}
             for (const field of INFO_FIELDS) {
                 if (obj_props[field] !== undefined) updateFields[field] = obj_props[field]
-            }
-
-            // Server-side cap: total rooms (max(1, added)) must not exceed MAX_ROOMS
-            if (Array.isArray(updateFields.rooms_info) && updateFields.rooms_info.length > MAX_ROOMS) {
-                return NextResponse.json(
-                    { error: `Maximum ${MAX_ROOMS} rooms per property allowed.` },
-                    { status: 400 }
-                )
             }
 
             // Defend against untransformed "lat, lng" strings from the client

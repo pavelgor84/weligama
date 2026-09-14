@@ -5,9 +5,6 @@ import { DeleteImage } from "@/app/lib/delete";
 import { revalidatePath } from "next/cache";
 import { requireAdminEmail } from "@/auth";
 
-// Total rooms per property: max(1, added rooms)
-const MAX_ROOMS = 10;
-
 export async function POST(request) {
     const sessionEmail = await requireAdminEmail();
     if (typeof sessionEmail !== "string") return sessionEmail; // 401 response
@@ -37,12 +34,6 @@ export async function POST(request) {
         if (Array.isArray(body.rooms)) updateFields.rooms = body.rooms
         if (Array.isArray(body.rooms_info)) updateFields.rooms_info = body.rooms_info
         if (Array.isArray(body.occupied_rooms)) updateFields.occupied_rooms = body.occupied_rooms
-
-        // Server-side cap: total rooms (max(1, added)) must not exceed MAX_ROOMS
-        if ((Array.isArray(updateFields.rooms) && updateFields.rooms.length > MAX_ROOMS) ||
-            (Array.isArray(updateFields.rooms_info) && updateFields.rooms_info.length > MAX_ROOMS)) {
-            return NextResponse.json({ error: `Maximum ${MAX_ROOMS} rooms per property allowed.` }, { status: 400 })
-        }
 
         const update_db = await Restate.updateOne({ _id: body._id }, { $set: updateFields })
         console.log(update_db)
