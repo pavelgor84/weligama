@@ -1,7 +1,9 @@
+/* Top-left corner of the header (both viewports); the amenities pill row
+   sits directly below it. Panel still opens downward over the map. */
 .wrap {
     position: absolute;
+    top: 14px;
     left: 16px;
-    bottom: 12px;
     z-index: 20;
 }
 

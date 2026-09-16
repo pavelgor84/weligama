@@ -7,8 +7,10 @@ export default function Header() {
     return (
         <div className={styles.container}>
             <CurrencySwitcher />
-            <PriceFilter />
-            <AmenityFilter />
+            <div className={styles.filterRow}>
+                <PriceFilter />
+                <AmenityFilter />
+            </div>
 
             <div className={styles.title}>
                 <div className={styles.title_header}>Ceylon rooms</div>

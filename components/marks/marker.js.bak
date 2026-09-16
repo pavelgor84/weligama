@@ -4,6 +4,7 @@ import * as maptilersdk from '@maptiler/sdk';
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 import { createPortal } from "react-dom";
 import { useMapContext } from "@/app/context/MapContext";
+import { useCurrency } from "@/app/context/CurrencyContext";
 
 
 const Marker = ({ map, feature, viewport, selected }) => {
@@ -14,6 +15,7 @@ const Marker = ({ map, feature, viewport, selected }) => {
     const contentRef = useRef(document.createElement("div"));
 
     const { setScrollTo } = useMapContext()
+    const { formatPrice } = useCurrency()
 
     useEffect(() => {
         markerRef.current = new maptilersdk.Marker({ element: contentRef.current })
@@ -44,7 +46,7 @@ const Marker = ({ map, feature, viewport, selected }) => {
                             cursor: "pointer",
                         }}
                     >
-                        {properties.price}
+                        {formatPrice(properties.price)}
                     </div>,
                     contentRef.current
                 )}

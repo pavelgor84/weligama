@@ -71,3 +71,19 @@
 .reset:hover {
     background: #eef3f5;
 }
+
+/* Desktop: center horizontally at bottom of header */
+@media (min-width: 769px) {
+    .wrap {
+        left: 50%;
+        transform: translateX(-50%);
+        top: auto;
+        bottom: 12px;
+        right: auto;
+        width: auto;
+    }
+
+    .scrollRow {
+        justify-content: center;
+    }
+}

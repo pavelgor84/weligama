@@ -434,6 +434,7 @@ export default function Map({ clearId, centerZoom, coords, pointId, scroll_to, h
                         feature={feature}
                         viewport={true} //if marker in current viewport then show it
                         selected={pointId}
+                        onSelect={clearId}
                     />)
                 }
                 else {

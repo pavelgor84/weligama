@@ -7,35 +7,30 @@ import styles from './admin_menu.module.css'
 import { createAddProperty } from '../shared/defaultPropertyState'
 import CoordinatePicker from '../coordinatePicker/maptiler'
 
+// Total rooms per property: max(1, added rooms) (matches server-side cap)
+const MAX_ROOMS = 10
+
 export default function AdminMenu({ email }) {
     const defaul_state = createAddProperty(email)
 
     const [asset, setAsset] = useState([])
     const [property, setProperty] = useState(defaul_state);
-    console.log(property)
     const [file, setFile] = useState([])
-    console.log(file)
+    // room files keyed by room index: room[i] = File[] for rooms_info[i]
     const [room, setRoom] = useState([])
-    console.log(room)
-    console.log(room.hasOwnProperty("room1") && room.room1.length != 0)
     const [loading, setLoading] = useState(false)
 
-    const [forms, setForms] = useState([]);
-
-    // const handleAddPerson = () => {
-    //     setForms([...forms, { info: '', id: Date.now() }]);
-    //     console.log(forms)
-    // };
     const handleAddPerson = (e) => {
         e.preventDefault()
-        //setForms([...forms, { info: '', id: Date.now() }]);
+        // Total rooms = max(1, added rooms); cap at MAX_ROOMS total
+        if (property.rooms_info.length >= MAX_ROOMS) {
+            alert('Maximum ' + MAX_ROOMS + ' rooms per property allowed.')
+            return
+        }
         setProperty(prevState => ({ ...prevState, rooms_info: [...prevState.rooms_info, { info: '', id: Date.now() }] }));
-        console.log(forms)
     };
 
-    console.log(forms)
     const handleInputChange = (e, index) => {
-        console.log(e)
         const { name, value } = e.target;
         const newForms = [...property.rooms_info];
         newForms[index][name] = value;
@@ -68,114 +63,117 @@ export default function AdminMenu({ email }) {
 
 
     const handleFileChange = (e) => {
-        console.log(e)
-
         const _files = Array.from(e.target.files);
+        // The input's file list is replaced on each selection — this batch is the full image set
+        if (_files.length > 15) {
+            alert('Maximum 15 property images allowed. Selected ' + _files.length + '.');
+            e.target.value = '';
+            return;
+        }
         setFile(_files);
     };
     const handleRoomChange = (e) => {
-        //console.log(e)
+        const roomIndex = Number(e.target.name);
         const _roomFiles = Array.from(e.target.files);
-        const roomNumber = e.target.name
-
-        setRoom(prevState => [...prevState, _roomFiles]);
-
+        // The input's file list is replaced on each selection — this batch is the room's image set
+        if (_roomFiles.length > 15) {
+            alert('Maximum 15 images per room allowed. Selected ' + _roomFiles.length + '.');
+            e.target.value = '';
+            return;
+        }
+        // Store by room index so the array position always matches rooms_info[i]
+        setRoom(prev => {
+            const next = [...prev];
+            next[roomIndex] = _roomFiles;
+            return next;
+        });
     };
-    const handleRoomInfoChange = (e) => {
-        //console.log(e)
-        const { name, value } = e.target;
-        setProperty(prevState => ({ ...prevState, rooms_info: { ...prevState.rooms_info, [name]: value } }));
-    }
     const handleTogglechange = (e) => {
-        console.log(e)
         const { name } = e.target;
         setProperty(prevState => ({ ...prevState, [name]: !prevState[name] }));
     }
 
     async function send_data(data) {
         try {
-            const room_response = await axios.post('/api/upload_room', data)
-            const room_result = await room_response.data
-            console.log({ room_result })
-            setProperty(createAddProperty(property.mail))
+            await axios.post('/api/upload_room', data)
         }
         catch (e) {
             console.error(e)
+            alert('Room images upload failed: ' + (e.response?.data?.error || e.message))
         }
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(property)// You can perform any necessary action with the form data here ;
-        //console.log(property.images[0])
 
-        if (!file) {
-            console.log("insufficient pics ")
+        if (!file.length) {
             return
         }
 
         try {
+            setLoading(true)
             const data = new FormData()
-            //data.set('file', property.images)
             //----------------------------------------add property----------------------
-            file.forEach((image, i) => {
+            file.forEach((image) => {
                 data.append(image.name, image)
             })
 
-            data.append('rooms', room)
-
             // Transform coordinates to GeoJSON [lng, lat] array format for database storage
             let transformedProp = { ...property };
-            // Room counts: total = added rooms, available = total (none occupied on creation)
-            transformedProp.numRooms = property.rooms_info.length;
+            // Room counts: total = max(1, added rooms), available = total (none occupied on creation)
+            transformedProp.numRooms = Math.max(1, property.rooms_info.length);
             transformedProp.availableRooms = transformedProp.numRooms;
             if (transformedProp.coordinates) {
                 const coordParts = transformedProp.coordinates.split(',');
                 if (coordParts.length >= 2) {
-                    const [lat, lng] = coordParts.map(part => parseFloat(part.trim()));
-                    // User input: "lat,lng" → Database expects GeoJSON: [lng, lat]
-                    transformedProp.coordinates = [lng, lat];
+                    const lat = parseFloat(coordParts[0].trim());
+                    const lng = parseFloat(coordParts[1].trim());
+                    // Guard against NaN — don't store invalid coordinates
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        // User input: "lat,lng" → Database expects GeoJSON: [lng, lat]
+                        transformedProp.coordinates = [lng, lat];
+                    } else {
+                        transformedProp.coordinates = [];
+                    }
                 }
             }
 
-            console.log(property)
             data.append('prop', JSON.stringify(transformedProp))
 
             const response = await axios.post('/api/upload', data)
             const result = await response.data
-            console.log({ result })
             const id = result.msg._id
             //----------------------------------------add property----------------------
 
             //----------------------------------------add rooms-------------------------
-            if (room[Object.keys(room)[0]] && room[Object.keys(room)[0]].length != 0) { //room.room1 && room.room1.length > 0
-                for (const property in room) {
-                    let room_data = new FormData()
-                    let room_info = { "room": property, "id": id } //{ "room": "room1", "id": id }
-
-                    room[property].forEach((image, i) => {
-                        room_data.append(image.name, image)
-                    })
-                    room_data.append('room', JSON.stringify(room_info))
-                    send_data(room_data)
-                }
-            }
+            // room[i] holds the files for rooms_info[i]; upload each non-empty room
+            const roomUploads = []
+            room.forEach((roomFiles, index) => {
+                if (!roomFiles || roomFiles.length === 0) return
+                let room_data = new FormData()
+                let room_info = { "room": String(index), "id": id }
+                roomFiles.forEach((image) => {
+                    room_data.append(image.name, image)
+                })
+                room_data.append('room', JSON.stringify(room_info))
+                roomUploads.push(send_data(room_data))
+            })
+            await Promise.all(roomUploads)
             //----------------------------------------add rooms-------------------------
 
+            // Reset the form only after the property and all its rooms are saved
+            setProperty(createAddProperty(property.mail))
+            setFile([])
+            setRoom([])
         }
         catch (e) {
             console.error(e)
+            alert('Save failed: ' + (e.response?.data?.error || e.message))
+        } finally {
+            setLoading(false)
         }
 
     };
-
-    // useEffect(() => {
-    //     fetch('/api')
-    //         .then((response) => response.json())
-    //         .then((json) => setAsset(json))
-    // }, []);
-
-    const [tabToggle, setTabToggle] = useState(1)
 
     return (
         <>
@@ -211,7 +209,7 @@ export default function AdminMenu({ email }) {
                                 </div>
                                 <div>
                                     <label className={styles.input_label}>Phone Number</label>
-                                    <input className={styles.text_input} placeholder="e.g., +1 555 123 4567" type="tel" name="phone" value={property.phone} onChange={handleChange} required />
+                                    <input className={styles.text_input} placeholder='e.g., +1 555 1234567' type="tel" name="phone" value={property.phone} onChange={handleChange} required />
                                 </div>
                                 <div className={styles.coordinates_wrapper}>
                                     <label className={styles.input_label}>Coordinates</label>
@@ -257,7 +255,7 @@ export default function AdminMenu({ email }) {
                                 </div>
                                 <div>
                                     <label className={styles.input_label}>Number of Rooms</label>
-                                    <input className={styles.text_input} type="number" readOnly value={property.rooms_info.length} title="Updates automatically when you add rooms" />
+                                    <input className={styles.text_input} type="number" readOnly value={Math.max(1, property.rooms_info.length)} title="Updates automatically when you add rooms" />
                                 </div>
                             </div>
                             <div className={styles.radio_group}>
@@ -309,14 +307,14 @@ export default function AdminMenu({ email }) {
                     {/* <!-- Add room menu --> */}
                     <div className={styles.add_rooms_block}>
                         <h2 className={styles.section_title}>If you have separate rooms:</h2>
-                        <button className={styles.roomButton} onClick={(e) => handleAddPerson(e)}>Add room</button>
+                        <button className={styles.roomButton} disabled={property.rooms_info.length >= MAX_ROOMS} onClick={(e) => handleAddPerson(e)}>Add room</button>
                     </div>
                     {property.rooms_info.map((form, index) => (
                         <React.Fragment key={form.id} >
                             <div className={styles.form_section}>
                                 <h2 className={styles.section_title}>Room {index + 1}</h2>
                                 <p className={styles.section_description}>Upload nice photos of the room.</p>
-                                <input className={styles.file_input} type="file" name={index} multiple value={room.images} onChange={handleRoomChange} required />
+                                <input className={styles.file_input} type="file" name={index} multiple onChange={handleRoomChange} required />
 
                                 <h2 className={styles.section_title}>Room {index + 1} description</h2>
                                 <textarea className={styles.text_input} placeholder="Describe this room in detail..." rows="4" name='info' value={form.info} onChange={(e) => handleInputChange(e, index)} required />
@@ -341,7 +339,7 @@ export default function AdminMenu({ email }) {
                         <p className={styles.section_description}>
                             Upload nice photos of the property.
                         </p>
-                        <input className={styles.file_input} type="file" name="images" multiple value={file.images} onChange={handleFileChange} required />
+                        <input className={styles.file_input} type="file" name="images" multiple onChange={handleFileChange} required />
                     </div>
 
                     {/* <!-- Search Visibility Toggle --> */}

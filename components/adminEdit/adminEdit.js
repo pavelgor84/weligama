@@ -525,6 +525,7 @@ export default function AdminEdit({ email }) {
                                             <option value="Forest">Forest</option>
                                             <option value="Sunset">Sunset</option>
                                             <option value="Garden">Garden</option>
+                                            <option value="Road">Road</option>
                                         </select>
                                     </div>
                                 </div>

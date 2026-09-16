@@ -5,9 +5,10 @@ import "@maptiler/sdk/dist/maptiler-sdk.css";
 import { createPortal } from "react-dom";
 import { useMapContext } from "@/app/context/MapContext";
 import { useCurrency } from "@/app/context/CurrencyContext";
+import styles from "./marker.module.css";
 
 
-const Marker = ({ map, feature, viewport, selected }) => {
+const Marker = ({ map, feature, viewport, selected, onSelect }) => {
     const { geometry, properties } = feature
     //console.log('All points', allPoints)
 
@@ -31,7 +32,10 @@ const Marker = ({ map, feature, viewport, selected }) => {
         return (
             <>
                 {createPortal(
-                    <div onMouseEnter={() => setScrollTo(properties.home_id)}
+                    <div
+                        className={styles.pill}
+                        onMouseEnter={() => setScrollTo(properties.home_id)}
+                        onClick={() => onSelect && onSelect(properties.home_id)}
                         style={{
                             display: "inline-block",
                             padding: "2px 10px",
@@ -58,6 +62,7 @@ const Marker = ({ map, feature, viewport, selected }) => {
             <>
                 {createPortal(
                     <div
+                        className={styles.pill}
                         style={{
                             display: "inline-block",
                             padding: "2px 10px",

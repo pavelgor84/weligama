@@ -1,5 +1,6 @@
 /* Amenities filter — always-visible horizontal pill row.
-   Full-width strip directly under the top-left price pill (both viewports). */
+   Mobile: full-width strip under the centered price pill.
+   Desktop: in-flow inside the header .filterRow (price button on its left). */
 .wrap {
     position: absolute;
     left: 16px;
@@ -72,18 +73,19 @@
     background: #eef3f5;
 }
 
-/* Desktop: center horizontally at bottom of header */
+/* Desktop: in-flow inside the header .filterRow (price button on its left).
+   The row is centered by .filterRow; cap width so the pill strip scrolls. */
 @media (min-width: 769px) {
     .wrap {
-        left: 50%;
-        transform: translateX(-50%);
-        top: auto;
-        bottom: 12px;
+        position: relative;
+        left: 0;
         right: auto;
+        top: 0;
+        transform: none;
         width: auto;
     }
 
     .scrollRow {
-        justify-content: center;
+        max-width: calc(100vw - 320px);
     }
 }

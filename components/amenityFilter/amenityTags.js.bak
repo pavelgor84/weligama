@@ -8,14 +8,13 @@
 // both client-side and server-side (see utils/filters.js).                   //
 // -------------------------------------------------------------------------- //
 
-// Header filter shows only the most popular views.
-// Full view list (incl. Road) lives in the admin forms' View dropdowns.
 export const VIEW_TAGS = [
-  'Beach', 'Mountain', 'Garden',
+  'Ocean', 'Beach', 'Lake', 'Lagoon', 'City',
+  'Mountain', 'River', 'Forest', 'Sunset', 'Garden',
 ]
 
-// Room count filter tags: "Rooms 1", "Rooms 2".
-const ROOM_COUNT_OPTIONS = [1, 2]
+// Room count filter tags: "Rooms 1", "Rooms 2", etc.
+const ROOM_COUNT_OPTIONS = [1, 2, 3, 4, 5]
 
 export const AMENITY_TAGS = [
   { id: 'ac', label: 'A/C', field: 'ac', type: 'boolean' },

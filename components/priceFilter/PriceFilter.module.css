@@ -1,10 +1,12 @@
-/* Top-left corner of the header (both viewports); the amenities pill row
-   sits directly below it. Panel still opens downward over the map. */
+/* Top-left corner of the header (mobile); on desktop the button sits in the
+   centered .filterRow next to the amenities row. Panel opens downward over
+   the map. */
 .wrap {
     position: absolute;
     top: 14px;
-    left: 16px;
-    z-index: 20;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30; /* above the amenities row so the open popup is never overlapped */
 }
 
 .button {
@@ -131,4 +133,14 @@
 
 .reset:hover {
     background: #e8e8e8;
+}
+
+/* Desktop: in-flow inside the header .filterRow (positioned by the row). */
+@media (min-width: 769px) {
+    .wrap {
+        position: relative;
+        top: 0;
+        left: 0;
+        transform: none;
+    }
 }

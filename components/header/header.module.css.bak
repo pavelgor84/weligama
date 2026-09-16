@@ -58,7 +58,7 @@
 @media (max-width:768px) {
 
     .container {
-        height: 10%;
+        height: 12%;
         padding: 0px;
     }
 

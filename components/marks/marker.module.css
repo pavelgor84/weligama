@@ -1,0 +1,11 @@
+/* Marker price pill. */
+.pill {
+    transition: transform 0.15s ease;
+}
+
+/* Desktop only: grow the marker 5% on hover. */
+@media (min-width: 769px) {
+    .pill:hover {
+        transform: scale(1.05);
+    }
+}
