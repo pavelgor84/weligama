@@ -57,7 +57,7 @@ export default function SliderTest({ img }) {
   })
   return (
     <>
-      <Swiper navigation={true} loop={true} modules={[Navigation]} className="mySwiper" style={{ '--swiper-navigation-color': '#fff' }}>
+      <Swiper navigation={true} loop={true} modules={[Navigation]} className="mySwiper">
 
         {
           slide
