@@ -18,7 +18,7 @@ export default function PriceFilter() {
         aria-haspopup="dialog"
         aria-expanded={open}
       >
-        ≤ {formatPrice(maxPrice)} <span className={styles.arrow}>{open ? '▲' : '▼'}</span>
+        Max price {formatPrice(maxPrice)} <span className={styles.arrow}>{open ? '▲' : '▼'}</span>
       </button>
 
       {open && (
@@ -37,7 +37,7 @@ export default function PriceFilter() {
             onChange={(e) => setMaxPrice(Number(e.target.value))}
             aria-label="Maximum price per day"
           />
-          <div className={styles.range_marks">
+          <div className={styles.range_marks}>
             <span>{formatPrice(PRICE_FILTER_MIN)}</span>
             <span>{formatPrice(PRICE_FILTER_MAX)}</span>
           </div>

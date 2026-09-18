@@ -18,7 +18,7 @@ export default function PriceFilter() {
         aria-haspopup="dialog"
         aria-expanded={open}
       >
-        Max price {formatPrice(maxPrice)} <span className={styles.arrow}>{open ? '▲' : '▼'}</span>
+        Max price <span className={styles.arrow}>{open ? '▲' : '▼'}</span>
       </button>
 
       {open && (
