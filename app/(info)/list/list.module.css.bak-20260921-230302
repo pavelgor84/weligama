@@ -123,14 +123,6 @@
     white-space: pre-wrap;
 }
 
-.room_beds {
-    font-weight: 500;
-    font-size: smaller;
-    padding: 0 30px 15px 30px;
-    color: rgb(29, 78, 216);
-    width: 100%;
-}
-
 @media (max-width:768px) {
     .container {
         width: 100%;

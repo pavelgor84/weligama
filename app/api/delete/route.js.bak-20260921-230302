@@ -4,7 +4,6 @@ import Restate from "@/models/Restate";
 import { DeleteImage } from "@/app/lib/delete";
 import { revalidatePath } from "next/cache";
 import { requireAdminEmail } from "@/auth";
-import { isValidBeds } from "@/components/shared/bedTypes";
 
 // Total rooms per property: max(1, added rooms)
 const MAX_ROOMS = 10;
@@ -43,16 +42,6 @@ export async function POST(request) {
         if ((Array.isArray(updateFields.rooms) && updateFields.rooms.length > MAX_ROOMS) ||
             (Array.isArray(updateFields.rooms_info) && updateFields.rooms_info.length > MAX_ROOMS)) {
             return NextResponse.json({ error: `Maximum ${MAX_ROOMS} rooms per property allowed.` }, { status: 400 })
-        }
-
-        // Server-side beds validation for edited rooms_info
-        if (Array.isArray(updateFields.rooms_info)) {
-            for (const room of updateFields.rooms_info) {
-                const bedCheck = isValidBeds(room?.beds)
-                if (!bedCheck.ok) {
-                    return NextResponse.json({ error: bedCheck.error }, { status: 400 })
-                }
-            }
         }
 
         const update_db = await Restate.updateOne({ _id: body._id }, { $set: updateFields })

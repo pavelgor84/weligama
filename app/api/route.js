@@ -40,7 +40,8 @@ export async function GET(request) {
 
     // ac/parking/view/availableRooms are projected so the client can gate already-loaded
     // markers instantly (see components/amenityFilter/amenityTags.js).
-    const projection  = { coordinates: 1, _id: 1, price: 1, ac: 1, parking: 1, view: 1, availableRooms: 1, numRooms: 1 }
+    // rooms_info is projected for the bed filter's client-side gate (matchesBeds).
+    const projection  = { coordinates: 1, _id: 1, price: 1, ac: 1, parking: 1, view: 1, availableRooms: 1, numRooms: 1, rooms_info: 1 }
     const skip        = (page - 1) * limit
 
     const data = await Restate.find(filter, projection).skip(skip).limit(limit).exec()

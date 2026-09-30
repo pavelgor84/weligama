@@ -4,7 +4,6 @@ import Restate from "@/models/Restate";
 import { UploadImage } from "@/app/lib/upload";
 import { revalidatePath } from "next/cache";
 import { requireAdminEmail } from "@/auth";
-import { isValidBeds } from "@/components/shared/bedTypes";
 
 const MAX_IMAGES = 15;
 // Total rooms per property: max(1, added rooms)
@@ -64,16 +63,6 @@ export async function POST(request) {
                     { error: `Maximum ${MAX_ROOMS} rooms per property allowed.` },
                     { status: 400 }
                 )
-            }
-
-            // Server-side beds validation for edited rooms_info
-            if (Array.isArray(updateFields.rooms_info)) {
-                for (const room of updateFields.rooms_info) {
-                    const bedCheck = isValidBeds(room?.beds)
-                    if (!bedCheck.ok) {
-                        return NextResponse.json({ error: bedCheck.error }, { status: 400 })
-                    }
-                }
             }
 
             // Defend against untransformed "lat, lng" strings from the client

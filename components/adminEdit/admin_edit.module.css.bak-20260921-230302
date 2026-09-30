@@ -42,10 +42,10 @@
 }
 .left_links{
     display: flex;
-        flex-direction: row;
-        gap: 10px;
-        align-items: center;
-        color: rgb(52, 62, 119);
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    color: rgb(52, 62, 119);
 }
 .right_items{
     
@@ -55,6 +55,14 @@
 .email{
     margin-right: 10px;
     text-align: right;
+}
+.select_container {
+    display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 5px;
+        color: black;
+        font-size: small;
 }
 
 .main_content {
@@ -69,18 +77,46 @@
     flex-direction: column;
     gap: 1.5rem;
 }
+.main_content_noDB{
+    padding-top: 5rem;
+    max-width: 72rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1.5rem;
+    //display: grid;
+    //grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 50%;
+    text-align: center;
+}
 
 @media (min-width: 768px) {
     .main_content {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+       
     }
     .right_items{
     
         font-size: small;
         color: #6b7280;
 }
+.del_button {
+    background-color: red;
+    width: 50%;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    align-self: self-end;
+    order: 3;
 }
+}
+
 
 .form_space {
     display: flex;
@@ -323,55 +359,116 @@
     cursor: pointer;
 }
 
+.dropdown_container {
+    position: relative;
+    display: inline-block;
+    width: 16rem;
+  }
+  
+  .dropdown_label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #2D3748;
+    margin-bottom: 0.5rem;
+  }
+  
+  .dropdown_select {
+    display: block;
+    width: 100%;
+    height:34px;
+    padding: 0.15rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #6366f1;
+    border-radius: 0.75rem;
+    background-color: white;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    appearance: none;
+  }
+  
+  .dropdown_select:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+  }
+  
+  .dropdown_select:hover {
+    background-color: #eef2ff;
+  }
+  
+  .dropdown_icon {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
+  
+  .dropdown_svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #9ca3af;
+  }
+  .images_container {
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.images {
+    gap: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px 0px;
+}
+.submit_room{
+    margin-top: 10px;
+}
+.occupied{
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.thumbnail_container {
+    position: relative;
+    display: inline-block;
+  }
+  .delete_btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 12px;
+    font-weight: bolder;
+  }
 .room_block{
     order: 2;
 }
-
-/* Beds section (per room) */
-.beds_section {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-.beds_list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-.bed_item {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: #eff6ff;
-    border-radius: 9999px;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.875rem;
-    color: #1d4ed8;
-}
-.bed_remove {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    line-height: 1;
-    color: #d7113d;
-    padding: 0 0.25rem;
-}
-.bed_add_row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-.beds_select {
+.del_button {
+    background-color: red;
+    width: 100%;
+    color: white;
+    padding: 0.75rem 1rem;
     border-radius: 0.375rem;
-    border: 1px solid #d1d5db;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    padding: 0.375rem 0.75rem;
-    font-size: 0.875rem;
-    color: #374151;
-    background-color: white;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    align-self: self-end;
+    order: 3;
 }

@@ -51,9 +51,6 @@ export default function List() {
                         </div>
 
                         <div className={styles.room_info}>  {asset.rooms_info[index] != undefined ? asset.rooms_info[index].info : 'No additional information'} </div>
-                        {asset.rooms_info[index] && Array.isArray(asset.rooms_info[index].beds) && asset.rooms_info[index].beds.length > 0 && (
-                            <div className={styles.room_beds}>Beds: {asset.rooms_info[index].beds.join(', ')}</div>
-                        )}
                     </div>
                 )
             }

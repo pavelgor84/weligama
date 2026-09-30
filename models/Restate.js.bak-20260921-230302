@@ -33,18 +33,7 @@ const propertySchema = new Schema({
             alt: String,
             public_id: String,
         }]],
-    rooms_info: [{
-        info: String,
-        id: Number,
-        beds: {
-            type: [String],
-            enum: ['King size', 'Double bed', 'Single bed', 'Bunk bed', 'Children bed'],
-            validate: {
-                validator: (v) => Array.isArray(v) && v.length <= 15,
-                message: 'Maximum 15 beds per room allowed',
-            },
-        },
-    }]
+    rooms_info: [{ info: String, id: Number }]
 
 })
 propertySchema.index({ coordinates: "2dsphere" });

@@ -5,7 +5,6 @@ import axios from 'axios'
 import styles from './admin_menu.module.css'
 
 import { createAddProperty } from '../shared/defaultPropertyState'
-import { BED_TYPES, MAX_BEDS_PER_ROOM } from '../shared/bedTypes'
 import CoordinatePicker from '../coordinatePicker/maptiler'
 
 // Total rooms per property: max(1, added rooms) (matches server-side cap)
@@ -20,8 +19,6 @@ export default function AdminMenu({ email }) {
     // room files keyed by room index: room[i] = File[] for rooms_info[i]
     const [room, setRoom] = useState([])
     const [loading, setLoading] = useState(false)
-    // Per-room bed-type <select> elements, read by the "Add the bed" button
-    const bedSelectRefs = React.useRef({})
 
     const handleAddPerson = (e) => {
         e.preventDefault()
@@ -30,7 +27,7 @@ export default function AdminMenu({ email }) {
             alert('Maximum ' + MAX_ROOMS + ' rooms per property allowed.')
             return
         }
-        setProperty(prevState => ({ ...prevState, rooms_info: [...prevState.rooms_info, { info: '', id: Date.now(), beds: [] }] }));
+        setProperty(prevState => ({ ...prevState, rooms_info: [...prevState.rooms_info, { info: '', id: Date.now() }] }));
     };
 
     const handleInputChange = (e, index) => {
@@ -50,34 +47,6 @@ export default function AdminMenu({ email }) {
         const roomFiles = [...room]
         roomFiles.splice(index, 1)
         setRoom(roomFiles)
-    };
-
-    // Add a bed of the selected type to a room (max MAX_BEDS_PER_ROOM per room)
-    const handleAddBed = (e, index) => {
-        e.preventDefault()
-        const beds = property.rooms_info[index].beds || []
-        if (beds.length >= MAX_BEDS_PER_ROOM) {
-            alert('Maximum ' + MAX_BEDS_PER_ROOM + ' beds per room allowed.')
-            return
-        }
-        const bedType = bedSelectRefs.current[index]?.value
-        if (!bedType) {
-            alert('Please select a bed type first.')
-            return
-        }
-        const newForms = [...property.rooms_info];
-        newForms[index] = { ...newForms[index], beds: [...beds, bedType] };
-        setProperty(prevState => ({ ...prevState, rooms_info: newForms }));
-    };
-
-    // Remove one bed (by its position in the array) from a room
-    const handleRemoveBed = (e, index, bedIndex) => {
-        e.preventDefault()
-        const beds = [...(property.rooms_info[index].beds || [])]
-        beds.splice(bedIndex, 1)
-        const newForms = [...property.rooms_info];
-        newForms[index] = { ...newForms[index], beds };
-        setProperty(prevState => ({ ...prevState, rooms_info: newForms }));
     };
 
 
@@ -350,37 +319,6 @@ export default function AdminMenu({ email }) {
 
                                 <h2 className={styles.section_title}>Room {index + 1} description</h2>
                                 <textarea className={styles.text_input} placeholder="Describe this room in detail..." rows="4" name='info' value={form.info} onChange={(e) => handleInputChange(e, index)} required />
-
-                                {/* <!-- Beds in this room --> */}
-                                <div className={styles.beds_section}>
-                                    <h2 className={styles.section_title}>Beds</h2>
-                                    {(form.beds || []).length > 0 && (
-                                        <ul className={styles.beds_list}>
-                                            {(form.beds || []).map((bed, bedIndex) => (
-                                                <li key={bedIndex} className={styles.bed_item}>
-                                                    <span className={styles.bed_label}>{bed}</span>
-                                                    <button type="button" className={styles.bed_remove} onClick={(e) => handleRemoveBed(e, index, bedIndex)} aria-label={'Remove ' + bed}>×</button>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                    <div className={styles.bed_add_row}>
-                                        <select
-                                            className={styles.beds_select}
-                                            name={'bed_type_' + index}
-                                            ref={(el) => { bedSelectRefs.current[index] = el }}
-                                            defaultValue=""
-                                            disabled={(form.beds || []).length >= MAX_BEDS_PER_ROOM}
-                                        >
-                                            <option value="">Select bed type</option>
-                                            {BED_TYPES.map((type) => (
-                                                <option key={type} value={type}>{type}</option>
-                                            ))}
-                                        </select>
-                                        <button type="button" className={styles.roomButton} disabled={(form.beds || []).length >= MAX_BEDS_PER_ROOM} onClick={(e) => handleAddBed(e, index)}>Add the bed</button>
-                                    </div>
-                                </div>
-
                                 <div className={styles.room_del_container}>
                                     <p className={styles.section_description}>Remove this room</p>
                                     <button className={styles.roomButton_del} onClick={(e) => handleDeleteRoom(e, index)}>Delete</button>
