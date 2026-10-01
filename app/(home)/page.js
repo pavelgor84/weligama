@@ -254,10 +254,18 @@ export default function Home() {
     // Cache this region so future overlapping queries skip the DB
     cacheRegion(bounds.west, bounds.south, bounds.east, bounds.north);
 
-    // ONE setAsset call after the loop
+    // ONE setAsset call after the loop.
+    // Dedupe against existing asset by _id: filter changes clear loadedIdsRef
+    // (force=true), so a re-fetch of the same viewport would otherwise
+    // re-append a full copy of already-loaded properties and duplicate
+    // markers on the map.
     if (allNewItems.length > 0) {
       console.log(`[BBQ] Loaded ${allNewItems.length} new items for viewport (${bounds.west.toFixed(2)},${bounds.south.toFixed(2)})-(${bounds.east.toFixed(2)},${bounds.north.toFixed(2)}), total cached:`, loadedIdsRef.current.size);
-      setAsset(prev => prev.concat(allNewItems));
+      setAsset(prev => {
+        const have = new Set(prev.map(p => p._id));
+        const fresh = allNewItems.filter(i => !have.has(i._id));
+        return fresh.length ? prev.concat(fresh) : prev;
+      });
     }
   }
 

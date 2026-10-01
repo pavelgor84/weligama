@@ -21,10 +21,11 @@ export default function AmenityFilter() {
       // keep working natively via overflow-x: auto.
       if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return
 
-      // Always swallow the vertical wheel over the pill row so the page
-      // (and thus the house menu) never scrolls from here. When the row has
-      // no room to scroll, scrollLeft is clamped by the browser and the
-      // wheel simply does nothing.
+      const maxScroll = el.scrollWidth - el.clientWidth
+      const canForward = e.deltaY > 0 && el.scrollLeft < maxScroll
+      const canBackward = e.deltaY < 0 && el.scrollLeft > 0
+      if (!canForward && !canBackward) return // no room — let the page scroll
+
       e.preventDefault()
       el.scrollLeft += e.deltaY
     }

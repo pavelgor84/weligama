@@ -8,6 +8,7 @@ import HousesMenu from '@/components/housesMenu/HousesMenu'
 import { MapContext } from '../context/MapContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { useFilter } from '../context/FilterContext'
+import { buildAmenityParams, matchesAmenities } from '@/components/amenityFilter/amenityTags'
 
 
 export default function Home() {
@@ -69,7 +70,7 @@ export default function Home() {
   const [scrollTo, setScrollTo] = useState('')
 
   const { currency, formatPrice } = useCurrency()
-  const { maxPrice } = useFilter()
+  const { maxPrice, selectedAmenities } = useFilter()
 
   // Ref to track all loaded property IDs globally — prevents duplicate fetches across viewport changes.
   // Kept as a secondary dedup layer within-batch.
@@ -84,6 +85,11 @@ export default function Home() {
   const viewportTimerRef = useRef(null)
   // AbortController for cancelling in-flight viewport requests
   const currentFetchAbortRef = useRef(null)
+
+  // Mirror of the active filters for fetch functions defined before the
+  // effects that use them (avoids stale closures without re-creating fns).
+  const maxPriceRef = useRef(maxPrice)
+  const selectedAmenitiesRef = useRef(selectedAmenities)
 
   /**
    * Check if a given bounding box is fully covered by any cached region.
@@ -189,7 +195,7 @@ export default function Home() {
     const paddedNorth = bounds.getNorth() + PADDING_LAT;
 
     if (!isRegionCached(paddedWest, paddedSouth, paddedEast, paddedNorth)) {
-      debouncedViewportFetch({ west: bounds.getWest(), east: bounds.getEast(), south: bounds.getSouth(), north: bounds.getNorth() });
+      debouncedViewportFetch({ west: bounds.getWest(), east: bounds.getEast(), south: bounds.getSouth(), north: bounds.getNorth() }, false);
     }
   }
 
@@ -203,6 +209,12 @@ export default function Home() {
     const limit = 50;
     const allNewItems = [];
 
+    // Active filters at the moment of the fetch (refs avoid stale closures).
+    const amenityParams = buildAmenityParams(selectedAmenitiesRef.current);
+    const amenityQuery = Object.entries(amenityParams)
+      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+      .join('&');
+
     while (true) {
       if (abortSignal?.aborted) break;
 
@@ -211,7 +223,8 @@ export default function Home() {
         `&maxLng=${bounds.east}` +
         `&minLat=${bounds.south}` +
         `&maxLat=${bounds.north}` +
-        `&maxPrice=${maxPrice}`;
+        `&maxPrice=${maxPriceRef.current}` +
+        (amenityQuery ? `&${amenityQuery}` : '');
 
       try {
         const response = await fetch(url, { signal: abortSignal });
@@ -251,14 +264,21 @@ export default function Home() {
   /**
    * Debounced viewport-change handler.
    * Waits for the user to stop panning/zooming before triggering API fetches.
+   * `force` = true: a filter changed, so drop loaded IDs + region caches first —
+   * otherwise the cache check would skip re-fetching with the new params.
    */
-  function debouncedViewportFetch(bounds) {
+  function debouncedViewportFetch(bounds, force = false) {
     // Cancel any in-flight request from a previous viewport state
     if (currentFetchAbortRef.current) {
       currentFetchAbortRef.current.abort();
     }
     const abortController = new AbortController();
     currentFetchAbortRef.current = abortController;
+
+    if (force) {
+      loadedIdsRef.current.clear();
+      cachedRegionsRef.current = [];
+    }
 
     if (viewportTimerRef.current) clearTimeout(viewportTimerRef.current);
     viewportTimerRef.current = setTimeout(() => {
@@ -281,29 +301,40 @@ export default function Home() {
     updateMarks()
   }, [asset]);
 
-  // When the max-price limit is RAISED, the previous fetch was narrower — re-fetch
-  // the current (or initial) viewport so newly-eligible properties load. Lowering
-  // the limit needs no fetch: the client-side filter on `marks` handles it instantly.
-  const maxPriceRef = useRef(maxPrice)
+  // When a filter widens (max price raised or amenities removed), the previous
+  // fetch was narrower — re-fetch the current viewport so newly-eligible
+  // properties load. Narrowing needs no fetch: the client-side gates on `marks`
+  // handle it instantly. On ANY change we also clear loadedIdsRef +
+  // cachedRegionsRef (via force=true), otherwise the region cache would make
+  // the re-fetch a no-op.
   useEffect(() => {
-    const prev = maxPriceRef.current
+    const prevPrice = maxPriceRef.current
+    const prevAmenities = selectedAmenitiesRef.current
     maxPriceRef.current = maxPrice
-    if (prev === undefined || maxPrice <= prev) return
+    selectedAmenitiesRef.current = selectedAmenities
+
+    const priceWidened = maxPrice > prevPrice
+    const amenitiesNarrowed = selectedAmenities.length < prevAmenities.length
+    if (prevPrice === maxPrice && !priceWidened && !amenitiesNarrowed) {
+      // First run (or no change) — nothing to do.
+      return
+    }
     const bounds = viewportBounds
       ? viewportBounds
       : { west: 80.0, east: 81.0, south: 5.8, north: 6.1 } // fallback: Weligama area (initial view)
-    debouncedViewportFetch(bounds)
+    debouncedViewportFetch(bounds, true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [maxPrice]);
+  }, [maxPrice, selectedAmenities]);
 
   // Memoize coordinate parsing so the prop reference stays stable when asset hasn't changed.
-  // The price gate lives here (client-side) so dragging the slider filters instantly,
-  // and it also trims the GeoJSON sent to the map. Raising the limit re-fetches
-  // (see the refetch effect below), so the map and sidebar always stay in sync.
+  // The price + amenities gates live here (client-side) so toggling filters works
+  // instantly on already-loaded markers, and it also trims the GeoJSON sent to the
+  // map. Widening a filter re-fetches (see the refetch effect above), so the map
+  // and sidebar always stay in sync.
   const marks = useMemo(() => {
     return Array.isArray(asset) 
       ? asset
-        .filter((prop) => Number(prop.price) <= maxPrice)
+        .filter((prop) => Number(prop.price) <= maxPrice && matchesAmenities(prop, selectedAmenities))
         .map((prop, index) => {
           // Parse coordinates - handles both user-friendly string "lat, lng" AND GeoJSON array [lng, lat] formats
           let geoCoord;
@@ -340,7 +371,7 @@ export default function Home() {
           }
         })
       : []
-  }, [asset, currency, formatPrice, maxPrice]);
+  }, [asset, currency, formatPrice, maxPrice, selectedAmenities]);
 
   const hverrStyle = {
     color: 'blue',
