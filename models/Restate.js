@@ -44,6 +44,17 @@ const propertySchema = new Schema({
                 message: 'Maximum 15 beds per room allowed',
             },
         },
+        // Per-room additional amenities — array of ids from
+        // components/shared/roomAmenityCatalog.js (e.g. "appliances.tv").
+        // Shape guard only; strict id validation lives in the API routes
+        // (isValidAmenities) — same split of duties as beds.
+        amenities: {
+            type: [String],
+            validate: {
+                validator: (v) => Array.isArray(v) && v.length <= 29,
+                message: 'Maximum 29 room amenities allowed',
+            },
+        },
     }]
 
 })

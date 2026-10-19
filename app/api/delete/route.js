@@ -5,6 +5,7 @@ import { DeleteImage } from "@/app/lib/delete";
 import { revalidatePath } from "next/cache";
 import { requireAdminEmail } from "@/auth";
 import { isValidBeds } from "@/components/shared/bedTypes";
+import { isValidAmenities } from "@/components/shared/roomAmenityCatalog";
 
 // Total rooms per property: max(1, added rooms)
 const MAX_ROOMS = 10;
@@ -51,6 +52,11 @@ export async function POST(request) {
                 const bedCheck = isValidBeds(room?.beds)
                 if (!bedCheck.ok) {
                     return NextResponse.json({ error: bedCheck.error }, { status: 400 })
+                }
+                // Server-side amenities validation for edited rooms_info
+                const amenityCheck = isValidAmenities(room?.amenities)
+                if (!amenityCheck.ok) {
+                    return NextResponse.json({ error: amenityCheck.error }, { status: 400 })
                 }
             }
         }

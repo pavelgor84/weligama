@@ -13,6 +13,7 @@ const FilterContext = createContext({
   selectedAmenities: [],
   toggleAmenity: () => {},
   resetAmenities: () => {},
+  applyAmenities: () => {},
 })
 
 export function FilterProvider({ children }) {
@@ -35,9 +36,15 @@ export function FilterProvider({ children }) {
 
   const resetAmenities = useCallback(() => setSelectedAmenities([]), [])
 
+  // Whole-list commit used by the detailed filter modal (Apply button).
+  const applyAmenities = useCallback((ids) => {
+    const list = Array.isArray(ids) ? ids.filter((id) => typeof id === 'string') : []
+    setSelectedAmenities([...new Set(list)])
+  }, [])
+
   const value = useMemo(
-    () => ({ maxPrice, setMaxPrice: setMaxPriceClamped, selectedAmenities, toggleAmenity, resetAmenities }),
-    [maxPrice, setMaxPriceClamped, selectedAmenities, toggleAmenity, resetAmenities]
+    () => ({ maxPrice, setMaxPrice: setMaxPriceClamped, selectedAmenities, toggleAmenity, resetAmenities, applyAmenities }),
+    [maxPrice, setMaxPriceClamped, selectedAmenities, toggleAmenity, resetAmenities, applyAmenities]
   )
 
   return <FilterContext.Provider value={value}>{children}</FilterContext.Provider>

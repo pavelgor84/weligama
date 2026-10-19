@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation'
 import styles from './admin_edit.module.css'
 import { createEditProperty } from '../shared/defaultPropertyState'
 import { BED_TYPES, MAX_BEDS_PER_ROOM } from '../shared/bedTypes'
+import { ALL_AMENITY_IDS } from '../shared/roomAmenityCatalog'
+import RoomAmenities from '../shared/RoomAmenities'
 import CoordinatePicker from '../coordinatePicker/maptiler'
 
 export default function AdminEdit({ email }) {
@@ -149,6 +151,14 @@ export default function AdminEdit({ email }) {
         setProperty(prevState => ({ ...prevState, rooms_info: newForms }))
     }
 
+    // Replace a room's selected amenities (full id list from the modal Confirm
+    // or a single-item remove — both arrive as the complete new list)
+    const handleRoomAmenities = (index, ids) => {
+        const newForms = [...property.rooms_info]
+        newForms[index] = { ...newForms[index], amenities: ids }
+        setProperty(prevState => ({ ...prevState, rooms_info: newForms }))
+    }
+
     const handleSubmit = async (e) => {
         if (e) {
             e.preventDefault();
@@ -232,7 +242,17 @@ export default function AdminEdit({ email }) {
             images: Array.isArray(obj.images) ? obj.images : [],
             rooms: Array.isArray(obj.rooms) ? obj.rooms : [],
             rooms_info: Array.isArray(obj.rooms_info)
-                ? obj.rooms_info.map(r => ({ ...r, info: r.info ?? '', beds: Array.isArray(r.beds) ? r.beds : [] }))
+                ? obj.rooms_info.map(r => ({
+                    ...r,
+                    info: r.info ?? '',
+                    beds: Array.isArray(r.beds) ? r.beds : [],
+                    // Safeguard for legacy DB documents that predate the
+                    // amenities field (undefined → []), and filter out any
+                    // unknown/stale ids so only valid catalog ids reach the UI.
+                    amenities: Array.isArray(r.amenities)
+                        ? r.amenities.filter(id => ALL_AMENITY_IDS.has(id))
+                        : [],
+                }))
                 : [],
             occupied_rooms: Array.isArray(obj.occupied_rooms) ? obj.occupied_rooms : [],
             totalRooms: typeof obj.totalRooms === 'number' ? obj.totalRooms : 1,
@@ -345,6 +365,13 @@ export default function AdminEdit({ email }) {
                         <button type="button" className={styles.roomButton} onClick={(e) => handleAddBed(e, index)} disabled={loading || (property.rooms_info[index]?.beds || []).length >= MAX_BEDS_PER_ROOM}>Add the bed</button>
                     </div>
                 </div>
+
+                {/* <!-- Additional amenities in this room --> */}
+                <RoomAmenities
+                    amenities={property.rooms_info[index]?.amenities || []}
+                    onConfirm={(ids) => handleRoomAmenities(index, ids)}
+                    disabled={loading}
+                />
 
                 <div className={styles.submit_room}>
                     <button className={styles.roomButton} disabled={loading} form="submit_form" type="submit">Save</button>

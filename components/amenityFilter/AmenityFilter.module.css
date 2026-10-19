@@ -4,7 +4,7 @@
 .wrap {
     position: absolute;
     left: 16px;
-    right: 16px;
+    right: 92px; /* leave room for the "more.." button at right:16px */
     top: 62px; /* just below the 40px price pill at top:14px */
     z-index: 20;
 }

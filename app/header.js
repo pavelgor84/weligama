@@ -1,7 +1,7 @@
 import styles from '../components/header/header.module.css'
 import CurrencySwitcher from '@/components/currencySwitcher/CurrencySwitcher'
 import PriceFilter from '@/components/priceFilter/PriceFilter'
-import AmenityFilter from '@/components/amenityFilter/AmenityFilter'
+import AmenityFilterArea from '@/components/amenityFilter/AmenityFilterArea'
 
 export default function Header() {
     return (
@@ -9,7 +9,7 @@ export default function Header() {
             <CurrencySwitcher />
             <div className={styles.filterRow}>
                 <PriceFilter />
-                <AmenityFilter />
+                <AmenityFilterArea />
             </div>
 
             <div className={styles.title}>

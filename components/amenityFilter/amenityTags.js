@@ -8,6 +8,8 @@
 // both client-side and server-side (see utils/filters.js).                   //
 // -------------------------------------------------------------------------- //
 
+import { AMENITY_CATEGORIES } from '@/components/shared/roomAmenityCatalog'
+
 // Header filter shows only the most popular views.
 // Full view list (incl. Road) lives in the admin forms' View dropdowns.
 export const VIEW_TAGS = [
@@ -37,6 +39,16 @@ export const AMENITY_TAGS = [
   ...VIEW_TAGS.map((v) => ({ id: `view:${v}`, label: v, field: 'view', type: 'string', value: v })),
 ]
 
+// Per-room amenity pills (source: components/shared/roomAmenityCatalog.js).
+// Ids are namespaced per category, so e.g. 'appliances.hair_dryer' and
+// 'bathroom.hair_dryer' are two distinct pills.
+export const ROOM_AMENITY_TAGS = AMENITY_CATEGORIES.flatMap((cat) =>
+  cat.items.map((item) => ({ id: item.id, label: item.label, type: 'roomAmenity' }))
+)
+
+// Every filterable tag — header tags + room amenities.
+const ALL_TAGS = [...AMENITY_TAGS, ...ROOM_AMENITY_TAGS]
+
 /**
  * Build the URL search-params for the /api route from selected tag ids.
  * e.g. ['ac', 'view:Ocean', 'view:City'] -> { ac: 'true', view: 'Ocean,City' }
@@ -44,7 +56,7 @@ export const AMENITY_TAGS = [
 export function buildAmenityParams(selectedIds) {
   const params = {}
   for (const id of selectedIds || []) {
-    const tag = AMENITY_TAGS.find((t) => t.id === id)
+    const tag = ALL_TAGS.find((t) => t.id === id)
     if (!tag) continue
     if (tag.type === 'boolean') {
       params[tag.field] = 'true'
@@ -54,6 +66,11 @@ export function buildAmenityParams(selectedIds) {
     } else if (tag.type === 'beds') {
       // Bed filters: ?beds=<count>:<bedType>:<scope>, e.g. beds=2:any:room
       params.beds = `${tag.count}:${tag.bedType}:${tag.scope}`
+    } else if (tag.type === 'roomAmenity') {
+      // Room amenities: ?roomAmenities=appliances.tv,appliances.air_conditioning
+      params.roomAmenities = params.roomAmenities
+        ? `${params.roomAmenities},${tag.id}`
+        : tag.id
     } else {
       params[tag.field] = params[tag.field] ? `${params[tag.field]},${tag.value}` : tag.value
     }
@@ -82,19 +99,43 @@ function matchesBeds(prop, tag) {
 /**
  * Client-side gate for already-loaded properties (same pattern as the price
  * gate in page.js). Returns true when the property matches every selected tag.
+ * Room-amenity ids are checked as a GROUP: at least one room must contain ALL
+ * of the selected room amenities (mirrors the server $elemMatch + $all clause
+ * in utils/filters.js), so already-loaded markers gate instantly.
  */
 export function matchesAmenities(prop, selectedIds) {
   if (!selectedIds || selectedIds.length === 0) return true
-  return selectedIds.every((id) => {
-    const tag = AMENITY_TAGS.find((t) => t.id === id)
-    if (!tag) return true
-    if (tag.type === 'boolean') return prop[tag.field] === true
-    if (tag.type === 'number') {
+
+  const generalTags = []
+  const roomAmenityIds = []
+  for (const id of selectedIds) {
+    const tag = ALL_TAGS.find((t) => t.id === id)
+    if (!tag) continue
+    if (tag.type === 'roomAmenity') roomAmenityIds.push(id)
+    else generalTags.push(tag)
+  }
+
+  for (const tag of generalTags) {
+    if (tag.type === 'boolean') {
+      if (prop[tag.field] !== true) return false
+    } else if (tag.type === 'number') {
       // Room filters: property must have >= N available rooms
-      return Number(prop[tag.field]) >= tag.value
+      if (Number(prop[tag.field]) < tag.value) return false
+    } else if (tag.type === 'beds') {
+      if (!matchesBeds(prop, tag)) return false
+    } else {
+      // view — case-insensitive, trimmed
+      if (String(prop[tag.field] ?? '').trim().toLowerCase() !== tag.value.toLowerCase()) return false
     }
-    if (tag.type === 'beds') return matchesBeds(prop, tag)
-    // view — case-insensitive, trimmed
-    return String(prop[tag.field] ?? '').trim().toLowerCase() === tag.value.toLowerCase()
-  })
+  }
+
+  if (roomAmenityIds.length > 0) {
+    const rooms = Array.isArray(prop.rooms_info) ? prop.rooms_info : []
+    return rooms.some((room) => {
+      const has = new Set(Array.isArray(room?.amenities) ? room.amenities : [])
+      return roomAmenityIds.every((id) => has.has(id))
+    })
+  }
+
+  return true
 }

@@ -1,0 +1,85 @@
+import { NextRequest, NextResponse } from "next/server";
+import { initMongoose } from "@/db/mongoose";
+import Restate from "@/models/Restate";
+import { UploadImage } from "@/app/lib/upload";
+import { revalidatePath } from "next/cache";
+import { requireAdminEmail } from "@/auth";
+import { isValidBeds } from "@/components/shared/bedTypes";
+
+const MAX_IMAGES = 15;
+// Total rooms per property: max(1, added rooms)
+const MAX_ROOMS = 10;
+
+export async function POST(request) {
+    const sessionEmail = await requireAdminEmail();
+    if (typeof sessionEmail !== "string") return sessionEmail; // 401 response
+
+    await initMongoose()
+
+    const data = await request.formData()
+    const props = data.get('prop')          //GET PROPS
+    if (!props) {
+        return NextResponse.json({ success: false }, { status: 400 })
+    }
+
+    let obj_props;
+    try {
+        obj_props = JSON.parse(props)
+    } catch {
+        return NextResponse.json({ success: false, error: 'Invalid property payload' }, { status: 400 })
+    }
+
+    // Server-side cap: total rooms (max(1, added)) must not exceed MAX_ROOMS
+    const addedRooms = Array.isArray(obj_props.rooms_info) ? obj_props.rooms_info.length : 0
+    if (addedRooms > MAX_ROOMS) {
+        return NextResponse.json(
+            { success: false, error: `Maximum ${MAX_ROOMS} rooms per property allowed.` },
+            { status: 400 }
+        )
+    }
+
+    // Server-side beds validation: per-room array, max 15, known types only
+    if (Array.isArray(obj_props.rooms_info)) {
+        for (const room of obj_props.rooms_info) {
+            const bedCheck = isValidBeds(room?.beds)
+            if (!bedCheck.ok) {
+                return NextResponse.json({ success: false, error: bedCheck.error }, { status: 400 })
+            }
+        }
+    }
+
+    const formDataEntryValues = Array.from(data.values()); // GET FILES
+    let imagesArray = []
+    for (const formDataEntryValue of formDataEntryValues) {
+        if (typeof formDataEntryValue === "object" && "arrayBuffer" in formDataEntryValue) {
+            imagesArray.push(formDataEntryValue)
+        }
+    }
+
+    if (imagesArray.length > MAX_IMAGES) {
+        return NextResponse.json(
+            { success: false, error: `Maximum ${MAX_IMAGES} images allowed.` },
+            { status: 400 }
+        )
+    }
+
+    // Owner is the authenticated session, never client-supplied
+    obj_props.mail = sessionEmail
+
+    try {
+        const values = await Promise.all(imagesArray.map((im) => UploadImage(im, "sri-lanka")))
+
+        const arrayOfImages = values.map((img) => ({
+            src: img.secure_url, width: img.width, height: img.height,
+            alt: img.original_filename, public_id: img.public_id
+        }))
+        obj_props.images = arrayOfImages
+
+        const respose = await Restate.create(obj_props)
+        revalidatePath('/', 'layout')
+        return NextResponse.json({ "msg": respose }, { status: 200 })
+    } catch (err) {
+        console.error('upload failed:', err)
+        return NextResponse.json({ error: err.message || 'Upload failed' }, { status: 500 })
+    }
+}

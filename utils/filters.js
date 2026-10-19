@@ -10,6 +10,8 @@
  * - Range ops on the same field merge (e.g. $gte + $lte on price).
  */
 
+import { ALL_AMENITY_IDS } from '@/components/shared/roomAmenityCatalog'
+
 const FILTER_WHITELIST = {
   // param name  -> { field, op, type }
   maxPrice: { field: 'price', op: '$lte', type: 'number' },
@@ -25,6 +27,10 @@ const FILTER_WHITELIST = {
   // Bed filter — ?beds=<count>:<bedType>:<scope>
   // (tag source: components/amenityFilter/amenityTags.js, BED_TAGS)
   beds: { field: 'rooms_info', op: 'beds', type: 'string' },
+
+  // Per-room amenities — ?roomAmenities=appliances.tv,appliances.air_conditioning
+  // (tag source: components/amenityFilter/amenityTags.js, ROOM_AMENITY_TAGS)
+  roomAmenities: { field: 'rooms_info', op: 'roomAmenities', type: 'string' },
 
   // ---- future filters go here ----
   // minPrice:  { field: 'price',     op: '$gte', type: 'number' },
@@ -114,6 +120,20 @@ export function buildFilterQuery(params) {
       const [count, bedType = 'any', scope = 'room'] = String(raw).split(':').map((s) => s.trim())
       const clause = buildBedFilter({ count, bedType, scope })
       if (clause) filter.$expr = clause.$expr
+      continue
+    }
+
+    // Room amenities — comma-separated catalog ids. Match when at least one
+    // room's amenities array contains ALL of them ($all inside $elemMatch).
+    // Unknown ids are dropped so junk params can't pollute the query.
+    if (def.op === 'roomAmenities') {
+      const ids = String(raw)
+        .split(',')
+        .map((s) => s.trim())
+        .filter((s) => ALL_AMENITY_IDS.has(s))
+      if (ids.length > 0) {
+        filter.rooms_info = { $elemMatch: { amenities: { $all: ids } } }
+      }
       continue
     }
 

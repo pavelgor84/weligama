@@ -1,0 +1,26 @@
+"use client"
+
+import { useState } from 'react'
+import AmenityFilter from './AmenityFilter'
+import DetailedAmenityFilter from './DetailedAmenityFilter'
+import styles from './AmenityFilterArea.module.css'
+
+/**
+ * Amenities filter + the "more.." button that opens the detailed filter modal.
+ *
+ * Rendered as a fragment (no wrapper div) so it slots into the header's
+ * .filterRow exactly like <AmenityFilter/> did:
+ *   - desktop: in-flow flex item right of the pill strip
+ *   - mobile:  absolutely positioned at the right end of the pill strip row
+ */
+export default function AmenityFilterArea() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <AmenityFilter />
+      <button className={styles.moreBtn} onClick={() => setOpen(true)}>more..</button>
+      <DetailedAmenityFilter open={open} onClose={() => setOpen(false)} />
+    </>
+  )
+}

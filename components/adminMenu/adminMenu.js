@@ -6,6 +6,7 @@ import styles from './admin_menu.module.css'
 
 import { createAddProperty } from '../shared/defaultPropertyState'
 import { BED_TYPES, MAX_BEDS_PER_ROOM } from '../shared/bedTypes'
+import RoomAmenities from '../shared/RoomAmenities'
 import CoordinatePicker from '../coordinatePicker/maptiler'
 
 // Total rooms per property: max(1, added rooms) (matches server-side cap)
@@ -30,7 +31,7 @@ export default function AdminMenu({ email }) {
             alert('Maximum ' + MAX_ROOMS + ' rooms per property allowed.')
             return
         }
-        setProperty(prevState => ({ ...prevState, rooms_info: [...prevState.rooms_info, { info: '', id: Date.now(), beds: [] }] }));
+        setProperty(prevState => ({ ...prevState, rooms_info: [...prevState.rooms_info, { info: '', id: Date.now(), beds: [], amenities: [] }] }));
     };
 
     const handleInputChange = (e, index) => {
@@ -76,8 +77,16 @@ export default function AdminMenu({ email }) {
         const beds = [...(property.rooms_info[index].beds || [])]
         beds.splice(bedIndex, 1)
         const newForms = [...property.rooms_info];
-        newForms[index] = { ...newForms[index], beds };
+        newForms[index] = { ...newForms[index], beds }
         setProperty(prevState => ({ ...prevState, rooms_info: newForms }));
+    };
+
+    // Replace a room's selected amenities (full id list from the modal Confirm
+    // or a single-item remove — both arrive as the complete new list)
+    const handleRoomAmenities = (index, ids) => {
+        const newForms = [...property.rooms_info]
+        newForms[index] = { ...newForms[index], amenities: ids }
+        setProperty(prevState => ({ ...prevState, rooms_info: newForms }))
     };
 
 
@@ -380,6 +389,12 @@ export default function AdminMenu({ email }) {
                                         <button type="button" className={styles.roomButton} disabled={(form.beds || []).length >= MAX_BEDS_PER_ROOM} onClick={(e) => handleAddBed(e, index)}>Add the bed</button>
                                     </div>
                                 </div>
+
+                                {/* <!-- Additional amenities in this room --> */}
+                                <RoomAmenities
+                                    amenities={form.amenities || []}
+                                    onConfirm={(ids) => handleRoomAmenities(index, ids)}
+                                />
 
                                 <div className={styles.room_del_container}>
                                     <p className={styles.section_description}>Remove this room</p>

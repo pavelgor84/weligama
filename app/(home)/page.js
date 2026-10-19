@@ -322,8 +322,15 @@ export default function Home() {
     selectedAmenitiesRef.current = selectedAmenities
 
     const priceWidened = maxPrice > prevPrice
-    const amenitiesNarrowed = selectedAmenities.length < prevAmenities.length
-    if (prevPrice === maxPrice && !priceWidened && !amenitiesNarrowed) {
+    // Refetch when ANY previously-selected amenity was removed — the previous
+    // server fetch was narrower than the current one, so newly-eligible
+    // properties must be fetched. Pure additions need no fetch: the client-side
+    // gates hide non-matching markers instantly, and everything matching a
+    // stricter filter was already fetched under the looser one.
+    // (Length comparison alone misses whole-list swaps from the detailed
+    // filter modal's Apply, e.g. [ac] -> [parking].)
+    const amenitiesRemoved = prevAmenities.some((id) => !selectedAmenities.includes(id))
+    if (prevPrice === maxPrice && !priceWidened && !amenitiesRemoved) {
       // First run (or no change) — nothing to do.
       return
     }

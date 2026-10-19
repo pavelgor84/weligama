@@ -1,0 +1,34 @@
+/* "more.." button — the next separate element to the right of the amenities
+   filter. Mobile: absolute at the right end of the pill strip row (top:62px,
+   same row as AmenityFilter .wrap). Desktop: in-flow flex item inside the
+   header .filterRow (gap 12px handles spacing). */
+.moreBtn {
+    position: absolute;
+    top: 62px;
+    right: 16px;
+    z-index: 21;
+    min-height: 36px;
+    padding: 8px 14px;
+    border-radius: 18px;
+    border: 1px solid #ccc;
+    background: rgba(255, 255, 255, 0.92);
+    color: #333;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.moreBtn:hover {
+    background: #fff;
+}
+
+@media (min-width: 769px) {
+    .moreBtn {
+        position: relative;
+        top: 0;
+        right: auto;
+        flex: 0 0 auto;
+    }
+}
