@@ -20,6 +20,13 @@
 .DS_Store
 *.pem
 
+# local backups / scratch copies (never commit these)
+*.bak
+*.bak*
+*.backup*
+*.orig
+*~
+
 # debug
 npm-debug.log*
 yarn-debug.log*

@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdminEmail } from "@/auth";
 import { isValidBeds } from "@/components/shared/bedTypes";
 import { isValidAmenities } from "@/components/shared/roomAmenityCatalog";
+import { isValidAddress } from "@/components/shared/addressValidation";
 
 const MAX_IMAGES = 15;
 // Total rooms per property: max(1, added rooms)
@@ -14,7 +15,7 @@ const MAX_ROOMS = 10;
 // Fields allowed on the info-update path. images/rooms are managed by
 // dedicated push/splice operations and must never be $set from UI state.
 const INFO_FIELDS = [
-    "mail", "phone", "name", "coordinates", "bedroom", "bath", "ac",
+    "mail", "phone", "name", "address", "coordinates", "bedroom", "bath", "ac",
     "view", "floor", "parking", "price", "available", "numRooms",
     "availableRooms", "occupied_rooms", "description", "rooms_info"
 ];
@@ -80,6 +81,16 @@ export async function POST(request) {
                         return NextResponse.json({ error: amenityCheck.error }, { status: 400 })
                     }
                 }
+            }
+
+            // Server-side address validation: trim, cap lengths, ISO country code.
+            // All-empty parts normalize to {} so clearing the fields clears the doc.
+            if (updateFields.address !== undefined) {
+                const addressCheck = isValidAddress(updateFields.address)
+                if (!addressCheck.ok) {
+                    return NextResponse.json({ error: addressCheck.error }, { status: 400 })
+                }
+                updateFields.address = addressCheck.address
             }
 
             // Defend against untransformed "lat, lng" strings from the client

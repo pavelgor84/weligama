@@ -4,6 +4,18 @@ const propertySchema = new Schema({
     mail: String,
     phone: String,
     name: String,
+    // Structured address. country is an ISO 3166-1 alpha-2 code ("LK", "IT").
+    // maxlengths enforce the same caps as components/shared/addressValidation.js
+    // server-side — Mongoose rejects oversized values on create/update.
+    address: {
+        country: { type: String, maxlength: 2 },
+        region: { type: String, maxlength: 80 },
+        city: { type: String, maxlength: 80 },
+        district: { type: String, maxlength: 80 },
+        street: { type: String, maxlength: 100 },
+        houseNumber: { type: String, maxlength: 20 },
+        postalCode: { type: String, maxlength: 16 },
+    },
     coordinates: [Number, Number],  // GeoJSON array format for map markers
     bedroom: Number,
     bath: Number,

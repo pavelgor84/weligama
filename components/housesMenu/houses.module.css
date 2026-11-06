@@ -1,183 +1,368 @@
+/* Card shell (white frame) — dimensions and styles copied from
+   /home/kali/Downloads/card/index.html (416px square variant). */
 .card_container {
+  --card-w: 416px;
+  --frame: 11px;
+  --radius: 26px;
+  --radius-media: 15px;
   margin-top: 10px;
-  width: 490px;
-  height: 170px;
-  display: flex;
-  -webkit-box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
-  -moz-box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
-  box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
-  border-radius: 15px 5px 15px 5px;
-  background-color: rgb(247 247 242);
+  width: min(var(--card-w), 100%);
+  padding: var(--frame);
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(17, 21, 30, 0.05),
+    0 26px 50px -20px rgba(17, 21, 30, 0.32);
 }
+
 .card_container_selected {
+  --card-w: 416px;
+  --frame: 11px;
+  --radius: 26px;
+  --radius-media: 15px;
   margin-top: 10px;
-  width: 490px;
-  height: 170px;
+  width: min(var(--card-w), 100%);
+  padding: var(--frame);
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(17, 21, 30, 0.05),
+    0 26px 50px -20px rgba(17, 21, 30, 0.32);
+}
+
+.card_container_selected .card_title {
+  color: #febb02;
+}
+
+.card_container_selected .btn {
+  background-color: #49735A;
+  color: #fff;
+}
+
+.card_container_selected .price {
+  color: #febb02;
+}
+
+/* The whole card is one link */
+.card_link {
+  display: block;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ---------- Media (slider) ---------- */
+
+.card_media {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-media);
+  overflow: hidden;
+  background: #21221f;
+}
+
+/* The shared slider css sets its own radius for the old layout — inherit ours.
+   z-index: auto removes .swiper's stacking context (swiper.css gives it z-index: 1),
+   otherwise the arrows' z-index: 5 is trapped inside it and can never rise above
+   .card_content (z-index: 2) — clicks on the arrows would hit the card link. */
+.card_media :global(.swiper) {
+  border-radius: inherit;
+  z-index: auto;
+}
+
+/* Slider arrows must stay on top of the clickable overlay and never be
+   covered by it (z-index above .card_content, which is z-index: 2). */
+.card_media :global(.swiper-button-next),
+.card_media :global(.swiper-button-prev) {
+  z-index: 5;
+}
+
+/* Legibility scrim, sitting between the photo and the content */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 10, 14, 0) 45%,
+    rgba(8, 10, 14, 0.06) 65%,
+    rgba(8, 10, 14, 0.12) 85%,
+    rgba(6, 8, 11, 0.18) 100%
+  );
+  pointer-events: none;
+}
+
+/* Frosted-glass panel behind the bottom half of the media — design
+   copied from /home/kali/Downloads/card/index.html. Same z-index as .scrim;
+   DOM order puts the scrim on top of it. The mask fades the glass in from
+   the 50% mark so only the lower half is frosted. */
+.glass {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.40);
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, transparent 0%, transparent 50%, black 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 50%, black 100%);
+}
+
+/* ---------- Content over the slider ---------- */
+
+.card_content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   display: flex;
-  -webkit-box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
-  -moz-box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
-  box-shadow: 2px 2px 5px 0px rgba(34, 60, 80, 0.2);
-  border-radius: 15px 5px 15px 5px;  
-  background-color: rgb(247 247 242);
-  transform: translateX(20px); /* Выдвигаем элемент вправо */
-    transition: transform 0.3s ease; /* Плавный переход */
-}
-.card_container_selected .card_right_options_button {
-  background-color: #49735A;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 18px 11px 16px;
+  color: #ffffff;
+  text-shadow: 0 1px 24px rgba(0, 0, 0, 0.28);
 }
 
-.card_container_selected .card_right_h3 {
-  color: #febb02
+.card_title {
+  margin: 0 0 17px;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.16;
+  letter-spacing: -0.018em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  color: #ffffff;
 }
 
-.card_container_selected .card_right_price {
-  color: #49735A
-}
+/* ---------- Amenity pills ---------- */
 
-.card_left {
-  width: 30%;
-  height: 100%;
-  border-radius: 15px 0px 0px 5px;
-}
-
-.card_right {
-  /* background-color: rgb(247 247 242); */
-  width: 70%;
-  padding: 20px 40px 20px 20px;
-  border-radius: 0px 5px 15px 0px;
-  z-index: 3;
-}
-
-
-/* .card_container :hover {
-  background-color: rgb(201, 232, 236);
-} */
-
-.card_container :hover .card_right_options_button {
-  background-color: #49735A;
-}
-
-.card_container :hover .card_right_h3 {
-  color: #febb02
-}
-
-.card_container :hover .card_right_price {
-  color: #49735A
-}
-
-.card_right_h3 {
-  color: #006ce4;
-  margin-bottom: 10px;
-}
-
-.card_right_options {
-  /* padding: 10px; */
+.features {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 16px;
-  row-gap: 8px;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
 }
 
-
-.card_right_options span {
-  margin-left: 5px;
-  margin-right: 10px;
+.features li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.11);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  backdrop-filter: blur(16px) saturate(150%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  font-size: 13px;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  transition: background-color 200ms ease, border-color 200ms ease;
 }
 
-.card_right_options_txt {
-  width: 100%;
+.features li:hover {
+  background: rgba(255, 255, 255, 0.19);
+  border-color: rgba(255, 255, 255, 0.55);
 }
 
-.card_right_options_txt span {
-  margin: 0px;
+.features svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  opacity: 0.95;
 }
 
-.card_right_bottom {
+/* ---------- Address row ---------- */
+
+.meta {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  margin-top: 15px;
-}
-
-.card_right_date {}
-
-.card_right_options_button {
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 20px;
-  padding: 4px 20px;
-  border-radius: 30px;
-  background: #49735A;
-  border: none;
-  color: white;
-}
-
-.card_right_price {
-  padding: 4px 0px;
+  gap: 13px;
+  margin: 0 0 25px;
   font-size: 14px;
-  font-style: normal;
+  letter-spacing: -0.006em;
+}
+
+.meta__location {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  min-width: 0;
+}
+
+.meta__location svg {
+  width: 19px;
+  height: 19px;
+  flex: none;
+  margin-top: -2px;
+}
+
+/* ---------- Footer ---------- */
+
+.card_footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.price {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.price_from {
+  margin-right: 6px;
+  font-size: 11px;
   font-weight: 400;
-  line-height: 16px;
+  letter-spacing: -0.005em;
+  color: rgba(255, 255, 255, 0.62);
 }
 
-.card_right_price span {
-  font-weight: bold;
+.price_period {
+  margin-left: 4px;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  color: rgba(255, 255, 255, 0.62);
 }
 
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 39px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 10px;
+  background: #fff;
+  color: #0b0b0d;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  text-shadow: none;
+  cursor: pointer;
+  transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
 
+.btn:hover {
+  background: #f1f1f3;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
+}
 
-@media (max-width:768px) {
+.btn:active {
+  transform: translateY(0);
+  background: #e6e6e9;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
 
-  
-  .card_container {
-    z-index: 10;
-    white-space: nowrap;
-    width: 450px;
-    height: 135px;
-    border-radius: 15px 5px 15px 5px;
+.btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .features li,
+  .btn {
+    transition: none;
   }
-
-  .card_right {
-    padding-top: 5px;
+  .btn:hover,
+  .btn:active {
+    transform: none;
   }
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 768px) {
+  .card_container,
   .card_container_selected {
-    z-index: 10;
-    white-space: nowrap;
-    width: 450px;
-    height: 135px;
-    border-radius: 15px 5px 15px 5px;
-    transform: translateY(-10px); /* Выдвигаем элемент вправо */
-    transition: transform 0.3s ease; /* Плавный переход */
+    --frame: 10px;
+    width: min(var(--card-w), 100%);
+    border-radius: 26px;
   }
 
+  .card_media {
+    border-radius: 15px;
+  }
+
+  .card_content {
+    padding: 0 15px 11px 14px;
+  }
+
+  .card_title {
+    font-size: 17px;
+    margin-bottom: 15px;
+  }
+
+  .features {
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .features li {
+    height: 27px;
+    padding: 0 9px;
+    gap: 5px;
+    font-size: 12.5px;
+  }
+
+  .features svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .meta {
+    font-size: 13.5px;
+    margin-bottom: 18px;
+  }
+
+  .meta__location {
+    gap: 4px;
+  }
+
+  .meta__location svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .price {
+    font-size: 18px;
+  }
+
+  .price_from,
+  .price_period {
+    font-size: 10.5px;
+  }
+
+  .btn {
+    height: 36px;
+    padding: 0 14px;
+    font-size: 13.5px;
+    border-radius: 8px;
+  }
 }
 
-@media (max-width:320px) {
-
-  .card_container {
-    z-index: 10;
-    white-space: nowrap;
-    width: 450px;
-    height: 135px;
-    border-radius: 15px 5px 15px 5px;
-  }
-
-  .card_right {
-    padding-top: 5px;
-  }
-
-  
+@media (max-width: 320px) {
+  .card_container,
   .card_container_selected {
-    z-index: 10;
-    white-space: nowrap;
-    width: 450px;
-    height: 135px;
-    border-radius: 15px 5px 15px 5px;
-    
+    width: 280px;
+    padding: 10px;
+    border-radius: 26px;
   }
-
 }

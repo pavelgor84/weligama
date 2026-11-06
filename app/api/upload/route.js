@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdminEmail } from "@/auth";
 import { isValidBeds } from "@/components/shared/bedTypes";
 import { isValidAmenities } from "@/components/shared/roomAmenityCatalog";
+import { isValidAddress } from "@/components/shared/addressValidation";
 
 const MAX_IMAGES = 15;
 // Total rooms per property: max(1, added rooms)
@@ -53,6 +54,13 @@ export async function POST(request) {
             }
         }
     }
+
+    // Server-side address validation: trim, cap lengths, ISO country code
+    const addressCheck = isValidAddress(obj_props.address)
+    if (!addressCheck.ok) {
+        return NextResponse.json({ success: false, error: addressCheck.error }, { status: 400 })
+    }
+    obj_props.address = addressCheck.address
 
     const formDataEntryValues = Array.from(data.values()); // GET FILES
     let imagesArray = []

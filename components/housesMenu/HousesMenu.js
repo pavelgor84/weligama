@@ -11,6 +11,7 @@ import styles from './houses.module.css'
 
 import { useMapContext } from '@/app/context/MapContext'
 import { useCurrency } from '@/app/context/CurrencyContext'
+import { formatAddress } from '@/components/shared/addressDisplay'
 
 
 export default function HousesMenu({ cards, handleOver, handleLeave }) {
@@ -119,30 +120,62 @@ export default function HousesMenu({ cards, handleOver, handleLeave }) {
     const menu = card ? card.map((prop, index) => {
         return (
             <div className={prop._id === scrollTo ? styles.card_container_selected : styles.card_container} key={prop._id} id={prop._id} onTouchStart={hov} onMouseEnter={hov} onMouseLeave={handleLeave} ref={addToRefs} >
-                <div className={styles.card_left}>
-                    <SliderTest img={prop.images} />
-                </div>
-                <div className={styles.card_right} id={prop._id} >
-                    <Link href={{
-                        pathname: "/list",
-                        query: {
-                            id: prop._id
-                        }
-                    }} target="_blank">
-                        <h3 className={styles.card_right_h3}>{prop.name}</h3>
-                        <div className={styles.card_right_options} >
-                            <Icon_bed /> <span>{prop.bedroom}</span>
-                            <Icon_shower /> <span>{prop.bath}</span>
-                            <Icon_cond /> <span>{prop.ac ? "Yes" : "No"}</span>
-                            <div className={styles.card_right_options_txt}><span>View {prop.view}</span>  |  <span>Floors {prop.floor}</span>  |  <span>Elevator</span> | <span>Parking {prop.parking ? "Yes" : "No"}</span></div>
-                        </div>
-                        <div className={styles.card_right_bottom}>
-                            <div className={styles.card_right_date}><button className={styles.card_right_options_button}>Available</button></div>
-                            <div className={styles.card_right_price}>from <span>{formatPrice(prop.price)}</span> /day</div>
-                        </div>
-                    </Link>
-                </div>
+                <Link href={{
+                    pathname: "/list",
+                    query: {
+                        id: prop._id
+                    }
+                }} target="_blank" className={styles.card_link}>
+                    <div className={styles.card_media}>
+                        <SliderTest img={prop.images} />
 
+                        {/* Frosted-glass panel behind the lower half of the media */}
+                        <div className={styles.glass} aria-hidden="true"></div>
+
+                        {/* Scrim for text legibility, sits above the glass and slider */}
+                        <div className={styles.scrim} aria-hidden="true"></div>
+
+                        <div className={styles.card_content}>
+                            <h3 className={styles.card_title}>{prop.name}</h3>
+
+                            <ul className={styles.features}>
+                                <li>
+                                    <Icon_bed width={15} height={15} />
+                                    <span>{prop.bedroom} Bedroom</span>
+                                </li>
+                                <li>
+                                    <Icon_shower width={15} height={15} />
+                                    <span>{prop.bath} Bath</span>
+                                </li>
+                                <li>
+                                    <Icon_cond width={15} height={15} />
+                                    <span>AC {prop.ac ? "Yes" : "No"}</span>
+                                </li>
+                            </ul>
+
+                            {/* Address row — city, street, house number only; "Address" when none provided */}
+                            <div className={styles.meta}>
+                                <p className={styles.meta__location}>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" aria-hidden="true">
+                                        <g transform="translate(12 12) scale(1.2) translate(-12 -12)">
+                                            <path d="M12 21.2s6.9-6.3 6.9-11.1a6.9 6.9 0 1 0-13.8 0C5.1 14.9 12 21.2 12 21.2Z" />
+                                            <circle cx="12" cy="9.9" r="2.5" />
+                                            <circle cx="12" cy="9.9" r="0.95" fill="currentColor" stroke="none" />
+                                        </g>
+                                    </svg>
+                                    {formatAddress(prop.address)}
+                                </p>
+                            </div>
+
+                            <div className={styles.card_footer}>
+                                <p className={styles.price}>
+                                    <span className={styles.price_from}>from</span> <span>{formatPrice(prop.price)}</span><span className={styles.price_period}>/day</span>
+                                </p>
+                                <button className={styles.btn} type="button">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </Link>
             </div>
         )
     }) : NULL

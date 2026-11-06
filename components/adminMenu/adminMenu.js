@@ -6,6 +6,8 @@ import styles from './admin_menu.module.css'
 
 import { createAddProperty } from '../shared/defaultPropertyState'
 import { BED_TYPES, MAX_BEDS_PER_ROOM } from '../shared/bedTypes'
+import { COUNTRIES } from '../shared/countries'
+import { ADDRESS_LIMITS } from '../shared/addressValidation'
 import RoomAmenities from '../shared/RoomAmenities'
 import CoordinatePicker from '../coordinatePicker/maptiler'
 
@@ -99,6 +101,12 @@ export default function AdminMenu({ email }) {
         } else {
             setProperty(prev => ({ ...prev, [name]: value }))
         }
+    };
+
+    // Nested address subdocument — generic handleChange only handles top-level names
+    const handleAddressChange = (e) => {
+        const { name, value } = e.target;
+        setProperty(prev => ({ ...prev, address: { ...prev.address, [name]: value } }))
     };
 
 
@@ -246,6 +254,42 @@ export default function AdminMenu({ email }) {
                                 <div>
                                     <label className={styles.input_label}>Property Name</label>
                                     <input className={styles.text_input} type="text" placeholder='e.g., Villa South' name="name" value={property.name} onChange={handleChange} required />
+                                </div>
+                                {/* Address — all parts optional, country is an ISO alpha-2 code */}
+                                <div className={styles.address_grid}>
+                                    <div>
+                                        <label className={styles.input_label}>Country</label>
+                                        <select className={styles.text_input} name="country" value={property.address.country} onChange={handleAddressChange}>
+                                            <option value="">Select country</option>
+                                            {COUNTRIES.map((c) => (
+                                                <option key={c.code} value={c.code}>{c.code} — {c.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className={styles.input_label}>Region</label>
+                                        <input className={styles.text_input} type="text" placeholder='e.g., Galle' name="region" value={property.address.region} onChange={handleAddressChange} maxLength={ADDRESS_LIMITS.region} />
+                                    </div>
+                                    <div>
+                                        <label className={styles.input_label}>City</label>
+                                        <input className={styles.text_input} type="text" placeholder='e.g., Weligama' name="city" value={property.address.city} onChange={handleAddressChange} maxLength={ADDRESS_LIMITS.city} />
+                                    </div>
+                                    <div>
+                                        <label className={styles.input_label}>District</label>
+                                        <input className={styles.text_input} type="text" placeholder='e.g., Matara' name="district" value={property.address.district} onChange={handleAddressChange} maxLength={ADDRESS_LIMITS.district} />
+                                    </div>
+                                    <div>
+                                        <label className={styles.input_label}>Street</label>
+                                        <input className={styles.text_input} type="text" placeholder='e.g., Galle Road' name="street" value={property.address.street} onChange={handleAddressChange} maxLength={ADDRESS_LIMITS.street} />
+                                    </div>
+                                    <div>
+                                        <label className={styles.input_label}>House number</label>
+                                        <input className={styles.text_input} type="text" placeholder='e.g., 12' name="houseNumber" value={property.address.houseNumber} onChange={handleAddressChange} maxLength={ADDRESS_LIMITS.houseNumber} />
+                                    </div>
+                                    <div>
+                                        <label className={styles.input_label}>Postal code</label>
+                                        <input className={styles.text_input} type="text" placeholder='e.g., 81200' name="postalCode" value={property.address.postalCode} onChange={handleAddressChange} maxLength={ADDRESS_LIMITS.postalCode} />
+                                    </div>
                                 </div>
                                 <div>
                                     <label className={styles.input_label}>Phone Number</label>

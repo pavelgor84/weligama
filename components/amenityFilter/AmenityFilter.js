@@ -6,7 +6,7 @@ import { AMENITY_TAGS } from './amenityTags'
 import styles from './AmenityFilter.module.css'
 
 export default function AmenityFilter() {
-  const { selectedAmenities, toggleAmenity, resetAmenities } = useFilter()
+  const { selectedAmenities, toggleAmenity } = useFilter()
   const rowRef = useRef(null)
 
   // Mouse wheel over the pill row should scroll the row horizontally.
@@ -33,8 +33,6 @@ export default function AmenityFilter() {
     return () => el.removeEventListener('wheel', onWheel)
   }, [])
 
-  const count = selectedAmenities.length
-
   return (
     <div className={styles.wrap}>
       <div ref={rowRef} className={styles.scrollRow} role="listbox" aria-label="Select amenities">
@@ -52,11 +50,6 @@ export default function AmenityFilter() {
             </button>
           )
         })}
-        {count > 0 && (
-          <button className={styles.reset} onClick={() => resetAmenities()}>
-            Reset ({count})
-          </button>
-        )}
       </div>
     </div>
   )

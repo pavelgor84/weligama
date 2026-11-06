@@ -9,7 +9,17 @@
 const baseDefaults = {
     phone: '',
     name: '',
-    address: '',            // kept in form but NOT persisted (no field in schema)
+    // Structured address (matches models/Restate.js subdocument).
+    // All parts optional — empty strings are dropped server-side.
+    address: {
+        country: '',   // ISO 3166-1 alpha-2 code from the dropdown
+        region: '',
+        city: '',
+        district: '',
+        street: '',
+        houseNumber: '',
+        postalCode: '',
+    },
     coordinates: '',        // UI format "lat, lng" — transformed before DB write
     view: '',
     description: '',

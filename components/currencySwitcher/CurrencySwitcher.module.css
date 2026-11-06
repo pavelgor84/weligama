@@ -1,10 +1,18 @@
 .wrap {
     position: absolute;
-    top: 14px;
+    top: 14px;      /* mobile: unchanged, stays in the price-pill row */
     right: 16px;
     z-index: 20;
     font-size: 14px;
     font-weight: 600;
+}
+
+/* Desktop: drop into the same bottom row as .filterRow (bottom: 12px). */
+@media (min-width: 769px) {
+    .wrap {
+        top: auto;
+        bottom: 12px;
+    }
 }
 
 .button {
