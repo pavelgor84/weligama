@@ -292,13 +292,24 @@
 @media (max-width: 768px) {
   .card_container,
   .card_container_selected {
-    --frame: 10px;
-    width: min(var(--card-w), 100%);
-    border-radius: 26px;
+    /* Mobile carousel item: the photo *is* the card — no white frame, and a fixed
+       width with flex: 0 0 auto so the row can never squeeze the cards into
+       slivers (those collapsing cards were the artifacts on the right edge).
+       --mobile-card-w comes from .main in app/page.module.css. */
+    flex: 0 0 auto;
+    width: var(--mobile-card-w, min(78vw, 300px));
+    margin-top: 0;
+    padding: 0;
+    border-radius: 18px;
+    background: transparent;
+    box-shadow: none;
+    scroll-snap-align: start;
   }
 
   .card_media {
-    border-radius: 15px;
+    border-radius: 18px;
+    /* The white frame is gone, so lift the bare photo off the map itself. */
+    box-shadow: 0 6px 18px -4px rgba(17, 21, 30, 0.45);
   }
 
   .card_content {
@@ -361,8 +372,14 @@
 @media (max-width: 320px) {
   .card_container,
   .card_container_selected {
-    width: 280px;
-    padding: 10px;
-    border-radius: 26px;
+    /* Width still comes from --mobile-card-w: at 320px that is 78vw, which keeps
+       the strip's peek of the next card. Never re-add the white padding here. */
+    width: var(--mobile-card-w, min(78vw, 300px));
+    padding: 0;
+    border-radius: 16px;
+  }
+
+  .card_media {
+    border-radius: 16px;
   }
 }

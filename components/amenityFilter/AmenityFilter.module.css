@@ -3,9 +3,12 @@
    Desktop: in-flow inside the header .filterRow (price button on its left). */
 .wrap {
     position: absolute;
-    left: 16px;
-    right: 92px; /* leave room for the "more.." button at right:16px */
-    top: 62px; /* just below the 40px price pill at top:14px */
+    /* Full-bleed strip: no side insets and nothing reserved on the right any more.
+       The "more.." chip is now a round icon button below the row, so the chips get
+       the whole screen width to scroll in. */
+    left: 0;
+    right: 0;
+    top: 58px; /* just below the 40px price pill at top:14px */
     z-index: 20;
 }
 
@@ -51,6 +54,17 @@
     background: #0a6e8a;
     border-color: #0a6e8a;
     color: #fff;
+}
+
+/* Mobile: the strip bleeds to both screen edges — the first chip is inset 12px,
+   the last 20px are a pure fade hint, and padding-right keeps the final chip
+   clear of that fade at the end of the scroll. No inset "borders" eat room. */
+@media (max-width: 768px) {
+    .scrollRow {
+        padding: 4px 20px 4px 12px;
+        mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 20px), transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 20px), transparent 100%);
+    }
 }
 
 /* Desktop: in-flow inside the header .filterRow (price button on its left).

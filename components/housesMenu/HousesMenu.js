@@ -40,7 +40,14 @@ export default function HousesMenu({ cards, handleOver, handleLeave }) {
                 itemRef.current.forEach((item) => {
                     if (item.id === scrollTo) {
                         item.className = styles.card_container_selected //apply selected style to menu element
-                        item.scrollIntoView({ block: "center", behavior: 'smooth' });
+                        // Mobile: the cards sit in a horizontal strip over the map, so
+                        // centre the card sideways; desktop keeps centring it in the list.
+                        const isMobile = window.innerWidth <= 768
+                        item.scrollIntoView(
+                            isMobile
+                                ? { block: 'nearest', inline: 'center', behavior: 'smooth' }
+                                : { block: 'center', behavior: 'smooth' }
+                        );
                         selectedRef.current = scrollTo
                     }
                 })

@@ -4,6 +4,14 @@
   margin: 0;
 }
 
+:root {
+  /* Mobile header height: the price/currency row, the amenity strip and the
+     round "adjust filters" button under it. A percentage alone clips that third
+     row on shorter phones, hence the px floor. Both the header and the map
+     (app/page.module.css) read this, so the two can never drift apart. */
+  --header-h-mobile: max(15.6vh, 140px);
+}
+
 html,
 body {
   max-width: 100vw;

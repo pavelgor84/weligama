@@ -1,27 +1,47 @@
-/* "more.." button — the next separate element to the right of the amenities
-   filter. Mobile: absolute at the right end of the pill strip row (top:62px,
-   same row as AmenityFilter .wrap). Desktop: in-flow flex item inside the
-   header .filterRow (gap 12px handles spacing). */
+/* "Adjust filters" icon button — opens the detailed amenity modal. Bare icon:
+   no border, no fill (the header background shows through).
+   Mobile: below the pill strip (the chips run full-bleed from top:58px and are
+   44px tall), horizontally centred — it never covers them and the strip keeps
+   the full screen width. Desktop: in-flow flex item inside the header .filterRow
+   (gap 12px spaces it), unchanged position. */
 .moreBtn {
     position: absolute;
-    top: 62px;
-    right: 16px;
+    top: 104px;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 21;
-    min-height: 36px;
-    padding: 8px 14px;
-    border-radius: 18px;
-    border: 1px solid #ccc;
-    background: rgba(255, 255, 255, 0.92);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%; /* shapes the hover/press halo only */
+    background: transparent;
     color: #333;
-    font: inherit;
-    font-size: 13px;
-    font-weight: 600;
     cursor: pointer;
-    white-space: nowrap;
 }
 
+.moreBtn svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+}
+
+/* Borderless control needs its own feedback — a light halo instead of a border. */
 .moreBtn:hover {
-    background: #fff;
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.moreBtn:active {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.moreBtn:focus-visible {
+    outline: 2px solid #0a6e8a;
+    outline-offset: 2px;
 }
 
 @media (min-width: 769px) {
@@ -29,6 +49,10 @@
         position: relative;
         top: 0;
         right: auto;
+        left: 0;
+        transform: none; /* desktop keeps it inline, at the end of the row */
         flex: 0 0 auto;
+        width: 36px;
+        height: 36px;
     }
 }

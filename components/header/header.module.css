@@ -20,7 +20,10 @@
 
 @media (max-width: 768px) {
     .container {
-        height: 15.6%; /* unchanged: mobile is a stacked price/amenities layout */
+        /* Shared with the map height (--header-h-mobile in globals.css): the
+           mobile header has three stacked rows (price/currency, amenity strip,
+           adjust button), which no bare percentage can fit on short phones. */
+        height: var(--header-h-mobile);
         padding: 0px;
     }
 }

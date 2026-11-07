@@ -96,23 +96,64 @@
 }
 
 
+/* Mobile: full-bleed map, with the house cards floating over its bottom edge as a
+   horizontal carousel (Airbnb-style). The map owns the whole screen under the
+   header, so the page never scrolls — the cards scroll sideways over it instead.
+   (≤320px needs no separate block: every rule here already applies there.) */
 @media (max-width:768px) {
 
   .main {
-    --header-h: 15.6vh; /* header height on mobile */
-    flex-direction: column-reverse;
-    overflow-x: hidden;
+    --header-h: var(--header-h-mobile); /* shared with components/header/header.module.css */
+
+    /* Card strip metrics. The card is a bare photo on mobile (no white frame),
+       so its height equals its width — the strip's height follows from this. */
+    --mobile-card-w: min(78vw, 300px);
+    --strip-gap: 10px;
+    --strip-inset: 10px;   /* card strip → screen edge / map bottom */
+    --strip-pad-b: 12px;   /* room for the card shadow inside the scroller */
+
+    position: relative; /* the card strip is anchored to the map block */
+    flex-direction: column; /* map in flow; the strip is lifted out of it */
+    overflow: hidden; /* clip the map's edges, nothing sticks out sideways */
     width: 100%;
     gap: 0px;
-    height: auto; /* the stack is taller than the viewport — let the page scroll */
+    height: auto;
+    /* No page frame: the map runs edge to edge, so the pink card, its radius,
+       shadow and blur would only show as a border around the map. */
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
+  /* The card strip: out of flow, pinned to the bottom of the map block, and a
+     horizontal scroller, so the cards are dragged across the map. */
   .left_block {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: var(--strip-inset);
+    z-index: 3;
     width: 100%;
+    height: auto;
+    padding: 0 var(--strip-inset) var(--strip-pad-b);
     display: flex;
+    align-items: flex-end;
+    gap: var(--strip-gap);
     overflow-x: auto;
-    white-space: nowrap;
-    gap: 10px;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain; /* don't hand the swipe to the page */
+    scroll-snap-type: x mandatory;
+    /* Without this the snap aligns the card to the scroller's border edge and
+       swallows the inline padding, leaving the first card flush with the screen. */
+    scroll-padding: 0 var(--strip-inset);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* a visible bar would eat card height on Android */
+  }
+
+  .left_block::-webkit-scrollbar {
+    display: none;
   }
 
   .right_block {
@@ -120,53 +161,30 @@
     flex: none;
     width: 100%;
     height: auto;
-    padding: var(--gutter);
+    padding: 0; /* no gaps left and right — the map touches both edges */
   }
 
   .map_place {
     height: auto; /* height comes from .block below */
+    padding: 0; /* no white frame around the map */
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   .block {
-    height: 86vh;
+    /* Fill the screen from under the sticky header down to the footer, so the
+       map ends exactly where the strip floats. */
+    height: calc(100vh - var(--header-h) - var(--footer-h));
+    height: calc(100dvh - var(--header-h) - var(--footer-h));
+    border-radius: 0;
   }
 
-
-}
-
-@media (max-width:320px) {
-
-  .main {
-    --header-h: 15.6vh;
-    flex-direction: column-reverse;
-    overflow-x: hidden;
-    width: 100%;
-    gap: 0px;
-    height: auto;
-  }
-
-  .left_block {
-    width: 100%;
-    display: flex;
-    overflow-x: auto;
-    white-space: nowrap;
-    gap: 10px;
-  }
-
-  .right_block {
-    position: static;
-    flex: none;
-    width: 100%;
-    height: auto;
-    padding: var(--gutter);
-  }
-
-  .map_place {
-    height: auto;
-  }
-
-  .block {
-    height: 86vh;
+  /* The map attribution and the MapLibre logo sit in the bottom corners, exactly
+     where the cards now float — lift them above the strip so they stay visible. */
+  .right_block :global(.maplibregl-ctrl-bottom-left),
+  .right_block :global(.maplibregl-ctrl-bottom-right) {
+    margin-bottom: calc(var(--mobile-card-w) + var(--strip-pad-b) + var(--strip-inset));
   }
 
 
