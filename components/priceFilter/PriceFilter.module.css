@@ -135,6 +135,28 @@
     background: #e8e8e8;
 }
 
+/* Mobile: borderless chip on the header's top line, pinned to the left edge
+   (the currency picker sits opposite, on the right). The 12px inset matches
+   the first amenity chip so the column reads as one line. */
+@media (max-width: 768px) {
+    .wrap {
+        top: 10px;      /* a little higher than the old 14px */
+        left: 12px;
+        transform: none;
+    }
+
+    .button {
+        min-height: 40px;   /* keep the touch target */
+        padding: 0;         /* text sits on the 12px inset line */
+        border: 0;
+        background: transparent;
+    }
+
+    .button:hover {
+        background: transparent;
+    }
+}
+
 /* Desktop: in-flow inside the header .filterRow (positioned by the row). */
 @media (min-width: 769px) {
     .wrap {

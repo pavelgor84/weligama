@@ -312,6 +312,13 @@
     box-shadow: 0 6px 18px -4px rgba(17, 21, 30, 0.45);
   }
 
+  /* Arrows a little above the vertical centre: at 50% they sat on the title /
+     amenity pills. Swiper reads this var in its own `top` declaration. */
+  .card_media :global(.swiper-button-next),
+  .card_media :global(.swiper-button-prev) {
+    --swiper-navigation-top-offset: 35%;
+  }
+
   .card_content {
     padding: 0 15px 11px 14px;
   }

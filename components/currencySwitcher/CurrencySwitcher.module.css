@@ -64,3 +64,27 @@
     color: #0a6e8a;
     font-weight: 700;
 }
+
+/* Mobile: borderless chip on the header's top line, pinned to the right edge
+   (Max price sits opposite, on the left). Declared after the base rules so the
+   border/padding resets actually win the cascade. z-index beats the amenity
+   strip (20) and its round adjust button (21), so the open list is drawn over
+   them instead of disappearing behind the filter chips. */
+@media (max-width: 768px) {
+    .wrap {
+        top: 10px;
+        right: 12px;
+        z-index: 40;
+    }
+
+    .button {
+        min-height: 40px;   /* keep the touch target */
+        padding: 0;
+        border: 0;
+        background: transparent;
+    }
+
+    .button:hover {
+        background: transparent;
+    }
+}
