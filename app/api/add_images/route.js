@@ -4,21 +4,9 @@ import Restate from "@/models/Restate";
 import { UploadImage } from "@/app/lib/upload";
 import { revalidatePath } from "next/cache";
 import { requireAdminEmail } from "@/auth";
-import { isValidBeds } from "@/components/shared/bedTypes";
-import { isValidAmenities } from "@/components/shared/roomAmenityCatalog";
-import { isValidAddress } from "@/components/shared/addressValidation";
+import { extractInfoFields } from "@/app/lib/propertyInfo";
 
 const MAX_IMAGES = 15;
-// Total rooms per property: max(1, added rooms)
-const MAX_ROOMS = 10;
-
-// Fields allowed on the info-update path. images/rooms are managed by
-// dedicated push/splice operations and must never be $set from UI state.
-const INFO_FIELDS = [
-    "mail", "phone", "name", "address", "coordinates", "bedroom", "bath", "ac",
-    "view", "floor", "parking", "price", "available", "numRooms",
-    "availableRooms", "occupied_rooms", "description", "rooms_info"
-];
 
 export async function POST(request) {
     const sessionEmail = await requireAdminEmail();
@@ -45,6 +33,15 @@ export async function POST(request) {
             return NextResponse.json({ error: 'Not found or not your property' }, { status: 403 })
         }
 
+        // Validate the editable text fields up-front: they are persisted on
+        // BOTH paths (info-only save AND image upload), so pending text edits
+        // (description, room descriptions, composition) are never discarded
+        // by an image operation.
+        const info = extractInfoFields(obj_props)
+        if (!info.ok) {
+            return NextResponse.json({ success: false, error: info.error }, { status: 400 })
+        }
+
         const formDataEntryValues = Array.from(data.values()); // GET FILES
         let imagesArray = []
         for (const formDataEntryValue of formDataEntryValues) {
@@ -54,83 +51,35 @@ export async function POST(request) {
         }
 
         if (imagesArray.length == 0) { //If no images included the update info
-            console.log("PROPS UPDATE")
-            const updateFields = {}
-            for (const field of INFO_FIELDS) {
-                if (obj_props[field] !== undefined) updateFields[field] = obj_props[field]
-            }
-
-            // Server-side cap: total rooms (max(1, added)) must not exceed MAX_ROOMS
-            if (Array.isArray(updateFields.rooms_info) && updateFields.rooms_info.length > MAX_ROOMS) {
-                return NextResponse.json(
-                    { error: `Maximum ${MAX_ROOMS} rooms per property allowed.` },
-                    { status: 400 }
-                )
-            }
-
-            // Server-side beds validation for edited rooms_info
-            if (Array.isArray(updateFields.rooms_info)) {
-                for (const room of updateFields.rooms_info) {
-                    const bedCheck = isValidBeds(room?.beds)
-                    if (!bedCheck.ok) {
-                        return NextResponse.json({ error: bedCheck.error }, { status: 400 })
-                    }
-                    // Server-side amenities validation for edited rooms_info
-                    const amenityCheck = isValidAmenities(room?.amenities)
-                    if (!amenityCheck.ok) {
-                        return NextResponse.json({ error: amenityCheck.error }, { status: 400 })
-                    }
-                }
-            }
-
-            // Server-side address validation: trim, cap lengths, ISO country code.
-            // All-empty parts normalize to {} so clearing the fields clears the doc.
-            if (updateFields.address !== undefined) {
-                const addressCheck = isValidAddress(updateFields.address)
-                if (!addressCheck.ok) {
-                    return NextResponse.json({ error: addressCheck.error }, { status: 400 })
-                }
-                updateFields.address = addressCheck.address
-            }
-
-            // Defend against untransformed "lat, lng" strings from the client
-            if (typeof updateFields.coordinates === 'string') {
-                const parts = updateFields.coordinates.split(',');
-                const lat = parseFloat(parts[0]);
-                const lng = parseFloat(parts[1]);
-                if (parts.length >= 2 && !isNaN(lat) && !isNaN(lng)) {
-                    updateFields.coordinates = [lng, lat];
-                } else {
-                    return NextResponse.json({ error: 'Invalid coordinates' }, { status: 400 })
-                }
-            }
-
-            const update_info = await Restate.updateOne({ _id: doc._id }, { $set: updateFields })
+            const update_info = await Restate.updateOne({ _id: doc._id }, { $set: info.updateFields })
             revalidatePath('/', 'layout')
             return NextResponse.json({ "msg": update_info }, { status: 200 })
-        } else {
-            // Server-side TOTAL cap: existing images + new batch (client check alone is bypassable)
-            const existingCount = Array.isArray(doc.images) ? doc.images.length : 0
-            if (existingCount + imagesArray.length > MAX_IMAGES) {
-                return NextResponse.json(
-                    { success: false, error: `Maximum ${MAX_IMAGES} property images allowed. You already have ${existingCount}.` },
-                    { status: 400 }
-                )
-            }
-
-            console.log("IMAGES UPDATE")
-            const uploads = imagesArray.map((im) => UploadImage(im, "sri-lanka"))
-            const values = await Promise.all(uploads)
-            const arrayOfImages = []
-            for (let i = 0; i < values.length; i++) {
-                arrayOfImages.push(
-                    { src: values[i].secure_url, width: values[i].width, height: values[i].height, alt: values[i].original_filename, public_id: values[i].public_id }
-                )
-            }
-            await Restate.updateOne({ _id: doc._id }, { $push: { images: { $each: arrayOfImages } } })
-            revalidatePath('/', 'layout')
-            return NextResponse.json({ "msg": values }, { status: 200 })
         }
+
+        // Server-side TOTAL cap: existing images + new batch (client check alone is bypassable)
+        const existingCount = Array.isArray(doc.images) ? doc.images.length : 0
+        if (existingCount + imagesArray.length > MAX_IMAGES) {
+            return NextResponse.json(
+                { success: false, error: `Maximum ${MAX_IMAGES} property images allowed. You already have ${existingCount}.` },
+                { status: 400 }
+            )
+        }
+
+        const uploads = imagesArray.map((im) => UploadImage(im, "sri-lanka"))
+        const values = await Promise.all(uploads)
+        const arrayOfImages = []
+        for (let i = 0; i < values.length; i++) {
+            arrayOfImages.push(
+                { src: values[i].secure_url, width: values[i].width, height: values[i].height, alt: values[i].original_filename, public_id: values[i].public_id }
+            )
+        }
+
+        // Push the new images AND persist the pending info edits in one update
+        const update = { $push: { images: { $each: arrayOfImages } } }
+        if (Object.keys(info.updateFields).length > 0) update.$set = info.updateFields
+        await Restate.updateOne({ _id: doc._id }, update)
+        revalidatePath('/', 'layout')
+        return NextResponse.json({ "msg": values }, { status: 200 })
     } catch (err) {
         console.error('add_images failed:', err)
         return NextResponse.json({ error: err.message || 'Update failed' }, { status: 500 })

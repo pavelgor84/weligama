@@ -3,10 +3,9 @@ import { initMongoose } from "@/db/mongoose";
 import Restate from "@/models/Restate";
 import { UploadImage } from "@/app/lib/upload";
 import { requireAdminEmail } from "@/auth";
+import { extractInfoFields, MAX_ROOMS } from "@/app/lib/propertyInfo";
 
 const MAX_IMAGES_PER_ROOM = 15;
-// Total rooms per property: max(1, added rooms)
-const MAX_ROOMS = 10;
 
 export async function POST(request) {
     const sessionEmail = await requireAdminEmail();
@@ -47,8 +46,27 @@ export async function POST(request) {
             return NextResponse.json({ error: 'Missing property id' }, { status: 400 })
         }
 
+        // Optional property payload: pending text edits (property/room
+        // descriptions, composition) travel with the upload so they are saved
+        // instead of being lost when the client re-fetches from the DB.
+        let infoFields = null
+        const propPayload = data.get('prop')
+        if (propPayload) {
+            let parsedProp;
+            try {
+                parsedProp = JSON.parse(propPayload)
+            } catch {
+                return NextResponse.json({ success: false, error: 'Invalid property payload' }, { status: 400 })
+            }
+            const info = extractInfoFields(parsedProp)
+            if (!info.ok) {
+                return NextResponse.json({ success: false, error: info.error }, { status: 400 })
+            }
+            infoFields = info.updateFields
+        }
+
         // Ownership: only the property owner may upload to its rooms
-        const doc = await Restate.findOne({ _id: obj_props.id })
+        const doc = await Restate.findOne({ _id: obj_props.id }).lean()
         if (!doc || doc.mail !== sessionEmail) {
             return NextResponse.json({ error: 'Not found or not your property' }, { status: 403 })
         }
@@ -79,13 +97,21 @@ export async function POST(request) {
             )
         }
 
-        const response = await Restate.updateOne({ _id: doc._id }, {
-            $push: {
-                [`rooms.${roomIndex}`]: {
-                    $each: arrayOfImages
-                }
-            }
-        })
+        // Build the full rooms array instead of $push into `rooms.<index>`:
+        // a room added in the edit form has no image array yet, and $push on a
+        // gap would pad the array with nulls.
+        const rooms = Array.isArray(doc.rooms)
+            ? doc.rooms.map((roomImages) => Array.isArray(roomImages) ? roomImages : [])
+            : []
+        while (rooms.length <= roomIndex) rooms.push([])
+        rooms[roomIndex] = [...rooms[roomIndex], ...arrayOfImages]
+
+        const update = { $set: { rooms } }
+        if (infoFields && Object.keys(infoFields).length > 0) {
+            Object.assign(update.$set, infoFields)
+        }
+
+        const response = await Restate.updateOne({ _id: doc._id }, update)
 
         return NextResponse.json({ "msg": response }, { status: 200 })
     } catch (err) {

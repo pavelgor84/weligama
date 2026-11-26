@@ -4,13 +4,9 @@ import Restate from "@/models/Restate";
 import { UploadImage } from "@/app/lib/upload";
 import { revalidatePath } from "next/cache";
 import { requireAdminEmail } from "@/auth";
-import { isValidBeds } from "@/components/shared/bedTypes";
-import { isValidAmenities } from "@/components/shared/roomAmenityCatalog";
-import { isValidAddress } from "@/components/shared/addressValidation";
+import { extractInfoFields } from "@/app/lib/propertyInfo";
 
 const MAX_IMAGES = 15;
-// Total rooms per property: max(1, added rooms)
-const MAX_ROOMS = 10;
 
 export async function POST(request) {
     const sessionEmail = await requireAdminEmail();
@@ -31,36 +27,13 @@ export async function POST(request) {
         return NextResponse.json({ success: false, error: 'Invalid property payload' }, { status: 400 })
     }
 
-    // Server-side cap: total rooms (max(1, added)) must not exceed MAX_ROOMS
-    const addedRooms = Array.isArray(obj_props.rooms_info) ? obj_props.rooms_info.length : 0
-    if (addedRooms > MAX_ROOMS) {
-        return NextResponse.json(
-            { success: false, error: `Maximum ${MAX_ROOMS} rooms per property allowed.` },
-            { status: 400 }
-        )
+    // Shared validation: rooms cap, beds, amenities, address, coordinates.
+    // Fail before uploading anything to Cloudinary.
+    const info = extractInfoFields(obj_props)
+    if (!info.ok) {
+        return NextResponse.json({ success: false, error: info.error }, { status: 400 })
     }
-
-    // Server-side beds validation: per-room array, max 15, known types only
-    if (Array.isArray(obj_props.rooms_info)) {
-        for (const room of obj_props.rooms_info) {
-            const bedCheck = isValidBeds(room?.beds)
-            if (!bedCheck.ok) {
-                return NextResponse.json({ success: false, error: bedCheck.error }, { status: 400 })
-            }
-            // Server-side amenities validation: known ids only, no duplicates
-            const amenityCheck = isValidAmenities(room?.amenities)
-            if (!amenityCheck.ok) {
-                return NextResponse.json({ success: false, error: amenityCheck.error }, { status: 400 })
-            }
-        }
-    }
-
-    // Server-side address validation: trim, cap lengths, ISO country code
-    const addressCheck = isValidAddress(obj_props.address)
-    if (!addressCheck.ok) {
-        return NextResponse.json({ success: false, error: addressCheck.error }, { status: 400 })
-    }
-    obj_props.address = addressCheck.address
+    obj_props = { ...obj_props, ...info.updateFields }
 
     const formDataEntryValues = Array.from(data.values()); // GET FILES
     let imagesArray = []

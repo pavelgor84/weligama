@@ -10,6 +10,7 @@ import { COUNTRIES } from '../shared/countries'
 import { ADDRESS_LIMITS } from '../shared/addressValidation'
 import RoomAmenities from '../shared/RoomAmenities'
 import CoordinatePicker from '../coordinatePicker/maptiler'
+import MessageBox from '../shared/MessageBox'
 
 // Total rooms per property: max(1, added rooms) (matches server-side cap)
 const MAX_ROOMS = 10
@@ -23,8 +24,14 @@ export default function AdminMenu({ email }) {
     // room files keyed by room index: room[i] = File[] for rooms_info[i]
     const [room, setRoom] = useState([])
     const [loading, setLoading] = useState(false)
+    // Feedback message box: { id, type: 'success' | 'error', message } | null
+    const [notice, setNotice] = useState(null)
     // Per-room bed-type <select> elements, read by the "Add the bed" button
     const bedSelectRefs = React.useRef({})
+
+    const showNotice = (type, message) => setNotice({ id: Date.now(), type, message })
+    const closeNotice = () => setNotice(null)
+    const serverError = (e) => e?.response?.data?.error || e?.message || 'Unknown error'
 
     const handleAddPerson = (e) => {
         e.preventDefault()
@@ -38,10 +45,12 @@ export default function AdminMenu({ email }) {
 
     const handleInputChange = (e, index) => {
         const { name, value } = e.target;
-        const newForms = [...property.rooms_info];
-        newForms[index][name] = value;
-        //setForms(newForms);
-        setProperty(prevState => ({ ...prevState, rooms_info: newForms }));
+        // Immutable update — never mutate an object held by state
+        setProperty(prev => {
+            const next = [...prev.rooms_info]
+            next[index] = { ...next[index], [name]: value }
+            return { ...prev, rooms_info: next }
+        })
     };
     // Обработчик события нажатия кнопки "Удалить форму"
     const handleDeleteRoom = (e, index) => {
@@ -155,6 +164,7 @@ export default function AdminMenu({ email }) {
         e.preventDefault();
 
         if (!file.length) {
+            showNotice('error', 'Please select at least one property image.')
             return
         }
 
@@ -213,10 +223,11 @@ export default function AdminMenu({ email }) {
             setProperty(createAddProperty(property.mail))
             setFile([])
             setRoom([])
+            showNotice('success', 'Property added successfully.')
         }
         catch (e) {
             console.error(e)
-            alert('Save failed: ' + (e.response?.data?.error || e.message))
+            showNotice('error', 'Save failed: ' + serverError(e))
         } finally {
             setLoading(false)
         }
@@ -225,6 +236,7 @@ export default function AdminMenu({ email }) {
 
     return (
         <>
+            <MessageBox notice={notice} onClose={closeNotice} />
             <div className={styles.container}>
                 <div className={styles.menu}>
                     <div className={styles.left_items}>
